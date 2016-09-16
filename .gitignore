@@ -1,3 +1,4 @@
 *_out
+.DS_Store
 *.dSYM
 *.exr

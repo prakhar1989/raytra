@@ -37,7 +37,22 @@ void readRgba (const char fileName[], Array2D<Rgba> &pixels, int &width, int &he
 }
 
 
+int getQuadrant(int x, int y, int w, int h)
+{
+    // either 0 or 2
+    if (x <= 0.33 * w) {
+        if (y < 0.5 * h)
+            return 0;
+        return 1;
+    }
+    // 2 or 3
+    if (y < 0.5 * h)
+        return 2;
+    return 3;
+}
 
+
+// 0 -> Red, 1 -> Blue, 2 -> Green, 4 -> luminance
 int main (int argc, char *argv[])
 {
     try
@@ -50,24 +65,20 @@ int main (int argc, char *argv[])
         readRgba (argv[1], p, w, h);
         cout << "image width height is: " << w << "  " << h << endl;
 
-        // move everything to red channel, this will give an intensity image
-        // in red only:
         for (int y = 0; y < h; ++y) {
             for (int x = 0; x < w; ++x) {
 
                 Rgba &px = p[y][x];  // get the pixel we are interested in
 
-                // we're going to put all the channels into one. We'll also
-                // normalize a bit - which is not really necessary in an exr image
-                // since it has the high range. But if this was an image where each
-                // pixel is only allowed to range [0..1] (floating point) or [0..255]
-                // (integer) this normalization will keep everything in range.
-                //
-                px.r += (px.r + px.b + px.g) / 3.0;
-                // zero everything except the red channel
-                px.g = 0;
-                px.b = 0;
-                px.a = 1;
+                switch(getQuadrant(x, y, w, h)) {
+                    case 0: px.g = 0; px.b = 0; break;
+                    case 1: px.r = 0; px.g = 0; break;
+                    case 2: px.r = 0; px.b = 0; break;
+                    case 3: {
+                                double l = 0.2126 * px.r + 0.7152 * px.g + 0.0722 * px.b;
+                                px.r = l; px.r = l; px.g = l; break;
+                            }
+                }
             }
         }
 
