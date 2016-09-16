@@ -1,4 +1,4 @@
-#include "exr_test.h"
+#include "hw_zero.h"
 
 
 void writeRgba (const char fileName[], const Rgba *pixels, int width, int height)
@@ -73,7 +73,7 @@ int main (int argc, char *argv[])
 
         cout << "writing output image" << endl;
 
-        writeRgba ("allred.exr", &p[0][0], w, h);
+        writeRgba ("hw0.exr", &p[0][0], w, h);
 
         cout << "done." << endl;
     }
