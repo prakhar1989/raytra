@@ -2,3 +2,5 @@
 .DS_Store
 *.dSYM
 *.exr
+.cproject
+.project

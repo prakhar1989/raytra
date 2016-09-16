@@ -1,4 +1,5 @@
 #include "hw_zero.h"
+#include <fstream>
 
 
 void writeRgba (const char fileName[], const Rgba *pixels, int width, int height)
@@ -51,17 +52,26 @@ int getQuadrant(int x, int y, int w, int h)
     return 3;
 }
 
+bool doesFileExist(const char* filename)
+{
+    std::ifstream infile(filename);
+    return infile.good();
+}
 
-// 0 -> Red, 1 -> Blue, 2 -> Green, 4 -> luminance
+
 int main (int argc, char *argv[])
 {
     try
     {
+        if (!doesFileExist(argv[1])) {
+            cout << "File doesn't exist" << endl;
+            return 1;
+        }
+
         cout << "reading " << argv[1] << endl;
         int w, h;
         Array2D<Rgba> p;
 
-        // you should test for file existence before this!
         readRgba (argv[1], p, w, h);
         cout << "image width height is: " << w << "  " << h << endl;
 
@@ -70,13 +80,14 @@ int main (int argc, char *argv[])
 
                 Rgba &px = p[y][x];  // get the pixel we are interested in
 
+                // 0 -> Red, 1 -> Blue, 2 -> Green, 3 -> luminance
                 switch(getQuadrant(x, y, w, h)) {
                     case 0: px.g = 0; px.b = 0; break;
                     case 1: px.r = 0; px.g = 0; break;
                     case 2: px.r = 0; px.b = 0; break;
                     case 3: {
                                 double l = 0.2126 * px.r + 0.7152 * px.g + 0.0722 * px.b;
-                                px.r = l; px.r = l; px.g = l; break;
+                                px.r = l; px.g = l; px.b = l; break;
                             }
                 }
             }
