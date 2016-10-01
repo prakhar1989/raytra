@@ -18,3 +18,6 @@ raytra takes two arguments - the name of a scene file to read, and the name of t
 to be written. For this part of the assignment, **only the camera command and the sphere command need
 to be working** (from the scene file format).
 
+
+### Build
+This project uses [cmake](https://cmake.org/) for building the binary. Run `cmake .` followed by `make` to build.
