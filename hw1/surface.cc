@@ -1,4 +1,6 @@
-#include "sphere.h"
+#include "surface.h"
+#include <iostream>
+
 
 Sphere::Sphere(const Point &center, float radius) : center(center), radius(radius) {}
 Sphere::Sphere(float x, float y, float z, float r) {

@@ -1,11 +1,10 @@
 #include <fstream>
 #include <sstream>
 #include "parser.h"
-#include "sphere.h"
 
 using namespace std;
 
-int Parser::parse_file(const string file_name)
+int Parser::parse_file(const string file_name, vector<Surface*>& surfaces)
 /* parses a file */
 {
     ifstream in(file_name);
@@ -30,7 +29,7 @@ int Parser::parse_file(const string file_name)
                 float x, y, z, r;
                 iss >> x >> y >> z >> r;
                 Sphere sphere(x, y, z, r);
-                sphere.print();
+                surfaces.push_back(&sphere);
             }
             case 'c':
                 cout << "found camera: " << line << endl;
