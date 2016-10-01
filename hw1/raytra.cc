@@ -17,8 +17,9 @@ int main(int argc, char** argv)
 
     string scene_file {argv[1]};
     vector<Surface*> surfaces;
+    Camera* camera;
 
-    Parser::parse_file(scene_file, surfaces);
+    Parser::parse_file(scene_file, surfaces, camera);
 
     for (auto s: surfaces)
         s->print();

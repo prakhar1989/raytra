@@ -4,10 +4,13 @@
 #include <iostream>
 #include <vector>
 #include "surface.h"
+#include "camera.h"
 
 class Parser {
 public:
-    static int parse_file(std::string file_name, std::vector<Surface*>& surfaces);
+    static int parse_file(std::string file_name,
+                          std::vector<Surface*>& surfaces,
+                          Camera* camera);
 };
 
 
