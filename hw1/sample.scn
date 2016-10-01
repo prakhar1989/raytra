@@ -1,0 +1,12 @@
+/ start of a scene file
+/ camera
+c 1 2 3 11 22 33 10 300 400 600 800
+
+/ a plane that should be ignored
+p 20 24 12 4
+
+/ sphere
+s 1 2 4 10
+
+/ material for the sphere
+m 255 0 0 4 5 6 0.5 12 12 12
