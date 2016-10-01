@@ -1,5 +1,7 @@
 #include <fstream>
+#include <sstream>
 #include "parser.h"
+#include "sphere.h"
 
 using namespace std;
 
@@ -16,11 +18,20 @@ int Parser::parse_file(const string file_name)
         if (line.empty())
             continue;
 
-        switch(line[0]) {
+        char cmd;
+
+        istringstream iss(line);
+        iss >> cmd;
+
+        switch(cmd) {
             case '/': continue;
             case 's':
-                cout << "found sphere:" << line << endl;
-                break;
+            {
+                float x, y, z, r;
+                iss >> x >> y >> z >> r;
+                Sphere sphere(x, y, z, r);
+                sphere.print();
+            }
             case 'c':
                 cout << "found camera: " << line << endl;
                 break;
