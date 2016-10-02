@@ -14,6 +14,8 @@ int Parser::parse_file(const string file_name, vector<Surface*>& surfaces, Camer
         return -1;
     }
 
+    Material* m = nullptr;
+
     for (string line; getline(in, line);) {
         if (line.empty())
             continue;
@@ -22,7 +24,6 @@ int Parser::parse_file(const string file_name, vector<Surface*>& surfaces, Camer
 
         istringstream iss(line);
         iss >> cmd;
-        Material* m;
 
         switch(cmd) {
             case '/': continue;
@@ -31,6 +32,10 @@ int Parser::parse_file(const string file_name, vector<Surface*>& surfaces, Camer
                 float x, y, z, r;
                 iss >> x >> y >> z >> r;
                 Sphere* s = new Sphere(x, y, z, r);
+                if (m == nullptr) {
+                    cerr << "invalid scene file. cannot find matching material for surface: " << line << endl;
+                    return -1;
+                }
                 s->material = m;
                 surfaces.push_back(s);
                 break;
