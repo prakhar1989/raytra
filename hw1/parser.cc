@@ -22,6 +22,7 @@ int Parser::parse_file(const string file_name, vector<Surface*>& surfaces, Camer
 
         istringstream iss(line);
         iss >> cmd;
+        Material* m;
 
         switch(cmd) {
             case '/': continue;
@@ -29,8 +30,9 @@ int Parser::parse_file(const string file_name, vector<Surface*>& surfaces, Camer
             {
                 float x, y, z, r;
                 iss >> x >> y >> z >> r;
-                Sphere sphere(x, y, z, r);
-                surfaces.push_back(&sphere);
+                Sphere* s = new Sphere(x, y, z, r);
+                s->material = m;
+                surfaces.push_back(s);
                 break;
             }
             case 'c':
@@ -45,11 +47,7 @@ int Parser::parse_file(const string file_name, vector<Surface*>& surfaces, Camer
             {
                 float dr, dg, db, sr, sg, sb, r, ir, ig, ib;
                 iss >> dr >> dg >> db >> sr >> sg >> sb >> r >> ir >> ig >> ib;
-                Material material(dr, dg, db, sr, sg, sb, ir, ig, ib, r);
-
-                // TODO: figure out better ways to assign
-                Surface *s = surfaces.at(surfaces.size() - 1);
-                s->material = &material;
+                m = new Material(dr, dg, db, sr, sg, sb, ir, ig, ib, r);
                 break;
             }
             default: continue;
