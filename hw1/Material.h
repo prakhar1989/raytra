@@ -1,11 +1,6 @@
 #ifndef HW1_MATERIAL_H
 #define HW1_MATERIAL_H
 
-#include <printf.h>
-#include <iosfwd>
-
-using namespace std;
-
 struct color {
     float red, green, blue;
 };

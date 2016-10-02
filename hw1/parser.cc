@@ -1,12 +1,10 @@
 #include <fstream>
 #include <sstream>
 #include "parser.h"
-#include "camera.h"
 
 using namespace std;
 
 int Parser::parse_file(const string file_name, vector<Surface*>& surfaces, Camera* camera)
-/* parses a file */
 {
     ifstream in(file_name);
     if (!in) {

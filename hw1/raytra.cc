@@ -1,9 +1,11 @@
 #include "parser.h"
-#include "surface.h"
-#include <iostream>
-#include <vector>
 
 using namespace std;
+
+void print_color(const color& c)
+{
+    printf("r: %f, g: %f, b: %f\n", c.red, c.green, c.blue);
+}
 
 int main(int argc, char** argv)
 {
@@ -21,6 +23,8 @@ int main(int argc, char** argv)
 
     Parser::parse_file(scene_file, surfaces, camera);
 
-    for (auto s: surfaces)
+    for (auto s: surfaces) {
         s->print();
+        print_color(s->material->diffuse);
+    }
 }

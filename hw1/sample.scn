@@ -1,12 +1,21 @@
-/ camera
-c 1 2 3 11 22 33 10 300 400 600 800
+/ simple test scene file, all units in mm.
 
-/ a plane that should be ignored
-p 20 24 12 4
+/ a red material, w/ white specular highlight, no reflection
+m 0.7 0.0 0.0 0.5 0.5 0.5 100. 0.0 0.0 0.0
 
-/ material for the sphere
-m 255 0 0 4 5 6 0.5 12 12 12
+/ one sphere in the above material
+s 0. 13.67 -62.57 10.
 
-/ some spheres
-s 1 2 4 10
-s 10 29 24 15
+/ a grey material with no specular, no reflection
+m 0.5 0.5 0.5 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+
+/ a grey ground plane made up of two triangles, no specular, no reflection
+t -500.00 -0.00 500.00 500.00 -0.00 500.00 -500.00 0.00 -500.00
+t -500.00 0.00 -500.00 500.00 -0.00 500.00 500.00 0.00 -500.00
+
+/ one point light, white
+l p -80. 120. -46.6 1.0 1.0 1.0
+
+/ camera: pointing towards -Z, 35mmx25mm "film", 35mm focal length
+/ making 160x120 pixels
+c 24.2 29.3 53.6 0.0 0.0 -1.0 35.0 35.0 25.0 160 120
