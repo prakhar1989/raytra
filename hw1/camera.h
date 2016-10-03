@@ -9,12 +9,12 @@ public:
             float vx, float vy, float vz,
             float d, float iw, float ih, float pw, float ph);
 
-    Point eye;
-    Point direction_point;
+    Raytra::Point eye;
+    Raytra::Point direction_point;
     float focal_length;
 
-    dim2d image_plane;
-    dim2d pixels_size;
+    Raytra::dim2d image_plane;
+    Raytra::dim2d pixels_size;
 };
 
 

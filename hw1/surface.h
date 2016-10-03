@@ -3,14 +3,6 @@
 
 #include "Material.h"
 
-struct Point {
-    float x, y, z;
-};
-
-struct dim2d {
-    float width, height;
-};
-
 class Surface {
 public:
     virtual void print() = 0;
@@ -20,10 +12,10 @@ public:
 class Sphere: public Surface {
 public:
     Sphere(float x, float y, float z, float r);
-    Sphere(const Point &center, float radius);
+    Sphere(const Raytra::Point &center, float radius);
     void print();
 
-    Point center;
+    Raytra::Point center;
     float radius;
 };
 

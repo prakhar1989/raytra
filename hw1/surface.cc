@@ -1,11 +1,10 @@
 #include "surface.h"
 #include <iostream>
 
-
-Sphere::Sphere(const Point &center, float radius) : center(center), radius(radius) {}
+Sphere::Sphere(const Raytra::Point &center, float radius) : center(center), radius(radius) {}
 
 Sphere::Sphere(float x, float y, float z, float r) {
-    Point c;
+    Raytra::Point c;
     c.x = x; c.y = y; c.z = z; center = c;
     radius = r;
 }

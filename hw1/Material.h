@@ -1,18 +1,16 @@
 #ifndef HW1_MATERIAL_H
 #define HW1_MATERIAL_H
 
-struct color {
-    float red, green, blue;
-};
+#include "raytra.h"
 
 class Material {
 public:
     Material(float dr, float dg, float db,
              float sr, float sg, float sb,
              float ir, float ig, float ib, float r);
-    color diffuse;
-    color specular;
-    color ideal_specular;
+    Raytra::color diffuse;
+    Raytra::color specular;
+    Raytra::color ideal_specular;
     float phong;
 };
 

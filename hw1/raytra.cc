@@ -2,7 +2,7 @@
 
 using namespace std;
 
-void print_color(const color& c)
+void print_color(const Raytra::color& c)
 {
     printf("r: %f, g: %f, b: %f\n", c.red, c.green, c.blue);
 }
