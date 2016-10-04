@@ -9,10 +9,6 @@ namespace Raytra {
         float x, y, z;
     };
 
-    struct dim2d {
-        float width, height;
-    };
-
     struct vector {
         float x, y, z;
     };
@@ -42,5 +38,15 @@ namespace Raytra {
     {
         float s = sqrtf(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
         return { .x = vec.x / s, .y = vec.y / s, .z = vec.z / s};
+    }
+
+    inline vector operator*(float c, const vector& vec)
+    {
+        return { .x = vec.x * c, .y = vec.y * c, .z = vec.z * c };
+    }
+
+    inline vector operator+(const vector& v1, const vector& v2)
+    {
+        return { .x = v1.x + v2.x, .y = v1.y + v2.y, .z = v1.z + v2.z, };
     }
 }

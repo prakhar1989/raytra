@@ -17,8 +17,7 @@ public:
 
     float focal_length;
 
-    Raytra::dim2d image_plane;
-    Raytra::dim2d pixels_size;
+    float nx, ny, left, right, top, bottom;
 };
 
 #endif //HW1_CAMERA_H

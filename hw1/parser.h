@@ -5,6 +5,7 @@
 #include <vector>
 #include "surface.h"
 #include "camera.h"
+#include "ray.h"
 
 class Parser {
 public:
@@ -12,6 +13,5 @@ public:
                           std::vector<Surface*>& surfaces,
                           Camera* camera);
 };
-
 
 #endif //HW1_PARSER_H

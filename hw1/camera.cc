@@ -17,6 +17,8 @@ Camera::Camera(float x, float y, float z,
     v = cross(u, direction);
 
     focal_length = d;
-    image_plane = {.width = iw, .height = ih};
-    pixels_size = {.width = pw, .height = ph};
+
+    nx = pw; ny = ph;
+
+    left = 0; bottom = 0; right = iw; top = ih;
 }
