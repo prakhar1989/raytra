@@ -15,7 +15,6 @@ int main(int argc, char** argv)
     }
 
     auto version = "0.1";
-    printf("Welcome to Raytra v%s\n", version);
 
     string scene_file {argv[1]};
     vector<Surface*> surfaces;

@@ -4,6 +4,6 @@ project(hw1)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 set(SOURCE_FILES
-    README.md parser.cc parser.h raytra.cc surface.h surface.cc camera.cc camera.h Material.cc Material.h)
+    README.md parser.cc parser.h raytra.cc surface.h surface.cc camera.cc camera.h Material.cc Material.h ray.h)
 
 add_executable(raytra ${SOURCE_FILES})
