@@ -47,13 +47,12 @@ int main(int argc, char** argv)
     for (auto s: surfaces) {
         s->print();
         std::cout << s->material->diffuse << std::endl;
-        std::cout << s->material->specular << std::endl;
-        std::cout << s->material->ideal_specular << std::endl;
     }
 
     for (int i = 0; i < camera.nx; i++) {
         for (int j = 0; j < camera.ny; j++) {
 
+            /* Step 1 - Ray Generation */
             float u = camera.left + (camera.right - camera.left) * (i + 0.5f)/camera.nx;
             float v = camera.bottom + (camera.top - camera.bottom) * (j + 0.5f)/camera.ny;
 
@@ -61,9 +60,6 @@ int main(int argc, char** argv)
                                  (u * camera.u) +  (v * camera.v);
 
             Raytra::point origin = camera.eye;
-
-            std::cout << origin << std::endl;
-            std::cout << dir << std::endl;
 
             Ray r(origin, dir);
         }

@@ -22,5 +22,5 @@ Camera::Camera(float x, float y, float z,
 
     nx = pw; ny = ph;
 
-    left = 0; bottom = 0; right = iw; top = ih;
+    left = -iw/2; bottom = -ih/2; right = iw/2; top = ih/2;
 }

@@ -46,6 +46,7 @@ int Parser::parse_file(const string file_name, vector<Surface*>& surfaces, Camer
                 camera.nx = cam.nx; camera.ny = cam.ny;
                 camera.left = cam.left; camera.right = cam.right;
                 camera.top = cam.top; camera.bottom = cam.bottom;
+                camera.focal_length = cam.focal_length;
 
                 camera.eye = cam.eye;
                 camera.w = cam.w; camera.u = cam.u; camera.v = cam.v;
