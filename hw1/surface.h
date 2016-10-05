@@ -2,20 +2,23 @@
 #define HW1_SURFACE_H
 
 #include "Material.h"
+#include "ray.h"
 
 class Surface {
 public:
     virtual void print() = 0;
+    virtual float get_intersection_point(const Ray& ray) = 0;
     Material* material = nullptr;
 };
 
 class Sphere: public Surface {
 public:
     Sphere(float x, float y, float z, float r);
-    Sphere(const Raytra::Point &center, float radius);
+    Sphere(const Raytra::point &center, float radius);
     void print();
+    float get_intersection_point(const Ray& ray);
 
-    Raytra::Point center;
+    Raytra::point center;
     float radius;
 };
 

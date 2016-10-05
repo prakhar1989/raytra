@@ -1,48 +1,71 @@
 #include "parser.h"
 
-using namespace std;
+using namespace Raytra;
 
-void print_color(const Raytra::color& c)
+std::ostream& operator << (std::ostream& o, const point& p)
 {
-    printf("r: %f, g: %f, b: %f\n", c.red, c.green, c.blue);
+    return o << "Point(x: " << p.x << ",y: " << p.y << ", z: " << p.z << ")";
+}
+
+std::ostream& operator << (std::ostream& o, const vector& v)
+{
+    return o << "Vector(x: " << v.x << ",y: " << v.y << ", z: " << v.z << ")";
+}
+
+std::ostream& operator << (std::ostream& o, const color& c)
+{
+    return o << "Color(r: " << c.red
+             << ",y: " << c.green << ", z: " << c.blue << ")";
+}
+
+int get_nearest_surface(const Ray& ray, const std::vector<Surface*>& surfaces)
+{
+    for (int i = 0; i < surfaces.size(); i++) {
+        float d = surfaces[i]->get_intersection_point(ray);
+        if (d != -1) {
+            printf("Ray hit surface: %d at d: %f", i, d);
+        }
+    }
+    return 0;
 }
 
 int main(int argc, char** argv)
 {
     if (argc < 2) {
-        cerr << "USAGE: raytra <scene_file> <output_file>" << endl;
+        std::cerr << "USAGE: raytra <scene_file> <output_file>" << std::endl;
         return -1;
     }
 
     auto version = "0.1";
 
-    string scene_file {argv[1]};
-    vector<Surface*> surfaces;
-    Camera* camera;
+    std::string scene_file {argv[1]};
+    std::vector<Surface*> surfaces;
+    Camera camera;
 
     Parser::parse_file(scene_file, surfaces, camera);
 
-    // TODO: for debugging only
     for (auto s: surfaces) {
         s->print();
-        print_color(s->material->diffuse);
+        std::cout << s->material->diffuse << std::endl;
+        std::cout << s->material->specular << std::endl;
+        std::cout << s->material->ideal_specular << std::endl;
     }
 
-    for (int i = 0; i < camera->nx; i++) {
-        for (int j = 0; j < camera->ny; j++) {
+    for (int i = 0; i < camera.nx; i++) {
+        for (int j = 0; j < camera.ny; j++) {
 
-            /* Step 1. Ray Generation */
-            float u = camera->left +
-                    (camera->right - camera->left) * (i + 0.5f)/camera->nx;
-            float v = camera->bottom +
-                      (camera->top - camera->bottom) * (j + 0.5f)/camera->ny;
+            float u = camera.left + (camera.right - camera.left) * (i + 0.5f)/camera.nx;
+            float v = camera.bottom + (camera.top - camera.bottom) * (j + 0.5f)/camera.ny;
 
-            Raytra::vector dir = (-camera->focal_length * camera->w) +
-                                (u * camera->u) +  (v * camera->v);
+            Raytra::vector dir = (-camera.focal_length * camera.w) +
+                                 (u * camera.u) +  (v * camera.v);
 
-            Raytra::Point origin = camera->eye;
+            Raytra::point origin = camera.eye;
 
-            Ray* r = new Ray(origin, dir);
+            std::cout << origin << std::endl;
+            std::cout << dir << std::endl;
+
+            Ray r(origin, dir);
         }
     }
 }

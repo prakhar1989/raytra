@@ -4,7 +4,7 @@
 
 using namespace std;
 
-int Parser::parse_file(const string file_name, vector<Surface*>& surfaces, Camera* camera)
+int Parser::parse_file(const string file_name, vector<Surface*>& surfaces, Camera& camera)
 {
     ifstream in(file_name);
     if (!in) {
@@ -43,7 +43,12 @@ int Parser::parse_file(const string file_name, vector<Surface*>& surfaces, Camer
                 float x, y, z, vx, vy, vz, d, iw, ih, pw, ph;
                 iss >> x >> y >> z >> vx >> vy >> vz >> d >> iw >> ih >> pw >> ph;
                 Camera cam(x, y, z, vx, vy, vz, d, iw, ih, pw, ph);
-                camera = &cam;
+                camera.nx = cam.nx; camera.ny = cam.ny;
+                camera.left = cam.left; camera.right = cam.right;
+                camera.top = cam.top; camera.bottom = cam.bottom;
+
+                camera.eye = cam.eye;
+                camera.w = cam.w; camera.u = cam.u; camera.v = cam.v;
                 break;
             }
             case 'm':

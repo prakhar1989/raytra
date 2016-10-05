@@ -11,7 +11,7 @@ class Parser {
 public:
     static int parse_file(std::string file_name,
                           std::vector<Surface*>& surfaces,
-                          Camera* camera);
+                          Camera& camera);
 };
 
 #endif //HW1_PARSER_H

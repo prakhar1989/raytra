@@ -2,6 +2,8 @@
 
 using namespace Raytra;
 
+Camera::Camera() {}
+
 Camera::Camera(float x, float y, float z,
                float vx, float vy, float vz,
                float d, float iw, float ih, float pw, float ph)

@@ -5,7 +5,7 @@ namespace Raytra {
         float red, green, blue;
     };
 
-    struct Point {
+    struct point {
         float x, y, z;
     };
 
@@ -13,7 +13,7 @@ namespace Raytra {
         float x, y, z;
     };
 
-    /* computes the cross product between two vectors */
+    /* --- VECTOR OPERATIONS ----- */
     inline vector cross(const vector& v1, const vector& v2)
     {
         return {
@@ -33,7 +33,6 @@ namespace Raytra {
         return { .x = -vec.x, .y = -vec.y, .z = -vec.z };
     }
 
-    /* computes the normalized version of a vector */
     inline vector norm(const vector& vec)
     {
         float s = sqrtf(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
@@ -47,6 +46,17 @@ namespace Raytra {
 
     inline vector operator+(const vector& v1, const vector& v2)
     {
-        return { .x = v1.x + v2.x, .y = v1.y + v2.y, .z = v1.z + v2.z, };
+        return { .x = v1.x + v2.x, .y = v1.y + v2.y, .z = v1.z + v2.z };
+    }
+
+    /* --- POINT OPERATIONS ----- */
+    inline vector operator-(const point& p1, const point& p2)
+    {
+        return { .x = p1.x - p2.x, .y = p1.y - p2.y, .z = p1.z - p2.z };
+    }
+
+    inline vector operator+(const point& p1, const point& p2)
+    {
+        return { .x = p1.x + p2.x, .y = p1.y + p2.y, .z = p1.z + p2.z };
     }
 }

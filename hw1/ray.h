@@ -5,10 +5,10 @@
 
 class Ray {
 public:
-    Ray(const Raytra::Point &origin, const Raytra::vector &direction) : origin(origin), direction(direction) {}
+    Ray(const Raytra::point &origin, const Raytra::vector &direction) : origin(origin), dir(direction) {}
 
-    Raytra::Point origin;
-    Raytra::vector direction;
+    Raytra::point origin;
+    Raytra::vector dir;
 };
 
 #endif //HW1_RAY_H

@@ -5,12 +5,13 @@
 
 class Camera {
 public:
+    Camera();
     Camera(float x, float y, float z,
             float vx, float vy, float vz,
             float d, float iw, float ih, float pw, float ph);
 
     // for the camera coordinate frame
-    Raytra::Point eye;
+    Raytra::point eye;
     Raytra::vector u;
     Raytra::vector v;
     Raytra::vector w;
