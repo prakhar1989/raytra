@@ -1,0 +1,21 @@
+/ simple test scene file, all units in mm.
+
+/ a red material, w/ white specular highlight, no reflection
+m 0.7 0.0 0.0 0.5 0.5 0.5 100. 0.0 0.0 0.0
+
+/ one sphere in the above material
+s 0. 13.67 -62.57 10.
+
+/ a grey material with no specular, no reflection
+m 0.5 0.5 0.5 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+
+/ a grey ground plane made up of two triangles, no specular, no reflection
+t -500.00 -0.00 500.00 500.00 -0.00 500.00 -500.00 0.00 -500.00
+t -500.00 0.00 -500.00 500.00 -0.00 500.00 500.00 0.00 -500.00
+
+/ one point light, white
+l p -80. 120. -46.6 1.0 1.0 1.0
+
+/ camera: pointing towards -Z, 35mmx25mm "film", 35mm focal length
+/ making 160x120 pixels
+c 24.2 29.3 53.6 0.0 0.0 -1.0 35.0 35.0 25.0 160 120

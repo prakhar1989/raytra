@@ -12,12 +12,7 @@ using namespace Imath;
 /* helper methods for the OpenEXR library */
 class exr {
 public:
-    static void writeRgba (const char fileName[], const Rgba *pixels,
-                           int width, int height);
-
-
-
+    static void writeRgba (const char fileName[], const Rgba *pixels, int width, int height);
 };
-
 
 #endif //HW1_EXR_H

@@ -4,8 +4,7 @@
 Sphere::Sphere(const Raytra::point &center, float radius) : center(center), radius(radius) {}
 
 Sphere::Sphere(float x, float y, float z, float r) {
-    Raytra::point c;
-    c.x = x; c.y = y; c.z = z; center = c;
+    center = { .x = x, .y = y, .z = z };
     radius = r;
 }
 

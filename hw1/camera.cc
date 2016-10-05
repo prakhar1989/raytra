@@ -11,7 +11,6 @@ Camera::Camera(float x, float y, float z,
     eye = {.x = x, .y = y, .z = z};
 
     vector direction = {.x = vx, .y = vy, .z = vz};
-    direction  = norm(direction);
     vector up = {.x = 0, .y = 1, .z = 0};
 
     w = -(direction);

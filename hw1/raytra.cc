@@ -26,7 +26,7 @@ int get_nearest_surface(const Ray& ray, const std::vector<Surface*>& surfaces)
 
     for (int i = 0; i < surfaces.size(); i++) {
         float t = surfaces[i]->get_intersection_point(ray);
-        if (t != -1 && t < min_t) {
+        if (t > 0 && t < min_t) {
             min_t = t;
             min_index = i;
         }
@@ -51,25 +51,25 @@ int main(int argc, char** argv)
     Parser::parse_file(scene_file, surfaces, camera);
 
     Array2D<Rgba> pixels;
-    pixels.resizeErase(camera.nx, camera.ny);
+    pixels.resizeErase(camera.ny, camera.nx);
 
-    for (int i = 0; i < camera.nx; i++) {
-        for (int j = 0; j < camera.ny; j++) {
+    for (int y = 0; y < camera.ny; y++) {
+        for (int x = 0; x < camera.nx; x++) {
 
             /* Step 1 - Ray Generation */
-            float u = camera.left + (camera.right - camera.left) * (i + 0.5f)/camera.nx;
-            float v = camera.bottom + (camera.top - camera.bottom) * (j + 0.5f)/camera.ny;
+            float u = camera.left + (camera.right - camera.left) * (x + 0.5f)/camera.nx;
+            float v = camera.bottom + (camera.top - camera.bottom) * (y + 0.5f)/camera.ny;
 
-            Raytra::vector dir = (-camera.focal_length * camera.w) +
-                                 (u * camera.u) +  (v * camera.v);
+            Raytra::vector dir = norm((-camera.focal_length * camera.w) + (u * camera.u) +  (v * camera.v));
             Raytra::point origin = camera.eye;
             Ray ray(origin, dir);
 
             /* Step 2 - Ray Intersection */
             int surface_index = get_nearest_surface(ray, surfaces);
 
+
             /* Step 3 - Shading */
-            Rgba &px = pixels[j][i];
+            Rgba &px = pixels[y][x];
 
             if (surface_index != -1) {
                 // set the material color as the pixel color
@@ -83,7 +83,6 @@ int main(int argc, char** argv)
             }
         }
     }
-
 
     printf("Generating image: %s\n", output_file);
     exr::writeRgba(output_file, &pixels[0][0], camera.nx, camera.ny);
