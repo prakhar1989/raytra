@@ -36,14 +36,15 @@ int get_nearest_surface(const Ray& ray, const std::vector<Surface*>& surfaces)
 
 int main(int argc, char** argv)
 {
-    if (argc < 2) {
+    if (argc < 3) {
         std::cerr << "USAGE: raytra <scene_file> <output_file>" << std::endl;
         return -1;
     }
 
     auto version = "0.1";
-
     std::string scene_file {argv[1]};
+    char* output_file {argv[2]};
+
     std::vector<Surface*> surfaces;
     Camera camera;
 
@@ -51,11 +52,6 @@ int main(int argc, char** argv)
 
     Array2D<Rgba> pixels;
     pixels.resizeErase(camera.nx, camera.ny);
-
-    for (auto s: surfaces) {
-        s->print();
-        std::cout << s->material->diffuse << std::endl;
-    }
 
     for (int i = 0; i < camera.nx; i++) {
         for (int j = 0; j < camera.ny; j++) {
@@ -66,9 +62,7 @@ int main(int argc, char** argv)
 
             Raytra::vector dir = (-camera.focal_length * camera.w) +
                                  (u * camera.u) +  (v * camera.v);
-
             Raytra::point origin = camera.eye;
-
             Ray ray(origin, dir);
 
             /* Step 2 - Ray Intersection */
@@ -87,9 +81,10 @@ int main(int argc, char** argv)
                 // set black color
                 px.r = 0; px.g = 0; px.b = 0;
             }
-
         }
     }
 
-    exr::writeRgba("image.exr", &pixels[0][0], camera.nx, camera.ny);
+
+    printf("Generating image: %s\n", output_file);
+    exr::writeRgba(output_file, &pixels[0][0], camera.nx, camera.ny);
 }
