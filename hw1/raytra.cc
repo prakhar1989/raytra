@@ -1,4 +1,5 @@
 #include "parser.h"
+#include "exr.h"
 
 using namespace Raytra;
 
@@ -48,6 +49,9 @@ int main(int argc, char** argv)
 
     Parser::parse_file(scene_file, surfaces, camera);
 
+    Array2D<Rgba> pixels;
+    pixels.resizeErase(camera.nx, camera.ny);
+
     for (auto s: surfaces) {
         s->print();
         std::cout << s->material->diffuse << std::endl;
@@ -69,9 +73,23 @@ int main(int argc, char** argv)
 
             /* Step 2 - Ray Intersection */
             int surface_index = get_nearest_surface(ray, surfaces);
+
+            /* Step 3 - Shading */
+            Rgba &px = pixels[j][i];
+
             if (surface_index != -1) {
-                printf("Surface %d hit at (%d, %d)\n", surface_index, i, j);
+                // set the material color as the pixel color
+                color c = surfaces[surface_index]->material->diffuse;
+                px.r = c.red;
+                px.g = c.green;
+                px.b = c.blue;
+            } else {
+                // set black color
+                px.r = 0; px.g = 0; px.b = 0;
             }
+
         }
     }
+
+    exr::writeRgba("image.exr", &pixels[0][0], camera.nx, camera.ny);
 }

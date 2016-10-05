@@ -6,7 +6,7 @@ Camera::Camera() {}
 
 Camera::Camera(float x, float y, float z,
                float vx, float vy, float vz,
-               float d, float iw, float ih, float pw, float ph)
+               float d, float iw, float ih, int pw, int ph)
 {
     eye = {.x = x, .y = y, .z = z};
 

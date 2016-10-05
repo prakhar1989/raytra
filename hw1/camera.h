@@ -8,7 +8,7 @@ public:
     Camera();
     Camera(float x, float y, float z,
             float vx, float vy, float vz,
-            float d, float iw, float ih, float pw, float ph);
+            float d, float iw, float ih, int pw, int ph);
 
     // for the camera coordinate frame
     Raytra::point eye;
@@ -16,9 +16,9 @@ public:
     Raytra::vector v;
     Raytra::vector w;
 
-    float focal_length;
+    int nx, ny;
 
-    float nx, ny, left, right, top, bottom;
+    float focal_length, left, right, top, bottom;
 };
 
 #endif //HW1_CAMERA_H
