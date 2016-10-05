@@ -1,5 +1,6 @@
 #include "parser.h"
 #include "exr.h"
+#include <limits>
 
 using namespace Raytra;
 
@@ -24,7 +25,7 @@ int get_nearest_surface(const Ray& ray, const std::vector<Surface*>& surfaces)
     float min_t = std::numeric_limits<float>::infinity();
     int min_index = -1;
 
-    for (int i = 0; i < surfaces.size(); i++) {
+    for (int i = 0; i < (int) surfaces.size(); i++) {
         float t = surfaces[i]->get_intersection_point(ray);
         if (t > 0 && t < min_t) {
             min_t = t;
