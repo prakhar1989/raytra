@@ -20,13 +20,17 @@ std::ostream& operator << (std::ostream& o, const color& c)
 
 int get_nearest_surface(const Ray& ray, const std::vector<Surface*>& surfaces)
 {
+    float min_t = std::numeric_limits<float>::infinity();
+    int min_index = -1;
+
     for (int i = 0; i < surfaces.size(); i++) {
-        float d = surfaces[i]->get_intersection_point(ray);
-        if (d != -1) {
-            printf("Ray hit surface: %d at d: %f", i, d);
+        float t = surfaces[i]->get_intersection_point(ray);
+        if (t != -1 && t < min_t) {
+            min_t = t;
+            min_index = i;
         }
     }
-    return 0;
+    return min_index;
 }
 
 int main(int argc, char** argv)
@@ -61,7 +65,13 @@ int main(int argc, char** argv)
 
             Raytra::point origin = camera.eye;
 
-            Ray r(origin, dir);
+            Ray ray(origin, dir);
+
+            /* Step 2 - Ray Intersection */
+            int surface_index = get_nearest_surface(ray, surfaces);
+            if (surface_index != -1) {
+                printf("Surface %d hit at (%d, %d)\n", surface_index, i, j);
+            }
         }
     }
 }

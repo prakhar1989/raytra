@@ -49,6 +49,11 @@ namespace Raytra {
         return { .x = v1.x + v2.x, .y = v1.y + v2.y, .z = v1.z + v2.z };
     }
 
+    inline point operator+(const vector& v1, const point& p1)
+    {
+        return { .x = v1.x + p1.x, .y = v1.y + p1.y, .z = v1.z + p1.z };
+    }
+
     /* --- POINT OPERATIONS ----- */
     inline vector operator-(const point& p1, const point& p2)
     {
