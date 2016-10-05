@@ -42,6 +42,8 @@ int main(int argc, char** argv)
     }
 
     auto version = "0.1";
+    printf("Raytra v%s\n", version);
+
     std::string scene_file {argv[1]};
     char* output_file {argv[2]};
 
