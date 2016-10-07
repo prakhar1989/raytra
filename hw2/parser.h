@@ -5,6 +5,7 @@
 #include "surface.h"
 #include "camera.h"
 #include "ray.h"
+#include "sphere.h"
 
 class Parser {
 public:

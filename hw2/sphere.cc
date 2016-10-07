@@ -1,4 +1,4 @@
-#include "surface.h"
+#include "sphere.h"
 
 Sphere::Sphere(float x, float y, float z, float r)
 {
