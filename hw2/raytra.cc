@@ -71,9 +71,10 @@ int main(int argc, char** argv)
                 px.r = c.red;
                 px.g = c.green;
                 px.b = c.blue;
+                px.a = 1;
             } else {
                 // set black color
-                px.r = 0; px.g = 0; px.b = 0;
+                px.r = 0; px.g = 0; px.b = 0; px.a = 1;
             }
         }
     }

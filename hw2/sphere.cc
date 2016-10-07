@@ -13,7 +13,7 @@ void Sphere::print()
 
 float Sphere::get_intersection_point(const Ray &ray)
 {
-    Raytra::vec v = ray.origin - center;
+    vec v = ray.origin - center;
 
     float d2 = dot(ray.dir, ray.dir);
     float disc = powf(dot(ray.dir, v), 2) - d2 * (dot(v, v) - (radius * radius));
