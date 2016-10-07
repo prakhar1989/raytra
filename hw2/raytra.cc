@@ -1,27 +1,13 @@
 #include "parser.h"
 #include "exr.h"
 #include <limits>
+
 using namespace Raytra;
+using namespace std;
 
-std::ostream& operator << (std::ostream& o, const point& p)
+int get_nearest_surface(const Ray& ray, const vector<Surface*>& surfaces)
 {
-    return o << "Point(x: " << p.x << ",y: " << p.y << ", z: " << p.z << ")";
-}
-
-std::ostream& operator << (std::ostream& o, const vec& v)
-{
-    return o << "Vector(x: " << v.x << ",y: " << v.y << ", z: " << v.z << ")";
-}
-
-std::ostream& operator << (std::ostream& o, const color& c)
-{
-    return o << "Color(r: " << c.red
-             << ",y: " << c.green << ", z: " << c.blue << ")";
-}
-
-int get_nearest_surface(const Ray& ray, const std::vector<Surface*>& surfaces)
-{
-    float min_t = std::numeric_limits<float>::infinity();
+    float min_t = numeric_limits<float>::infinity();
     int min_index = -1;
 
     for (int i = 0; i < (int) surfaces.size(); i++) {
@@ -37,17 +23,17 @@ int get_nearest_surface(const Ray& ray, const std::vector<Surface*>& surfaces)
 int main(int argc, char** argv)
 {
     if (argc < 3) {
-        std::cerr << "USAGE: raytra <scene_file> <output_file>" << std::endl;
+        cerr << "USAGE: raytra <scene_file> <output_file>" << endl;
         return -1;
     }
 
-    auto version = "0.1";
+    auto version = "0.2";
     printf("Raytra v%s\n", version);
 
-    std::string scene_file {argv[1]};
+    string scene_file {argv[1]};
     char* output_file {argv[2]};
 
-    std::vector<Surface*> surfaces;
+    vector<Surface*> surfaces;
     Camera camera;
 
     Parser::parse_file(scene_file, surfaces, camera);
@@ -88,4 +74,5 @@ int main(int argc, char** argv)
 
     printf("Generating image: %s\n", output_file);
     exr::writeRgba(output_file, &pixels[0][0], camera.nx, camera.ny);
+
 }

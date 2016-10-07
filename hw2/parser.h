@@ -1,7 +1,6 @@
 #ifndef HW_PARSER_H
 #define HW_PARSER_H
 
-#include <iostream>
 #include <vector>
 #include "surface.h"
 #include "camera.h"

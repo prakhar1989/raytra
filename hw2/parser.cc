@@ -1,6 +1,5 @@
 #include <fstream>
 #include <sstream>
-#include <assert.h>
 #include "parser.h"
 
 using namespace std;
@@ -9,7 +8,7 @@ int Parser::parse_file(const string file_name, vector<Surface*>& surfaces, Camer
 {
     ifstream in(file_name);
     if (!in) {
-        cerr << "no file\n";
+        cerr << "error: no file found" <<  endl;
         return -1;
     }
 
@@ -72,7 +71,7 @@ int Parser::parse_file(const string file_name, vector<Surface*>& surfaces, Camer
     printf("Read %lu surface(s) and %d material(s)\n", surfaces.size(), material_count);
 
     if (camera_count != 1)
-        std::cerr << "parse error: scene file should contain only one camera" << std::endl;
+        cerr << "parse error: scene file should contain only one camera" << endl;
 
     return 0;
 }

@@ -1,4 +1,5 @@
 #include <math.h>
+#include <iostream>
 
 namespace Raytra {
     struct color {
@@ -28,20 +29,20 @@ namespace Raytra {
         return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
     }
 
-    inline vec operator-(const vec& vec)
+    inline vec operator-(const vec& v)
     {
-        return { .x = -vec.x, .y = -vec.y, .z = -vec.z };
+        return { .x = -v.x, .y = -v.y, .z = -v.z };
     }
 
-    inline vec norm(const vec& vec)
+    inline vec norm(const vec& v)
     {
-        float s = sqrtf(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
-        return { .x = vec.x / s, .y = vec.y / s, .z = vec.z / s};
+        float s = sqrtf(v.x * v.x + v.y * v.y + v.z * v.z);
+        return { .x = v.x / s, .y = v.y / s, .z = v.z / s};
     }
 
-    inline vec operator*(float c, const vec& vec)
+    inline vec operator*(float c, const vec& v)
     {
-        return { .x = vec.x * c, .y = vec.y * c, .z = vec.z * c };
+        return { .x = v.x * c, .y = v.y * c, .z = v.z * c };
     }
 
     inline vec operator+(const vec& v1, const vec& v2)
@@ -63,5 +64,21 @@ namespace Raytra {
     inline vec operator+(const point& p1, const point& p2)
     {
         return { .x = p1.x + p2.x, .y = p1.y + p2.y, .z = p1.z + p2.z };
+    }
+
+    inline std::ostream& operator << (std::ostream& o, const point& p)
+    {
+        return o << "Point(x: " << p.x << ",y: " << p.y << ", z: " << p.z << ")";
+    }
+
+    inline std::ostream& operator << (std::ostream& o, const vec& v)
+    {
+        return o << "Vector(x: " << v.x << ",y: " << v.y << ", z: " << v.z << ")";
+    }
+
+    inline std::ostream& operator << (std::ostream& o, const color& c)
+    {
+        return o << "Color(r: " << c.red
+                 << ",y: " << c.green << ", z: " << c.blue << ")";
     }
 }

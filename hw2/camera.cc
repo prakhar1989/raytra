@@ -13,9 +13,9 @@ Camera::Camera(float x, float y, float z,
     vec direction = {.x = vx, .y = vy, .z = vz};
     vec up = {.x = 0, .y = 1, .z = 0};
 
-    w = -(direction);
-    u = cross(direction, up);
-    v = cross(u, direction);
+    w = norm(-(direction));
+    u = norm(cross(direction, up));
+    v = norm(cross(u, direction));
 
     focal_length = d;
 

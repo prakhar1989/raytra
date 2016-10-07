@@ -1,5 +1,4 @@
 #include "surface.h"
-#include <iostream>
 
 Sphere::Sphere(const Raytra::point &center, float radius) : center(center), radius(radius) {}
 

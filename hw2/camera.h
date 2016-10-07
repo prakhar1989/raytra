@@ -3,6 +3,8 @@
 
 #include "surface.h"
 
+using namespace Raytra;
+
 class Camera {
 public:
     Camera();
@@ -10,11 +12,7 @@ public:
             float vx, float vy, float vz,
             float d, float iw, float ih, int pw, int ph);
 
-    // for the camera coordinate frame
-    Raytra::point eye;
-    Raytra::vec u;
-    Raytra::vec v;
-    Raytra::vec w;
+    point eye; vec u; vec v; vec w;
 
     int nx, ny;
 
