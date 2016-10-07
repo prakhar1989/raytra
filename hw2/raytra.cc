@@ -1,7 +1,6 @@
 #include "parser.h"
 #include "exr.h"
 #include <limits>
-
 using namespace Raytra;
 
 std::ostream& operator << (std::ostream& o, const point& p)

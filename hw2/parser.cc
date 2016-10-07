@@ -1,5 +1,6 @@
 #include <fstream>
 #include <sstream>
+#include <assert.h>
 #include "parser.h"
 
 using namespace std;
@@ -13,6 +14,8 @@ int Parser::parse_file(const string file_name, vector<Surface*>& surfaces, Camer
     }
 
     Material* m = nullptr;
+    int material_count = 0;
+    int camera_count = 0;
 
     for (string line; getline(in, line);) {
         if (line.empty())
@@ -50,6 +53,8 @@ int Parser::parse_file(const string file_name, vector<Surface*>& surfaces, Camer
 
                 camera.eye = cam.eye;
                 camera.w = cam.w; camera.u = cam.u; camera.v = cam.v;
+
+                ++camera_count;
                 break;
             }
             case 'm':
@@ -57,10 +62,17 @@ int Parser::parse_file(const string file_name, vector<Surface*>& surfaces, Camer
                 float dr, dg, db, sr, sg, sb, r, ir, ig, ib;
                 iss >> dr >> dg >> db >> sr >> sg >> sb >> r >> ir >> ig >> ib;
                 m = new Material(dr, dg, db, sr, sg, sb, ir, ig, ib, r);
+                ++material_count;
                 break;
             }
             default: continue;
         }
     }
+
+    printf("Read %lu surface(s) and %d material(s)\n", surfaces.size(), material_count);
+
+    if (camera_count != 1)
+        std::cerr << "parse error: scene file should contain only one camera" << std::endl;
+
     return 0;
 }
