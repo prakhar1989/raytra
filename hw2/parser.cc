@@ -64,6 +64,15 @@ int Parser::parse_file(const string file_name, vector<Surface*>& surfaces, Camer
                 ++material_count;
                 break;
             }
+            case 'p':
+            {
+                float nx, ny, nz, d;
+                iss >> nx >> ny >> nz >> d;
+                Plane* p = new Plane(nx, ny, nz, d);
+                p->material = m;
+                surfaces.push_back(p);
+                break;
+            }
             default: continue;
         }
     }
