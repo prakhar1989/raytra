@@ -8,13 +8,16 @@ class Surface {
 public:
     virtual void print() = 0;
     virtual float get_intersection_point(const Ray& ray) = 0;
+    virtual ~Surface() {};
     Material* material = nullptr;
 };
 
 class Sphere: public Surface {
 public:
     Sphere(float x, float y, float z, float r);
-    Sphere(const Raytra::point &center, float radius);
+
+    virtual ~Sphere() { delete material; }
+
     void print();
     float get_intersection_point(const Ray& ray);
 

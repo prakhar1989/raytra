@@ -1,17 +1,18 @@
 #include "surface.h"
 
-Sphere::Sphere(const Raytra::point &center, float radius) : center(center), radius(radius) {}
-
-Sphere::Sphere(float x, float y, float z, float r) {
+Sphere::Sphere(float x, float y, float z, float r)
+{
     center = { .x = x, .y = y, .z = z };
     radius = r;
 }
 
-void Sphere::print() {
+void Sphere::print()
+{
     printf("Sphere((%f, %f, %f), %f)\n", center.x, center.y, center.z, radius);
 }
 
-float Sphere::get_intersection_point(const Ray &ray) {
+float Sphere::get_intersection_point(const Ray &ray)
+{
     Raytra::vec v = ray.origin - center;
 
     float d2 = dot(ray.dir, ray.dir);

@@ -5,6 +5,12 @@
 using namespace Raytra;
 using namespace std;
 
+void cleanup(vector<Surface*>& surfaces)
+{
+    for (auto s: surfaces)
+        delete s;
+}
+
 int get_nearest_surface(const Ray& ray, const vector<Surface*>& surfaces)
 {
     float min_t = numeric_limits<float>::infinity();
@@ -74,5 +80,5 @@ int main(int argc, char** argv)
 
     printf("Generating image: %s\n", output_file);
     exr::writeRgba(output_file, &pixels[0][0], camera.nx, camera.ny);
-
+    cleanup(surfaces);
 }

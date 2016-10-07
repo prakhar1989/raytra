@@ -8,6 +8,8 @@ using namespace Raytra;
 class Camera {
 public:
     Camera();
+    virtual ~Camera() {};
+
     Camera(float x, float y, float z,
             float vx, float vy, float vz,
             float d, float iw, float ih, int pw, int ph);

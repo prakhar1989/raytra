@@ -7,6 +7,8 @@ using namespace Raytra;
 
 class Material {
 public:
+    virtual ~Material() {};
+
     Material(float dr, float dg, float db,
              float sr, float sg, float sb,
              float ir, float ig, float ib, float r);
