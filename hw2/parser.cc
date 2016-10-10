@@ -4,7 +4,10 @@
 
 using namespace std;
 
-int Parser::parse_file(const string file_name, vector<Surface*>& surfaces, Camera& camera)
+int Parser::parse_file(const string file_name,
+                       vector<Surface*>& surfaces,
+                       Camera& camera,
+                       Point_light& light)
 {
     ifstream in(file_name);
     if (!in) {
@@ -15,6 +18,7 @@ int Parser::parse_file(const string file_name, vector<Surface*>& surfaces, Camer
     Material* m = nullptr;
     int material_count = 0;
     int camera_count = 0;
+    int light_count = 0;
 
     for (string line; getline(in, line);) {
         if (line.empty())
@@ -73,14 +77,38 @@ int Parser::parse_file(const string file_name, vector<Surface*>& surfaces, Camer
                 surfaces.push_back(p);
                 break;
             }
+            case 'l':
+            {
+                char light_type;
+                float x, y, z, r, g, b;
+
+                iss >> light_type;
+
+                // ignore all except point lights
+                if (light_type != 'p')
+                    continue;
+
+                iss >> x >> y >> z >> r >> g >> b;
+
+                Point_light l(x, y, z, r, g, b);
+                light.intensity =  l.intensity;
+                light.position = l.position;
+                light.c = l.c;
+
+                ++light_count;
+            }
             default: continue;
         }
     }
 
-    printf("Read %lu surface(s) and %d material(s)\n", surfaces.size(), material_count);
-
     if (camera_count != 1)
         cerr << "parse error: scene file should contain only one camera" << endl;
+
+    if (light_count != 1)
+        cerr << "parse error: scene file should contain only one point light" << endl;
+
+    printf("Read %lu surface(s), %d material(s), a camera and a light\n",
+                   surfaces.size(), material_count);
 
     return 0;
 }

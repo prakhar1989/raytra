@@ -7,12 +7,14 @@
 #include "ray.h"
 #include "sphere.h"
 #include "plane.h"
+#include "point_light.h"
 
 class Parser {
 public:
     static int parse_file(std::string file_name,
                           std::vector<Surface*>& surfaces,
-                          Camera& camera);
+                          Camera& camera,
+                          Point_light& light);
 };
 
 #endif //HW_PARSER_H

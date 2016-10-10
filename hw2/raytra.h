@@ -1,3 +1,6 @@
+#ifndef HW_RAYTRA_H
+#define HW_RAYTRA_H
+
 #include <math.h>
 #include <iostream>
 
@@ -82,3 +85,5 @@ namespace Raytra {
                  << ",y: " << c.green << ", z: " << c.blue << ")";
     }
 }
+
+#endif

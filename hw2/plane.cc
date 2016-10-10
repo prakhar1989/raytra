@@ -13,7 +13,7 @@ void Plane::print()
 
 float Plane::get_intersection_point(const Ray &ray)
 {
-    if (dot(ray.dir, normal) == 0)
+   if (dot(ray.dir, normal) == 0)
         return -1; // ray and plane are parallel
 
     float s = ray.origin.x * normal.x + ray.origin.y * normal.y

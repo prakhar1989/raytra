@@ -1,5 +1,6 @@
 #include "parser.h"
 #include "exr.h"
+#include "point_light.h"
 #include <limits>
 
 using namespace Raytra;
@@ -41,8 +42,9 @@ int main(int argc, char** argv)
 
     vector<Surface*> surfaces;
     Camera camera;
+    Point_light light;
 
-    Parser::parse_file(scene_file, surfaces, camera);
+    Parser::parse_file(scene_file, surfaces, camera, light);
 
     Array2D<Rgba> pixels;
     pixels.resizeErase(camera.ny, camera.nx);
@@ -60,7 +62,6 @@ int main(int argc, char** argv)
 
             /* Step 2 - Ray Intersection */
             int surface_index = get_nearest_surface(ray, surfaces);
-
 
             /* Step 3 - Shading */
             Rgba &px = pixels[y][x];
