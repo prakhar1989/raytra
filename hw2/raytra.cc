@@ -15,8 +15,10 @@ void cleanup(vector<Surface*>& surfaces)
 /* returns a pair of index and t for the intersection point
  * at the nearest surface
  */
-pair<int, float> get_nearest_surface(const Ray& ray,
-                                     const vector<Surface*>& surfaces)
+pair<int, float> get_nearest_surface (
+        const Ray& ray,
+        const vector<Surface*>& surfaces
+)
 {
     float min_t = numeric_limits<float>::infinity();
     int min_index = -1;
@@ -31,24 +33,41 @@ pair<int, float> get_nearest_surface(const Ray& ray,
     return make_pair(min_index, min_t);
 }
 
-// computes the diffuse shading for surface s at the intersection point
-color get_diffuse_shading(
-        const Surface* surface,
-        const Ray& ray,
-        const Raytra::point& point,
-        const Point_light& light
+color compute_shading (
+       const Surface* surface,
+       const Ray& ray,
+       const Raytra::point& point,
+       const Point_light& light
 )
 {
+    // diffuse computation
     vec surface_normal = surface->get_normal(point);
-    vec light_ray = norm(ray.origin - point);
+    vec light_ray = norm(light.position - point);
     float cosine = fmaxf(0, dot(surface_normal, light_ray));
     color kd = surface->material->diffuse;
-    //float d2 = powf(dist(light.position, point), 2);
-    float d2 = 1;
+    float d2 = powf(dist(light.position, point), 0.5);
+    color diffuse = {
+            .red   = kd.red * light.c.red * cosine * light.intensity,
+            .green = kd.green * light.c.green * cosine * light.intensity,
+            .blue  = kd.blue * light.c.blue * cosine * light.intensity,
+    };
+
+    // specular computation
+    vec bisector = norm(ray.dir + light_ray);
+    float cosalpha = fmaxf(0, dot(surface_normal, bisector));
+    float phong = surface->material->phong;
+    float multiplier = light.intensity * powf(cosalpha, phong);
+    color ks = surface->material->specular;
+    color specular = {
+            .red = ks.red * multiplier,
+            .green = ks.green * multiplier,
+            .blue = ks.blue * multiplier,
+    };
+
     return {
-        .red   = kd.red * light.c.red * cosine * light.intensity / d2,
-        .green = kd.green * light.c.green * cosine * light.intensity / d2,
-        .blue  = kd.blue * light.c.blue * cosine * light.intensity / d2,
+            .red = diffuse.red + specular.red,
+            .green = diffuse.green + specular.green,
+            .blue = diffuse.blue + specular.blue,
     };
 }
 
@@ -96,8 +115,7 @@ int main(int argc, char** argv)
                 Surface* surface = surfaces[surface_index];
                 point intersection_pt = ray.get_point(hit.second);
 
-                color c = get_diffuse_shading(surface, ray,
-                                              intersection_pt, light);
+                color c = compute_shading(surface, ray, intersection_pt, light);
                 px.r = c.red;
                 px.g = c.green;
                 px.b = c.blue;
