@@ -12,7 +12,11 @@ void cleanup(vector<Surface*>& surfaces)
         delete s;
 }
 
-int get_nearest_surface(const Ray& ray, const vector<Surface*>& surfaces)
+
+/* returns a pair of index and t for the intersection point
+ * at the nearest surface
+ */
+pair<int, float> get_nearest_surface(const Ray& ray, const vector<Surface*>& surfaces)
 {
     float min_t = numeric_limits<float>::infinity();
     int min_index = -1;
@@ -24,7 +28,7 @@ int get_nearest_surface(const Ray& ray, const vector<Surface*>& surfaces)
             min_index = i;
         }
     }
-    return min_index;
+    return make_pair(min_index, min_t);
 }
 
 int main(int argc, char** argv)
@@ -61,14 +65,18 @@ int main(int argc, char** argv)
             Ray ray(origin, dir);
 
             /* Step 2 - Ray Intersection */
-            int surface_index = get_nearest_surface(ray, surfaces);
+            pair<int, float> hit = get_nearest_surface(ray, surfaces);
+            int surface_index = hit.first;
 
             /* Step 3 - Shading */
             Rgba &px = pixels[y][x];
 
             if (surface_index != -1) {
-                // set the material color as the pixel color
-                color c = surfaces[surface_index]->material->diffuse;
+                Surface* surface = surfaces[surface_index];
+                point intersection_pt = ray.get_point(hit.second);
+                vec surface_normal = surface->get_normal(intersection_pt);
+
+                color c = surface->material->diffuse;
                 px.r = c.red;
                 px.g = c.green;
                 px.b = c.blue;

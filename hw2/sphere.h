@@ -9,6 +9,7 @@ public:
     virtual ~Sphere() { delete material; }
     void print();
     float get_intersection_point(const Ray& ray);
+    vec get_normal(const point& p);
 
     Raytra::point center;
     float radius;

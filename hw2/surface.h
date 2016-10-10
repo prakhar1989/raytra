@@ -8,6 +8,8 @@ class Surface {
 public:
     virtual void print() = 0;
     virtual float get_intersection_point(const Ray& ray) = 0;
+    virtual vec get_normal(const point& p) = 0;
+
     virtual ~Surface() {};
     Material* material = nullptr;
 };

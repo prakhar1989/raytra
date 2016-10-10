@@ -1,17 +1,18 @@
 #ifndef HW_RAY_H
 #define HW_RAY_H
 
+using namespace Raytra;
+
 class Ray {
 public:
-    Ray(const Raytra::point &origin, const Raytra::vec &direction) : origin(origin), dir(direction) {}
+    Ray(const point &origin, const vec &direction) : origin(origin), dir(direction) {}
+    point get_point(float t) const;
 
-    Raytra::point get_point(float t) const;
-
-    Raytra::point origin;
-    Raytra::vec dir;
+    point origin;
+    vec dir;
 };
 
-inline Raytra::point Ray::get_point(float t) const {
+inline point Ray::get_point(float t) const {
     return t * dir + origin;
 }
 
