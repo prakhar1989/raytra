@@ -19,6 +19,9 @@ p 0.0 1.0 0.0 0.0
 / one point light
 l p -10. 13.67 -32.5 1.0 1.0 1.0
 
+/ one ambient light
+l a 0.1 0.1 0.1
+
 / camera: pointing towards -Z, 35mmx25mm "film", 35mm focal length
 / making 160x120 pixels
 c 24.2 29.3 53.6 0.0 0.0 -1.0 35.0 35.0 25.0 800 600

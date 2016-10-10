@@ -4,10 +4,13 @@
 
 using namespace std;
 
-int Parser::parse_file(const string file_name,
-                       vector<Surface*>& surfaces,
-                       Camera& camera,
-                       Point_light& light)
+int Parser::parse_file(
+        const string file_name,
+        vector<Surface*>& surfaces,
+        Camera& camera,
+        Point_light& light,
+        color& ambient_light
+)
 {
     ifstream in(file_name);
     if (!in) {
@@ -19,6 +22,7 @@ int Parser::parse_file(const string file_name,
     int material_count = 0;
     int camera_count = 0;
     int light_count = 0;
+    int ambient_count = 0;
 
     for (string line; getline(in, line);) {
         if (line.empty())
@@ -80,22 +84,30 @@ int Parser::parse_file(const string file_name,
             case 'l':
             {
                 char light_type;
-                float x, y, z, r, g, b;
-
                 iss >> light_type;
 
-                // ignore all except point lights
-                if (light_type != 'p')
-                    continue;
+                if (light_type == 'p') {
+                    float x, y, z, r, g, b;
+                    iss >> x >> y >> z >> r >> g >> b;
 
-                iss >> x >> y >> z >> r >> g >> b;
+                    Point_light l(x, y, z, r, g, b);
+                    light.intensity =  l.intensity;
+                    light.position = l.position;
+                    light.c = l.c;
 
-                Point_light l(x, y, z, r, g, b);
-                light.intensity =  l.intensity;
-                light.position = l.position;
-                light.c = l.c;
+                    ++light_count;
+                } else if (light_type == 'a') {
+                    float x, y, z;
+                    iss >> x >> y >> z;
+                    ambient_light.red = x;
+                    ambient_light.green = y;
+                    ambient_light.blue = z;
 
-                ++light_count;
+                    ++ambient_count;
+                } else {
+                    // ignore direction lights for now
+                }
+
             }
             default: continue;
         }
@@ -107,8 +119,10 @@ int Parser::parse_file(const string file_name,
     if (light_count != 1)
         cerr << "parse error: scene file should contain only one point light" << endl;
 
-    printf("Read %lu surface(s), %d material(s), a camera and a light\n",
-                   surfaces.size(), material_count);
+    if (ambient_count != 1)
+        cerr << "parse error: scene file should contain only one ambient light" << endl;
+
+    printf("Read %lu surface(s), %d material(s)\n", surfaces.size(), material_count);
 
     return 0;
 }

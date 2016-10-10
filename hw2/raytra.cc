@@ -37,7 +37,8 @@ color compute_shading (
        const Surface* surface,
        const Ray& ray,
        const Raytra::point& point,
-       const Point_light& light
+       const Point_light& light,
+       const color& ambient_light
 )
 {
     // diffuse computation
@@ -45,7 +46,7 @@ color compute_shading (
     vec light_ray = norm(light.position - point);
     float cosine = fmaxf(0, dot(surface_normal, light_ray));
     color kd = surface->material->diffuse;
-    float d2 = powf(dist(light.position, point), 0.5);
+    float d2 = dist(light.position, point);
     color diffuse = {
             .red   = kd.red * light.c.red * cosine * light.intensity,
             .green = kd.green * light.c.green * cosine * light.intensity,
@@ -64,10 +65,13 @@ color compute_shading (
             .blue = ks.blue * multiplier,
     };
 
+    // ambient coeffcient
+    float ka = 0.125;
+
     return {
-            .red = diffuse.red + specular.red,
-            .green = diffuse.green + specular.green,
-            .blue = diffuse.blue + specular.blue,
+            .red = diffuse.red + specular.red + ka * ambient_light.red,
+            .green = diffuse.green + specular.green + ka * ambient_light.green,
+            .blue = diffuse.blue + specular.blue + ka * ambient_light.blue,
     };
 }
 
@@ -86,9 +90,10 @@ int main(int argc, char** argv)
 
     vector<Surface*> surfaces;
     Camera camera;
-    Point_light light;
+    Point_light point_light;
+    color ambient_light;
 
-    Parser::parse_file(scene_file, surfaces, camera, light);
+    Parser::parse_file(scene_file, surfaces, camera, point_light, ambient_light);
 
     Array2D<Rgba> pixels;
     pixels.resizeErase(camera.ny, camera.nx);
@@ -115,7 +120,11 @@ int main(int argc, char** argv)
                 Surface* surface = surfaces[surface_index];
                 point intersection_pt = ray.get_point(hit.second);
 
-                color c = compute_shading(surface, ray, intersection_pt, light);
+                color c = compute_shading(surface,
+                                          ray,
+                                          intersection_pt,
+                                          point_light,
+                                          ambient_light);
                 px.r = c.red;
                 px.g = c.green;
                 px.b = c.blue;
