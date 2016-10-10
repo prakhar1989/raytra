@@ -54,7 +54,7 @@ color compute_shading (
     };
 
     // specular computation
-    vec bisector = norm(ray.dir + light_ray);
+    vec bisector = norm(-ray.dir + light_ray);
     float cosalpha = fmaxf(0, dot(surface_normal, bisector));
     float phong = surface->material->phong;
     float multiplier = light.intensity * powf(cosalpha, phong);
@@ -66,7 +66,7 @@ color compute_shading (
     };
 
     // ambient coeffcient
-    float ka = 0.125;
+    float ka = 0.225;
 
     return {
             .red = diffuse.red + specular.red + ka * ambient_light.red,
@@ -138,5 +138,7 @@ int main(int argc, char** argv)
 
     printf("Generating image: %s\n", output_file);
     exr::writeRgba(output_file, &pixels[0][0], camera.nx, camera.ny);
+
+    // memory cleanup
     cleanup(surfaces);
 }
