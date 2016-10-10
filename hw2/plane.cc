@@ -22,7 +22,7 @@ float Plane::get_intersection_point(const Ray &ray)
     return -(s - dist) / dot(ray.dir, normal);
 }
 
-vec Plane::get_normal(const point &p)
+vec Plane::get_normal(const point &p) const
 {
     return normal;
 }

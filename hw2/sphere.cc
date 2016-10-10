@@ -34,7 +34,7 @@ float Sphere::get_intersection_point(const Ray &ray)
     return std::min(disc1, disc2);
 }
 
-vec Sphere::get_normal(const point &p)
+vec Sphere::get_normal(const point &p) const
 {
-    return p - center;
+    return norm(p - center);
 }

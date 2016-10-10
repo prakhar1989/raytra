@@ -12,11 +12,11 @@ void cleanup(vector<Surface*>& surfaces)
         delete s;
 }
 
-
 /* returns a pair of index and t for the intersection point
  * at the nearest surface
  */
-pair<int, float> get_nearest_surface(const Ray& ray, const vector<Surface*>& surfaces)
+pair<int, float> get_nearest_surface(const Ray& ray,
+                                     const vector<Surface*>& surfaces)
 {
     float min_t = numeric_limits<float>::infinity();
     int min_index = -1;
@@ -29,6 +29,27 @@ pair<int, float> get_nearest_surface(const Ray& ray, const vector<Surface*>& sur
         }
     }
     return make_pair(min_index, min_t);
+}
+
+// computes the diffuse shading for surface s at the intersection point
+color get_diffuse_shading(
+        const Surface* surface,
+        const Ray& ray,
+        const Raytra::point& point,
+        const Point_light& light
+)
+{
+    vec surface_normal = surface->get_normal(point);
+    vec light_ray = norm(ray.origin - point);
+    float cosine = fmaxf(0, dot(surface_normal, light_ray));
+    color kd = surface->material->diffuse;
+    //float d2 = powf(dist(light.position, point), 2);
+    float d2 = 1;
+    return {
+        .red   = kd.red * light.c.red * cosine * light.intensity / d2,
+        .green = kd.green * light.c.green * cosine * light.intensity / d2,
+        .blue  = kd.blue * light.c.blue * cosine * light.intensity / d2,
+    };
 }
 
 int main(int argc, char** argv)
@@ -74,9 +95,9 @@ int main(int argc, char** argv)
             if (surface_index != -1) {
                 Surface* surface = surfaces[surface_index];
                 point intersection_pt = ray.get_point(hit.second);
-                vec surface_normal = surface->get_normal(intersection_pt);
 
-                color c = surface->material->diffuse;
+                color c = get_diffuse_shading(surface, ray,
+                                              intersection_pt, light);
                 px.r = c.red;
                 px.g = c.green;
                 px.b = c.blue;
