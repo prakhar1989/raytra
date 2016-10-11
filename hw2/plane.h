@@ -6,7 +6,7 @@
 class Plane: public Surface {
 public:
     Plane(float x, float y, float z, float d);
-    virtual ~Plane() { delete material; }
+    virtual ~Plane() {}
     void print();
     float get_intersection_point(const Ray& ray);
     vec get_normal(const point& p) const;

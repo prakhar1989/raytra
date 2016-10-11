@@ -11,7 +11,7 @@ public:
     virtual vec get_normal(const point& p) const = 0;
 
     virtual ~Surface() {};
-    Material* material = nullptr;
+    std::shared_ptr<Material> material;
 };
 
 #endif //HW_SURFACE_H

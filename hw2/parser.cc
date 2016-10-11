@@ -18,7 +18,7 @@ int Parser::parse_file(
         return -1;
     }
 
-    Material* m = nullptr;
+    std::shared_ptr<Material> m(nullptr);
     int material_count = 0;
     int camera_count = 0;
     int light_count = 0;
@@ -68,7 +68,7 @@ int Parser::parse_file(
             {
                 float dr, dg, db, sr, sg, sb, r, ir, ig, ib;
                 iss >> dr >> dg >> db >> sr >> sg >> sb >> r >> ir >> ig >> ib;
-                m = new Material(dr, dg, db, sr, sg, sb, ir, ig, ib, r);
+                m = make_shared<Material>(dr, dg, db, sr, sg, sb, ir, ig, ib, r);
                 ++material_count;
                 break;
             }
@@ -107,7 +107,7 @@ int Parser::parse_file(
                 } else {
                     // ignore direction lights for now
                 }
-
+                break;
             }
             default: continue;
         }
@@ -116,10 +116,10 @@ int Parser::parse_file(
     if (camera_count != 1)
         cerr << "parse error: scene file should contain only one camera" << endl;
 
-    if (light_count != 1)
+    if (light_count > 1)
         cerr << "parse error: scene file should contain only one point light" << endl;
 
-    if (ambient_count != 1)
+    if (ambient_count > 1)
         cerr << "parse error: scene file should contain only one ambient light" << endl;
 
     printf("Read %lu surface(s), %d material(s)\n", surfaces.size(), material_count);
