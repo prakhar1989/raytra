@@ -17,6 +17,12 @@ namespace Raytra {
         float x, y, z;
     };
 
+    // returns true if a string is all whitespaces
+    inline bool is_blank(const std::string& line)
+    {
+        return line.find_first_not_of(' ') == std::string::npos;
+    }
+
     /* --- VECTOR OPERATIONS ----- */
     inline vec cross(const vec& v1, const vec& v2)
     {

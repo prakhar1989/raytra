@@ -1,6 +1,7 @@
 #ifndef HW_SURFACE_H
 #define HW_SURFACE_H
 
+#include <memory>
 #include "Material.h"
 #include "ray.h"
 
