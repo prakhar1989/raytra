@@ -19,6 +19,7 @@ public:
     int pixelsX();
     int pixelsY();
     point get_center();
+
 private:
     vec u; vec v; vec w;
     point eye;

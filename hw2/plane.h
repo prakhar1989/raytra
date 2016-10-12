@@ -11,7 +11,7 @@ public:
     float get_intersection_point(const Ray& ray);
     vec get_normal(const point& p) const;
 
-    // distance between origin and plane in direction of the normal
+private:
     vec normal;
     float dist;
 };

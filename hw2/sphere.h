@@ -11,6 +11,7 @@ public:
     float get_intersection_point(const Ray& ray);
     vec get_normal(const point& p) const;
 
+private:
     Raytra::point center;
     float radius;
 };
