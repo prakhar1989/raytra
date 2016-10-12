@@ -47,7 +47,6 @@ color compute_shading (
     float cosine = fmaxf(0, dot(surface_normal, light_ray));
     color kd = surface->material->diffuse;
 
-    //TODO: use d2 in the diffuse computation
     float d2 = dist(light.position, point);
     color diffuse = {
             .red   = kd.red * light.c.red * cosine * light.intensity,
@@ -67,13 +66,10 @@ color compute_shading (
             .blue = ks.blue * multiplier * light.c.blue,
     };
 
-    // ambient coeffcient
-    float ka = 0.225;
-
     return {
-            .red = diffuse.red + specular.red + ka * ambient_light.red,
-            .green = diffuse.green + specular.green + ka * ambient_light.green,
-            .blue = diffuse.blue + specular.blue + ka * ambient_light.blue,
+            .red = (diffuse.red + specular.red)/d2,
+            .green = (diffuse.green + specular.green)/d2,
+            .blue = (diffuse.blue + specular.blue)/d2,
     };
 }
 
