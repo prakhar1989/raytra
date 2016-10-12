@@ -98,17 +98,13 @@ int main(int argc, char** argv)
     Parser::parse_file(scene_file, surfaces, camera, point_light, ambient_light);
 
     Array2D<Rgba> pixels;
-    pixels.resizeErase(camera.ny, camera.nx);
+    pixels.resizeErase(camera.pixelsY(), camera.pixelsX());
 
-    for (int y = 0; y < camera.ny; y++) {
-        for (int x = 0; x < camera.nx; x++) {
-
+    for (int y = 0; y < camera.pixelsY(); y++) {
+        for (int x = 0; x < camera.pixelsX(); x++) {
             /* Step 1 - Ray Generation */
-            float u = camera.left + (camera.right - camera.left) * (x + 0.5f)/camera.nx;
-            float v = camera.bottom + (camera.top - camera.bottom) * (y + 0.5f)/camera.ny;
-
-            Raytra::vec dir = norm((-camera.focal_length * camera.w) + (u * camera.u) +  (v * camera.v));
-            Raytra::point origin = camera.eye;
+            vec dir = camera.ray_direction(x, y);
+            point origin = camera.get_center();
             Ray ray(origin, dir);
 
             /* Step 2 - Ray Intersection */
@@ -139,7 +135,8 @@ int main(int argc, char** argv)
     }
 
     printf("Generating image: %s\n", output_file);
-    exr::writeRgba(output_file, &pixels[0][0], camera.nx, camera.ny);
+    exr::writeRgba(output_file, &pixels[0][0],
+                   camera.pixelsX(), camera.pixelsY());
 
     // memory cleanup
     cleanup(surfaces);

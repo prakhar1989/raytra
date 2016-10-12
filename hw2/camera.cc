@@ -23,3 +23,27 @@ Camera::Camera(float x, float y, float z,
 
     left = -iw/2; bottom = -ih/2; right = iw/2; top = ih/2;
 }
+
+void Camera::copy_to_camera(Camera &camera)
+{
+    camera.nx = nx; camera.ny = ny;
+    camera.left = left; camera.right = right;
+    camera.top = top; camera.bottom = bottom;
+    camera.focal_length = focal_length;
+
+    camera.eye = eye;
+    camera.w = w; camera.u = u; camera.v = v;
+
+}
+
+vec Camera::ray_direction(float x, float y)
+{
+    float centerX = left + (right - left) * (x + 0.5f)/nx;
+    float centerY = bottom + (top - bottom) * (y + 0.5f)/ny;
+    return norm((-focal_length * w) + (centerX * u) + (centerY * v));
+}
+
+int Camera::pixelsY() { return ny; }
+int Camera::pixelsX() { return nx; }
+
+point Camera::get_center() { return eye; }

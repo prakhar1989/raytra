@@ -14,11 +14,16 @@ public:
             float vx, float vy, float vz,
             float d, float iw, float ih, int pw, int ph);
 
-    point eye; vec u; vec v; vec w;
-
-    int nx, ny;
-
+    void copy_to_camera(Camera& cam);
+    vec ray_direction(float x, float y);
+    int pixelsX();
+    int pixelsY();
+    point get_center();
+private:
+    vec u; vec v; vec w;
+    point eye;
     float focal_length, left, right, top, bottom;
+    int nx, ny;
 };
 
 #endif //HW_CAMERA_H
