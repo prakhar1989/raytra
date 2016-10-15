@@ -1,26 +1,18 @@
 cmake_minimum_required(VERSION 3.6)
 project(hw3)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -I. -I/usr/include/OpenEXR -I/usr/local/include/OpenEXR -I/usr/local/include -lIlmImf -lImath -lHalf -L/usr/local/lib")
+set(CMAKE_CXX_STANDARD 11)
 
-set(SOURCE_FILES
-    camera.cc
-    camera.h
-    exr.cc
-    exr.h
-    Material.cc
-    Material.h
-    parser.cc
-    parser.h
-    plane.cc
-    plane.h
-    point_light.cc
-    point_light.h
-    ray.h
-    raytra.cc
-    raytra.h
-    sphere.cc
-    sphere.h
-    surface.h)
+include_directories(/usr/local/include)
+include_directories(/usr/local/include/OpenEXR)
 
+set(EXR_LIBS IlmImf.a Imath.a Half.a)
+link_directories(/usr/local/lib)
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-register")
+file(GLOB SOURCE_FILES  "*.cc")
 add_executable(hw3 ${SOURCE_FILES})
+target_link_libraries(hw3 ${EXR_LIBS})
+
+file(GLOB TEST_FILES "tests/*.cc")
+add_executable(hw3_test ${TEST_FILES})
