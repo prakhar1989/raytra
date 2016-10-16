@@ -45,7 +45,7 @@ TEST_CASE("distance between two points is computed correctly") {
     REQUIRE(dist(p, z) == sqrtf(2));
 }
 
-TEST_CASE("cross product between vwctors is computed correctly") {
+TEST_CASE("cross product between vectors is computed correctly") {
     vec a = {.x = 1, .y = 2, .z = 3};
     vec b = {.x = 4, .y = 1, .z = 62};
     vec c = cross(a, b);
