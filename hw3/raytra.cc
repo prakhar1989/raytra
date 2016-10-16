@@ -47,7 +47,7 @@ color compute_shading (
     float cosine = fmaxf(0, dot(surface_normal, light_ray));
     color kd = surface->material->diffuse;
 
-    float d2 = dist(light.position, point);
+    float d2 = powf(dist(light.position, point), 2);
     color diffuse = {
             .red   = kd.red * light.c.red * cosine * light.intensity,
             .green = kd.green * light.c.green * cosine * light.intensity,
