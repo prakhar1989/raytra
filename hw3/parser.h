@@ -15,7 +15,7 @@ public:
             std::string file_name,
             std::vector<Surface*>& surfaces,
             Camera& camera,
-            Point_light& light,
+            std::vector<PointLight*>& lights,
             color& ambient_light
     );
 };

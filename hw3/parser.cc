@@ -8,7 +8,7 @@ int Parser::parse_file(
         const string file_name,
         vector<Surface*>& surfaces,
         Camera& camera,
-        Point_light& light,
+        vector<PointLight*>& lights,
         color& ambient_light
 )
 {
@@ -86,11 +86,8 @@ int Parser::parse_file(
                     float x, y, z, r, g, b;
                     iss >> x >> y >> z >> r >> g >> b;
 
-                    Point_light l(x, y, z, r, g, b);
-                    light.intensity =  l.intensity;
-                    light.position = l.position;
-                    light.c = l.c;
-
+                    PointLight* l = new PointLight(x, y, z, r, g, b);
+                    lights.push_back(l);
                     ++light_count;
                 } else if (light_type == 'a') {
                     float x, y, z;
@@ -111,11 +108,6 @@ int Parser::parse_file(
 
     if (camera_count != 1) {
         cerr << "parse error: scene file should contain only one camera" << endl;
-        exit(1);
-    }
-
-    if (light_count > 1) {
-        cerr << "parse error: scene file should contain only one point light" << endl;
         exit(1);
     }
 

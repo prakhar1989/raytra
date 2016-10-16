@@ -4,10 +4,10 @@
 #include "raytra.h"
 using namespace Raytra;
 
-class Point_light {
+class PointLight {
 public:
-    Point_light() {};
-    Point_light(float x, float y, float z, float r, float g, float b);
+    PointLight() {};
+    PointLight(float x, float y, float z, float r, float g, float b);
 
     point position;
     color c;
