@@ -1,6 +1,7 @@
 #define CATCH_CONFIG_MAIN
 #include "catch.hpp"
 #include "../raytra.h"
+#include "../triangle.h"
 
 using namespace Raytra;
 
@@ -52,4 +53,14 @@ TEST_CASE("cross product between vwctors is computed correctly") {
     REQUIRE(c.x == 121);
     REQUIRE(c.y == -50);
     REQUIRE(c.z == -7);
+}
+
+TEST_CASE("triangles have correct normals") {
+    const Triangle t(1, 0, 0, 0, 1, 0, 0, 0, 1);
+    point p = {.x = 1, .y = 1, .z = 1};
+    vec n = t.get_normal(p);
+
+    REQUIRE(n.x == 1/sqrtf(3));
+    REQUIRE(n.y == 1/sqrtf(3));
+    REQUIRE(n.z == 1/sqrtf(3));
 }

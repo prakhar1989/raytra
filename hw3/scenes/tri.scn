@@ -1,0 +1,13 @@
+/ a gray material, w/ white specular highlight, no reflection
+m 0.2 0.2 0.2 0.5 0.5 0.5 10. 0.0 0.0 0.0
+
+/ a triangle
+/ this has the reversed normal
+/ t 0.0 0.0 -100.0 0.0 30.0 -100.0 30.0 15.0 -100.0
+t 0.0 30.0 -100.0 0.0 0.0 -100.0 30.0 15.0 -100.0
+
+/ one point light, white
+l p -80. 120. -46.6 15000.0 15000.0 15000.0
+
+/ camera: pointing towards -Z, 35mmx25mm "film", 35mm focal length
+c 24.2 29.3 53.6 0.0 0.0 -1.0 35.0 35.0 25.0 800 600

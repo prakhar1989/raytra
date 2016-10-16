@@ -6,6 +6,7 @@
 #include "camera.h"
 #include "ray.h"
 #include "sphere.h"
+#include "triangle.h"
 #include "plane.h"
 #include "point_light.h"
 

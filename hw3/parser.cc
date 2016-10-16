@@ -77,6 +77,15 @@ int Parser::parse_file(
                 surfaces.push_back(p);
                 break;
             }
+            case 't':
+            {
+                float ax, ay, az, bx, by, bz, cx, cy, cz;
+                iss >> ax >> ay >> az >> bx >> by >> bz >> cx >> cy >> cz;
+                Triangle* t = new Triangle(ax, ay, az, bx, by, bz, cx, cy, cz);
+                t->material = m;
+                surfaces.push_back(t);
+                break;
+            }
             case 'l':
             {
                 char light_type;

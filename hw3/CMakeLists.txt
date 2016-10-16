@@ -14,5 +14,6 @@ file(GLOB SOURCE_FILES  "*.cc")
 add_executable(hw3 ${SOURCE_FILES})
 target_link_libraries(hw3 ${EXR_LIBS})
 
+set(TESTABLE_SOURCES triangle.h triangle.cc)
 file(GLOB TEST_FILES "tests/*.cc")
-add_executable(hw3_test ${TEST_FILES})
+add_executable(hw3_test ${TEST_FILES} ${TESTABLE_SOURCES})
