@@ -12,7 +12,11 @@ void cleanup(vector<Surface*>& surfaces)
         delete s;
 }
 
-/* returns a pair of index and t for the intersection point
+/**
+ * @param ray - the camera ray for which the nearest surface has to be computed
+ * @param surfaces - a vector of surfaces that needs to be searched over
+ *
+ * @returns - a pair of index and parameter t for the intersection point
  * at the nearest surface
  */
 pair<int, float> get_nearest_surface (
@@ -33,12 +37,21 @@ pair<int, float> get_nearest_surface (
     return make_pair(min_index, min_t);
 }
 
+/**
+ * Computes diffuse and specular shading at a surface for a point light
+ *
+ * @param surface - the surface for which shading has to be computed
+ * @param point - the point at which the camera ray and surface intersect
+ * @param ray - the camera ray at the point of intersection
+ * @param light - a point light at that point due to which shading occurs
+ *
+ * @Returns - a color (r,g,b triple) to denote the shading at the point
+ */
 color compute_shading (
        const Surface* surface,
        const Ray& ray,
        const Raytra::point& point,
-       const PointLight* light,
-       const color& ambient_light
+       const PointLight* light
 )
 {
     // diffuse computation
@@ -123,7 +136,7 @@ int main(int argc, char** argv)
             color c;
 
             for (auto light: lights) {
-                c = compute_shading(surface, ray, intersection_pt, light, ambient_light);
+                c = compute_shading(surface, ray, intersection_pt, light);
                 px.r += c.red;
                 px.g += c.green;
                 px.b += c.blue;
