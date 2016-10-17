@@ -6,4 +6,3 @@ PointLight::PointLight(float x, float y, float z, float r, float g, float b)
     position = {.x = x, .y = y, .z = z};
     intensity = 1;
 }
-

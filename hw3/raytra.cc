@@ -6,10 +6,14 @@
 using namespace Raytra;
 using namespace std;
 
-void cleanup(vector<Surface*>& surfaces)
+void cleanup(vector<Surface*>& surfaces,
+             vector<PointLight*>& lights)
 {
     for (auto s: surfaces)
         delete s;
+
+    for (auto l: lights)
+        delete l;
 }
 
 /**
@@ -69,39 +73,6 @@ color diffuse_shading (
 
 
 /**
- *
- * @param point
- * @param surfaces
- * @param light
- * @return
- */
-bool is_occluded_by (
-        const Raytra::point& point,
-        const vector<Surface*>& surfaces,
-        const PointLight* light
-)
-{
-    /* to avoid shadow rounding errors */
-    const float surface_delta = 0.01;
-
-    /* generate ray from point to light */
-    vec light_dir = norm(light->position - point);
-    Ray light_ray(point, light_dir);
-
-    /* the t at which the light is located */
-    float t_light = light_ray.offset(light->position);
-
-    /* compute intersection of light ray with all surfaces */
-    for(auto surface: surfaces) {
-        float t = surface->get_intersection_point(light_ray);
-        if (t > 0 && t < t_light && fabsf(t) > surface_delta)
-            return true;
-    }
-
-    return false;
-}
-
-/**
  * Computes specular shading at a surface for a point light
  *
  * @param surface - the surface for which shading has to be computed
@@ -133,6 +104,43 @@ color specular_shading (
 }
 
 /**
+ * Checks whether a point on a surface is
+ * occuled by any other surface between the point
+ * and the light. Used for computing shadows.
+ *
+ * @param point - point of intersection
+ * @param surfaces - a vector of surfaces in the scene
+ * @param light - a point light from which the occlusion has
+ * to be calculated
+ * @return true to indicate if the surface is occluded.
+ */
+bool is_occluded_by (
+        const Raytra::point& point,
+        const vector<Surface*>& surfaces,
+        const PointLight* light
+)
+{
+    /* to avoid shadow rounding errors */
+    const float surface_delta = 0.01;
+
+    /* generate ray from point to light */
+    vec light_dir = norm(light->position - point);
+    Ray light_ray(point, light_dir);
+
+    /* the t at which the light is located */
+    float t_light = light_ray.offset(light->position);
+
+    /* compute intersection of light ray with all surfaces */
+    for(auto surface: surfaces) {
+        float t = surface->get_intersection_point(light_ray);
+        if (t > 0 && t < t_light && fabsf(t) > surface_delta)
+            return true;
+    }
+
+    return false;
+}
+
+/**
  * Computes diffuse and specular shading at a surface for a point light
  *
  * @param surface - the surface for which shading has to be computed
@@ -149,10 +157,9 @@ color compute_shading (
        const PointLight* light
 )
 {
-    float d2 = powf(dist(light->position, point), 2);
-
-    color diffuse  = diffuse_shading(surface, ray, point, light);
-    color specular = specular_shading(surface, ray, point, light);
+    const float d2 = powf(dist(light->position, point), 2);
+    const color diffuse  = diffuse_shading(surface, ray, point, light);
+    const color specular = specular_shading(surface, ray, point, light);
 
     return {
             .red = (diffuse.red + specular.red)/d2,
@@ -225,6 +232,6 @@ int main(int argc, char** argv)
     exr::writeRgba(output_file, &pixels[0][0],
                    camera.pixelsX(), camera.pixelsY());
 
-    // memory cleanup
-    cleanup(surfaces);
+    /* cleanup up surfaces */
+    cleanup(surfaces, lights);
 }

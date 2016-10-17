@@ -24,6 +24,10 @@ Camera::Camera(float x, float y, float z,
     left = -iw/2; bottom = -ih/2; right = iw/2; top = ih/2;
 }
 
+/**
+ * Copy values to the passed camera
+ * @param camera - copy data to the camera reference
+ */
 void Camera::copy_to_camera(Camera &camera)
 {
     camera.nx = nx; camera.ny = ny;
@@ -33,9 +37,15 @@ void Camera::copy_to_camera(Camera &camera)
 
     camera.eye = eye;
     camera.w = w; camera.u = u; camera.v = v;
-
 }
 
+/**
+ * Calculates the direction of camera ray to point (x, y)
+ * @param x
+ * @param y
+ * @return A vector denoting the direction of the camera
+ * ray to point (x, y) on the image plane
+ */
 vec Camera::ray_direction(float x, float y)
 {
     float centerX = left + (right - left) * (x + 0.5f)/nx;
@@ -45,5 +55,4 @@ vec Camera::ray_direction(float x, float y)
 
 int Camera::pixelsY() { return ny; }
 int Camera::pixelsX() { return nx; }
-
 point Camera::get_center() { return eye; }
