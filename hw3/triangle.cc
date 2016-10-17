@@ -55,5 +55,3 @@ float Triangle::get_intersection_point(const Ray &ray)
 
     return t;
 }
-
-

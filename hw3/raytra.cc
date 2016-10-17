@@ -38,6 +38,101 @@ pair<int, float> get_nearest_surface (
 }
 
 /**
+ * Computes diffuse shading at a surface for a point light
+ *
+ * @param surface - the surface for which shading has to be computed
+ * @param point - the point at which the camera ray and surface intersect
+ * @param ray - the camera ray at the point of intersection
+ * @param light - a point light at that point due to which shading occurs
+ *
+ * @Returns - a color (r,g,b triple) to denote the shading at the point
+ */
+color diffuse_shading (
+        const Surface* surface,
+        const Ray& ray,
+        const Raytra::point& point,
+        const PointLight* light
+)
+{
+    // diffuse computation
+    vec surface_normal = surface->get_normal(point);
+    vec light_ray = norm(light->position - point);
+    float cosine = fmaxf(0, dot(surface_normal, light_ray));
+    color kd = surface->material->diffuse;
+
+    return {
+            .red   = kd.red * light->c.red * cosine * light->intensity,
+            .green = kd.green * light->c.green * cosine * light->intensity,
+            .blue  = kd.blue * light->c.blue * cosine * light->intensity,
+    };
+}
+
+
+/**
+ *
+ * @param point
+ * @param surfaces
+ * @param light
+ * @return
+ */
+bool is_occluded_by (
+        const Raytra::point& point,
+        const vector<Surface*>& surfaces,
+        const PointLight* light
+)
+{
+    /* to avoid shadow rounding errors */
+    const float surface_delta = 0.01;
+
+    /* generate ray from point to light */
+    vec light_dir = norm(light->position - point);
+    Ray light_ray(point, light_dir);
+
+    /* the t at which the light is located */
+    float t_light = light_ray.offset(light->position);
+
+    /* compute intersection of light ray with all surfaces */
+    for(auto surface: surfaces) {
+        float t = surface->get_intersection_point(light_ray);
+        if (t > 0 && t < t_light && fabsf(t) > surface_delta)
+            return true;
+    }
+
+    return false;
+}
+
+/**
+ * Computes specular shading at a surface for a point light
+ *
+ * @param surface - the surface for which shading has to be computed
+ * @param point - the point at which the camera ray and surface intersect
+ * @param ray - the camera ray at the point of intersection
+ * @param light - a point light at that point due to which shading occurs
+ *
+ * @Returns - a color (r,g,b triple) to denote the shading at the point
+ */
+color specular_shading (
+        const Surface* surface,
+        const Ray& ray,
+        const Raytra::point& point,
+        const PointLight* light
+)
+{
+    vec surface_normal = surface->get_normal(point);
+    vec light_ray = norm(light->position - point);
+    vec bisector = norm(-ray.dir + light_ray);
+
+    float cosalpha = fmaxf(0, dot(surface_normal, bisector));
+    float multiplier = light->intensity * powf(cosalpha, surface->material->phong);
+    color ks = surface->material->specular;
+    return {
+            .red = ks.red * multiplier * light->c.red,
+            .green = ks.green * multiplier * light->c.green,
+            .blue = ks.blue * multiplier * light->c.blue,
+    };
+}
+
+/**
  * Computes diffuse and specular shading at a surface for a point light
  *
  * @param surface - the surface for which shading has to be computed
@@ -54,30 +149,10 @@ color compute_shading (
        const PointLight* light
 )
 {
-    // diffuse computation
-    vec surface_normal = surface->get_normal(point);
-    vec light_ray = norm(light->position - point);
-    float cosine = fmaxf(0, dot(surface_normal, light_ray));
-    color kd = surface->material->diffuse;
-
     float d2 = powf(dist(light->position, point), 2);
-    color diffuse = {
-            .red   = kd.red * light->c.red * cosine * light->intensity,
-            .green = kd.green * light->c.green * cosine * light->intensity,
-            .blue  = kd.blue * light->c.blue * cosine * light->intensity,
-    };
 
-    // specular computation
-    vec bisector = norm(-ray.dir + light_ray);
-    float cosalpha = fmaxf(0, dot(surface_normal, bisector));
-    float phong = surface->material->phong;
-    float multiplier = light->intensity * powf(cosalpha, phong);
-    color ks = surface->material->specular;
-    color specular = {
-            .red = ks.red * multiplier * light->c.red,
-            .green = ks.green * multiplier * light->c.green,
-            .blue = ks.blue * multiplier * light->c.blue,
-    };
+    color diffuse  = diffuse_shading(surface, ray, point, light);
+    color specular = specular_shading(surface, ray, point, light);
 
     return {
             .red = (diffuse.red + specular.red)/d2,
@@ -136,10 +211,12 @@ int main(int argc, char** argv)
             color c;
 
             for (auto light: lights) {
-                c = compute_shading(surface, ray, intersection_pt, light);
-                px.r += c.red;
-                px.g += c.green;
-                px.b += c.blue;
+                if (!is_occluded_by(intersection_pt, surfaces, light)) {
+                    c = compute_shading(surface, ray, intersection_pt, light);
+                    px.r += c.red;
+                    px.g += c.green;
+                    px.b += c.blue;
+                }
             }
         }
     }
