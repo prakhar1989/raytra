@@ -64,8 +64,15 @@ int main(int argc, char** argv)
     Array2D<Rgba> pixels;
     pixels.resizeErase(camera.pixelsY(), camera.pixelsX());
 
+    printf("Generating image: %s\n", output_file);
+
     for (int y = 0; y < camera.pixelsY(); y++) {
         for (int x = 0; x < camera.pixelsX(); x++) {
+
+            /* progress indicator */
+            std::cout.flush();
+            if ((x * y) % 1000 == 0) cout << ".";
+
             /* Step 1 - Ray Generation */
             vec dir = camera.ray_direction(x, y);
             point origin = camera.get_center();
@@ -104,9 +111,7 @@ int main(int argc, char** argv)
         }
     }
 
-    printf("Generating image: %s\n", output_file);
-    exr::writeRgba(output_file, &pixels[0][0],
-                   camera.pixelsX(), camera.pixelsY());
+    //exr::writeRgba(output_file, &pixels[0][0], camera.pixelsX(), camera.pixelsY());
 
     /* cleanup up surfaces */
     cleanup(surfaces, lights);
