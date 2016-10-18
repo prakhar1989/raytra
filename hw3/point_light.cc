@@ -66,7 +66,7 @@ color PointLight::diffuse_shading (
 
 /**
  * Checks whether a point on a surface is
- * occuled by any other surface between the point
+ * occluded by any other surface between the point
  * and the light. Used for computing shadows.
  *
  * @param point - point of intersection
@@ -115,7 +115,7 @@ color PointLight::compute_shading (
         const Raytra::point &point
 )
 {
-    const float d2 = powf(dist(position, point), 2);
+    const float d2 = dist2(position, point);
     const color diffuse  = diffuse_shading(surface, ray, point);
     const color specular = specular_shading(surface, ray, point);
 

@@ -41,8 +41,8 @@ TEST_CASE("distance between two points is computed correctly") {
     point q = {.x = 0, .y = 0, .z = 0};
     point z = {.x = 1, .y = 1, .z = 1};
 
-    REQUIRE(dist(p, q) == 1);
-    REQUIRE(dist(p, z) == sqrtf(2));
+    REQUIRE(dist2(p, q) == 1);
+    REQUIRE(dist2(p, z) == 2);
 }
 
 TEST_CASE("cross product between vectors is computed correctly") {

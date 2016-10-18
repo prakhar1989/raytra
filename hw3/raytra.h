@@ -91,10 +91,10 @@ namespace Raytra {
                  << ",y: " << c.green << ", z: " << c.blue << ")";
     }
 
-    inline float dist(const point& p1, const point& p2)
+    inline float dist2(const point &p1, const point &p2)
     {
-        return sqrtf(powf((p1.x - p2.x), 2) + powf((p1.y - p2.y), 2)
-               + powf((p1.z - p2.z), 2));
+        return powf((p1.x - p2.x), 2) + powf((p1.y - p2.y), 2)
+               + powf((p1.z - p2.z), 2);
     }
 }
 
