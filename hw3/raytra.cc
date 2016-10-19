@@ -2,6 +2,7 @@
 #include "exr.h"
 #include "point_light.h"
 #include <limits>
+#include "progress_bar.h"
 
 using namespace Raytra;
 using namespace std;
@@ -64,14 +65,17 @@ int main(int argc, char** argv)
     Array2D<Rgba> pixels;
     pixels.resizeErase(camera.pixelsY(), camera.pixelsX());
 
-    printf("Generating image: %s\n", output_file);
+    ProgressBar progressBar(camera.pixelsX() * camera.pixelsY());
+
+    cout << "Rendering..." << endl;
 
     for (int y = 0; y < camera.pixelsY(); y++) {
         for (int x = 0; x < camera.pixelsX(); x++) {
 
-            /* progress indicator */
-            std::cout.flush();
-            if ((x * y) % 1000 == 0) cout << ".";
+            /* Step 0: show progress */
+            ++progressBar;
+            if ((x * y) % 1000 == 0)
+                progressBar.display();
 
             /* Step 1 - Ray Generation */
             vec dir = camera.ray_direction(x, y);
@@ -111,7 +115,11 @@ int main(int argc, char** argv)
         }
     }
 
-    //exr::writeRgba(output_file, &pixels[0][0], camera.pixelsX(), camera.pixelsY());
+    exr::writeRgba(output_file, &pixels[0][0],
+                   camera.pixelsX(), camera.pixelsY());
+
+    progressBar.display();
+    printf("\nImage generated: %s\n", output_file);
 
     /* cleanup up surfaces */
     cleanup(surfaces, lights);
