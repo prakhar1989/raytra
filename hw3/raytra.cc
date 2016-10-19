@@ -1,5 +1,6 @@
 #include "parser.h"
 #include "exr.h"
+#include <fstream>
 #include "point_light.h"
 #include <limits>
 #include "progress_bar.h"
@@ -16,6 +17,16 @@ void cleanup(vector<Surface*>& surfaces,
     for (auto l: lights)
         delete l;
 }
+
+/**
+ * Checks if a file exist
+ */
+bool does_file_exist(const string& filename)
+{
+    std::ifstream infile(filename);
+    return infile.good();
+}
+
 
 /**
  * @param ray - the camera ray for which the nearest surface has to be computed
@@ -54,6 +65,11 @@ int main(int argc, char** argv)
 
     string scene_file {argv[1]};
     char* output_file {argv[2]};
+
+    if (!does_file_exist(scene_file)) {
+        cerr << "error: scene file doesn't exist" << endl;
+        return -1;
+    }
 
     vector<Surface*> surfaces;
     vector<PointLight*> lights;

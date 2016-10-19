@@ -125,7 +125,8 @@ int Parser::parse_file(
         exit(1);
     }
 
-    printf("Read %lu surface(s), %d material(s)\n", surfaces.size(), material_count);
+    printf("Read %lu surface(s), %d material(s) & %d light(s) \n",
+           surfaces.size(), material_count, light_count);
 
     return 0;
 }
