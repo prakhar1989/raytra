@@ -3,7 +3,7 @@
 #include <fstream>
 #include "point_light.h"
 #include <limits>
-#include "progress_bar.h"
+#include "ProgressBar.hpp"
 
 using namespace Raytra;
 using namespace std;
@@ -81,7 +81,7 @@ int main(int argc, char** argv)
     Array2D<Rgba> pixels;
     pixels.resizeErase(camera.pixelsY(), camera.pixelsX());
 
-    ProgressBar progressBar(camera.pixelsX() * camera.pixelsY());
+    ProgressBar progressBar(camera.pixelsX() * camera.pixelsY(), 70);
 
     cout << "Rendering..." << endl;
 
@@ -89,8 +89,7 @@ int main(int argc, char** argv)
         for (int x = 0; x < camera.pixelsX(); x++) {
 
             /* Step 0: show progress */
-            ++progressBar;
-            if ((x * y) % 1000 == 0)
+            if (++progressBar % 1000 == 0)
                 progressBar.display();
 
             /* Step 1 - Ray Generation */
