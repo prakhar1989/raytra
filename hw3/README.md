@@ -1,7 +1,7 @@
 RayTra
 ===
 
-Part II of Building a Raytracer by Prakhar Srivastav (ps2894).
+Part III of Building a Raytracer by Prakhar Srivastav (ps2894).
 
 
 ## Run
