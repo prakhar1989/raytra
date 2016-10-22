@@ -12,12 +12,18 @@
 
 class Parser {
 public:
-    static int parse_file(
+    static int parse_file (
             std::string file_name,
             std::vector<Surface*>& surfaces,
             Camera& camera,
             std::vector<PointLight*>& lights,
             color& ambient_light
+    );
+
+    static int parse_obj (
+            std::string file_name,
+            std::vector<int>& tris,
+            std::vector<float>& vertices
     );
 };
 

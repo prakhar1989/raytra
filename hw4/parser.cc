@@ -4,7 +4,7 @@
 
 using namespace std;
 
-int Parser::parse_file(
+int Parser::parse_file (
         const string file_name,
         vector<Surface*>& surfaces,
         Camera& camera,
@@ -111,6 +111,16 @@ int Parser::parse_file(
                 }
                 break;
             }
+            case 'w':
+            {
+                string fname;
+                iss >> fname;
+                std::vector<int> tris;
+                std::vector<float> vertices;
+                if (parse_obj(fname, tris, vertices) < 0)
+                    exit(1);
+                break;
+            }
             default: continue;
         }
     }
@@ -130,3 +140,20 @@ int Parser::parse_file(
 
     return 0;
 }
+
+int Parser::parse_obj (
+        std::string file_name,
+        std::vector<int> &tris,
+        std::vector<float> &vertices
+)
+{
+    ifstream in(file_name);
+    if (!in) {
+        cerr << "error: no file found: " << file_name << endl;
+        return -1;
+    }
+
+    cout << "reading " << file_name << endl;
+    return 0;
+}
+

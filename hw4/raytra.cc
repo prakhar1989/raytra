@@ -78,6 +78,8 @@ int main(int argc, char** argv)
 
     Parser::parse_file(scene_file, surfaces, camera, lights, ambient_light);
 
+    return -1;
+
     Array2D<Rgba> pixels;
     pixels.resizeErase(camera.pixelsY(), camera.pixelsX());
 
