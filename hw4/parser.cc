@@ -51,6 +51,7 @@ int Parser::parse_file (
                 surfaces.push_back(s);
                 break;
             }
+
             case 'c':
             {
                 float x, y, z, vx, vy, vz, d, iw, ih, pw, ph;
@@ -60,6 +61,7 @@ int Parser::parse_file (
                 ++camera_count;
                 break;
             }
+
             case 'm':
             {
                 float dr, dg, db, sr, sg, sb, r, ir, ig, ib;
@@ -68,6 +70,7 @@ int Parser::parse_file (
                 ++material_count;
                 break;
             }
+
             case 'p':
             {
                 float nx, ny, nz, d;
@@ -77,6 +80,7 @@ int Parser::parse_file (
                 surfaces.push_back(p);
                 break;
             }
+
             case 't':
             {
                 float ax, ay, az, bx, by, bz, cx, cy, cz;
@@ -86,6 +90,7 @@ int Parser::parse_file (
                 surfaces.push_back(t);
                 break;
             }
+
             case 'l':
             {
                 char light_type;
@@ -111,6 +116,7 @@ int Parser::parse_file (
                 }
                 break;
             }
+
             case 'w':
             {
                 string fname;
@@ -119,8 +125,26 @@ int Parser::parse_file (
                 std::vector<float> vertices;
                 if (parse_obj(fname, tris, vertices) < 0)
                     exit(1);
+
+                // build triangles
+                unsigned long n_tri = tris.size() / 3;
+                for (int i = 0; i < n_tri; i++) {
+                    // the ith triangle has vertices
+                    int a_index = tris[3*i];
+                    int b_index = tris[3*i + 1];
+                    int c_index = tris[3*i + 2];
+
+                    Triangle* t = new Triangle (
+                        vertices[3*a_index], vertices[3*a_index+1], vertices[3*a_index+2],
+                        vertices[3*b_index], vertices[3*b_index+1], vertices[3*b_index+2],
+                        vertices[3*c_index], vertices[3*c_index+1], vertices[3*c_index+2]
+                    );
+                    t->material = m;
+                    surfaces.push_back(t);
+                }
                 break;
             }
+
             default: continue;
         }
     }

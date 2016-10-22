@@ -8,7 +8,7 @@ l p -80.0 120.0 -46.6 18000.0 18000.0 18000.0
 / camera
 c 0.2 0.3 10.6 0.0 0.0 -1.0 35.0 35.0 25.0 640 480
 
-m .95 .07 0. 0.4 0.4 0.4 4.0 0.0 0.0 0.0
 / load in the bunny obj file
 /w scenes/bunny_regular.obj
+m .95 .07 0. 0.4 0.4 0.4 4.0 0.0 0.0 0.0
 w scenes/dodecahedron.obj
