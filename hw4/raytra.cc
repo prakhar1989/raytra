@@ -8,6 +8,8 @@
 using namespace Raytra;
 using namespace std;
 
+const int MAX_REFLECTIONS = 5;
+
 void cleanup(vector<Surface*>& surfaces,
              vector<PointLight*>& lights)
 {
@@ -53,17 +55,22 @@ pair<int, float> get_nearest_surface (
     return make_pair(min_index, min_t);
 }
 
+
 color radiance (
         const Ray& ray,
         const vector<Surface*>& surfaces,
-        const vector<PointLight*>& lights
+        const vector<PointLight*>& lights,
+        int recurse_limit
 )
 {
+    color spd = {.red = 0, .green = 0, .blue = 0};
+
+    if (recurse_limit == 0)
+        return spd;
+
     /* Step 2 - Ray Intersection */
     pair<int, float> hit = get_nearest_surface(ray, surfaces);
     int surface_index = hit.first;
-
-    color spd = {.red = 0, .green = 0, .blue = 0};
 
     /* no intersection - color black */
     if (surface_index < 0)
@@ -88,7 +95,27 @@ color radiance (
         }
     }
 
-    return spd;
+    color reflective = surface->material->ideal_specular;
+
+    /* not reflective surface; return */
+    if (reflective.red == 0 && reflective.green == 0 &&
+            reflective.blue == 0)
+        return spd;
+
+    /* compute the reflected ray */
+    vec N = surface->get_normal(intersection_pt);
+    vec reflect_dir = ray.dir + (-2 * dot(ray.dir, N) * N);
+    Ray reflected_ray(intersection_pt, reflect_dir);
+
+    /* recursively compute reflection shading */
+    color combined_spd = radiance(reflected_ray, surfaces,
+                                  lights, recurse_limit-1);
+
+    return {
+        .red = spd.red + combined_spd.red * reflective.red,
+        .green = spd.green + combined_spd.green * reflective.green,
+        .blue = spd.blue + combined_spd.blue * reflective.blue
+    };
 }
 
 int main(int argc, char** argv)
@@ -136,7 +163,7 @@ int main(int argc, char** argv)
             Ray ray(origin, dir);
 
             /* compute radiance */
-            color c = radiance(ray, surfaces, lights);
+            color c = radiance(ray, surfaces, lights, MAX_REFLECTIONS);
 
             /* finally assign shading to the pixel */
             Rgba &px = pixels[y][x];
