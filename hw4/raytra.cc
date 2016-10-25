@@ -8,7 +8,7 @@
 using namespace Raytra;
 using namespace std;
 
-const int MAX_REFLECTIONS = 5;
+const int MAX_REFLECTIONS = 2;
 
 void cleanup(vector<Surface*>& surfaces,
              vector<PointLight*>& lights)
@@ -39,7 +39,8 @@ bool does_file_exist(const string& filename)
  */
 pair<int, float> get_nearest_surface (
         const Ray& ray,
-        const vector<Surface*>& surfaces
+        const vector<Surface*>& surfaces,
+        int incident_surface_index
 )
 {
     float min_t = numeric_limits<float>::infinity();
@@ -47,7 +48,7 @@ pair<int, float> get_nearest_surface (
 
     for (int i = 0; i < (int) surfaces.size(); i++) {
         float t = surfaces[i]->get_intersection_point(ray);
-        if (t > 0 && t < min_t) {
+        if (t > 0.001 && t < min_t && i != incident_surface_index) {
             min_t = t;
             min_index = i;
         }
@@ -60,7 +61,8 @@ color radiance (
         const Ray& ray,
         const vector<Surface*>& surfaces,
         const vector<PointLight*>& lights,
-        int recurse_limit
+        int recurse_limit,
+        int incident_surface_index
 )
 {
     color spd = {.red = 0, .green = 0, .blue = 0};
@@ -69,7 +71,7 @@ color radiance (
         return spd;
 
     /* Step 2 - Ray Intersection */
-    pair<int, float> hit = get_nearest_surface(ray, surfaces);
+    pair<int, float> hit = get_nearest_surface(ray, surfaces, incident_surface_index);
     int surface_index = hit.first;
 
     /* no intersection - color black */
@@ -98,18 +100,18 @@ color radiance (
     color reflective = surface->material->ideal_specular;
 
     /* not reflective surface; return */
-    if (reflective.red == 0 && reflective.green == 0 &&
-            reflective.blue == 0)
+    if (!surface->material->is_reflective())
         return spd;
 
     /* compute the reflected ray */
     vec N = surface->get_normal(intersection_pt);
-    vec reflect_dir = ray.dir + (-2 * dot(ray.dir, N) * N);
+    vec reflect_dir = norm(ray.dir + (-2 * dot(ray.dir, N) * N));
     Ray reflected_ray(intersection_pt, reflect_dir);
 
     /* recursively compute reflection shading */
     color combined_spd = radiance(reflected_ray, surfaces,
-                                  lights, recurse_limit-1);
+                                lights, recurse_limit-1,
+                                surface_index);
 
     return {
         .red = spd.red + combined_spd.red * reflective.red,
@@ -163,7 +165,7 @@ int main(int argc, char** argv)
             Ray ray(origin, dir);
 
             /* compute radiance */
-            color c = radiance(ray, surfaces, lights, MAX_REFLECTIONS);
+            color c = radiance(ray, surfaces, lights, MAX_REFLECTIONS, -1);
 
             /* finally assign shading to the pixel */
             Rgba &px = pixels[y][x];
