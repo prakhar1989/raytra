@@ -53,6 +53,44 @@ pair<int, float> get_nearest_surface (
     return make_pair(min_index, min_t);
 }
 
+color radiance (
+        const Ray& ray,
+        const vector<Surface*>& surfaces,
+        const vector<PointLight*>& lights
+)
+{
+    /* Step 2 - Ray Intersection */
+    pair<int, float> hit = get_nearest_surface(ray, surfaces);
+    int surface_index = hit.first;
+
+    color spd = {.red = 0, .green = 0, .blue = 0};
+
+    /* no intersection - color black */
+    if (surface_index < 0)
+        return spd;
+
+    /* on intersection, compute shading
+     * by summing contributions from each light source
+     */
+    Surface* surface = surfaces[surface_index];
+    point intersection_pt = ray.get_point(hit.second);
+    color c;
+
+    for (auto light: lights) {
+        /* compute shading only if the light to the surface
+         * at the intersection point is not occluded by another surface
+         */
+        if (!light->is_occluded_by(intersection_pt, surfaces)) {
+            c = light->compute_shading(surface, ray, intersection_pt);
+            spd.red += c.red;
+            spd.green += c.green;
+            spd.blue += c.blue;
+        }
+    }
+
+    return spd;
+}
+
 int main(int argc, char** argv)
 {
     if (argc < 3) {
@@ -92,41 +130,17 @@ int main(int argc, char** argv)
             if (++progressBar % 1000 == 0)
                 progressBar.display();
 
-            /* Step 1 - Ray Generation */
+            /* step 1: generate ray */
             vec dir = camera.ray_direction(x, y);
             point origin = camera.get_center();
             Ray ray(origin, dir);
 
-            /* Step 2 - Ray Intersection */
-            pair<int, float> hit = get_nearest_surface(ray, surfaces);
-            int surface_index = hit.first;
+            /* compute radiance */
+            color c = radiance(ray, surfaces, lights);
 
-            /* Step 3 - Shading */
+            /* finally assign shading to the pixel */
             Rgba &px = pixels[y][x];
-            px.r = 0; px.g = 0; px.b = 0; px.a = 1;
-
-            /* no intersection - color black */
-            if (surface_index < 0)
-                continue;
-
-            /* on intersection, compute shading
-             * by summing contributions from each light source
-             */
-            Surface* surface = surfaces[surface_index];
-            point intersection_pt = ray.get_point(hit.second);
-            color c;
-
-            for (auto light: lights) {
-                /* compute shading only if the light to the surface
-                 * at the intersection point is not occluded by another surface
-                 */
-                if (!light->is_occluded_by(intersection_pt, surfaces)) {
-                    c = light->compute_shading(surface, ray, intersection_pt);
-                    px.r += c.red;
-                    px.g += c.green;
-                    px.b += c.blue;
-                }
-            }
+            px.r = c.red; px.g = c.green; px.b = c.blue; px.a = 1;
         }
     }
 
