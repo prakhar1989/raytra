@@ -119,10 +119,8 @@ color PointLight::compute_shading (
 
     // backside of a one-sided surface. color yellow for debugging
     if (surface->is_one_sided() &&
-            dot(surface->get_normal(point), -camera_ray.dir) < 0) {
-        printf("hitting on back side\n");
+            dot(surface->get_normal(point), -camera_ray.dir) < 0)
         return { .red = 1, .green = 1, .blue = 0 };
-    }
 
     const color diffuse  = diffuse_shading(surface, point);
     const color specular = specular_shading(surface, camera_ray, point);

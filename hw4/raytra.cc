@@ -184,6 +184,11 @@ int main(int argc, char** argv)
             /* finally assign shading to the pixel */
             Rgba &px = pixels[y][x];
             px.r = c.red; px.g = c.green; px.b = c.blue; px.a = 1;
+
+            /* add ambient light */
+            px.r += ambient_light.red;
+            px.g += ambient_light.green;
+            px.b += ambient_light.blue;
         }
     }
 
