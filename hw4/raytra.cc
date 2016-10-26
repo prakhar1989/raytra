@@ -8,7 +8,7 @@
 using namespace Raytra;
 using namespace std;
 
-const int MAX_REFLECTIONS = 2;
+const int MAX_REFLECTIONS = 20;
 
 void cleanup(vector<Surface*>& surfaces,
              vector<PointLight*>& lights)
@@ -33,6 +33,8 @@ bool does_file_exist(const string& filename)
 /**
  * @param ray - the camera ray for which the nearest surface has to be computed
  * @param surfaces - a vector of surfaces that needs to be searched over
+ * @param incident_surface_index - index of the surface that shouldn't
+ * be counted in the computation.
  *
  * @returns - a pair of index and parameter t for the intersection point
  * at the nearest surface
@@ -48,7 +50,8 @@ pair<int, float> get_nearest_surface (
 
     for (int i = 0; i < (int) surfaces.size(); i++) {
         float t = surfaces[i]->get_intersection_point(ray);
-        if (t > 0.001 && t < min_t && i != incident_surface_index) {
+        if (t > 0.001 && t < min_t &&
+                i != incident_surface_index) {
             min_t = t;
             min_index = i;
         }
@@ -57,17 +60,28 @@ pair<int, float> get_nearest_surface (
 }
 
 
-color radiance (
-        const Ray& ray,
-        const vector<Surface*>& surfaces,
-        const vector<PointLight*>& lights,
-        int recurse_limit,
-        int incident_surface_index
+/**
+ * Computes the spectral power distribution using the phong
+ * shading model and reflections
+ * @param ray - camera ray
+ * @param surfaces - list of all surfaces in the scene
+ * @param lights - list of all lights in the scene
+ * @param bounces_left - number of light bounces left
+ * @param incident_surface_index - index of the incident surface
+ * useful for making sure surfaces don't reflect themselves.
+ * @return
+ */
+color compute_spd (
+    const Ray &ray,
+    const vector<Surface *> &surfaces,
+    const vector<PointLight *> &lights,
+    int bounces_left,
+    int incident_surface_index
 )
 {
     color spd = {.red = 0, .green = 0, .blue = 0};
 
-    if (recurse_limit == 0)
+    if (bounces_left == 0)
         return spd;
 
     /* Step 2 - Ray Intersection */
@@ -109,14 +123,14 @@ color radiance (
     Ray reflected_ray(intersection_pt, reflect_dir);
 
     /* recursively compute reflection shading */
-    color combined_spd = radiance(reflected_ray, surfaces,
-                                lights, recurse_limit-1,
-                                surface_index);
+    color reflected_spd = compute_spd(reflected_ray, surfaces,
+                                     lights, bounces_left - 1,
+                                     surface_index);
 
     return {
-        .red = spd.red + combined_spd.red * reflective.red,
-        .green = spd.green + combined_spd.green * reflective.green,
-        .blue = spd.blue + combined_spd.blue * reflective.blue
+        .red = spd.red + reflected_spd.red * reflective.red,
+        .green = spd.green + reflected_spd.green * reflective.green,
+        .blue = spd.blue + reflected_spd.blue * reflective.blue
     };
 }
 
@@ -164,8 +178,8 @@ int main(int argc, char** argv)
             point origin = camera.get_center();
             Ray ray(origin, dir);
 
-            /* compute radiance */
-            color c = radiance(ray, surfaces, lights, MAX_REFLECTIONS, -1);
+            /* compute compute_spd */
+            color c = compute_spd(ray, surfaces, lights, MAX_REFLECTIONS, -1);
 
             /* finally assign shading to the pixel */
             Rgba &px = pixels[y][x];

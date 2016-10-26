@@ -80,7 +80,7 @@ bool PointLight::is_occluded_by (
 )
 {
     /* to avoid shadow rounding errors */
-    const float surface_delta = 0.05;
+    const float surface_delta = 0.001;
 
     /* generate ray from point to light */
     vec light_dir = norm(position - point);
@@ -92,7 +92,8 @@ bool PointLight::is_occluded_by (
     /* compute intersection of light ray with all surfaces */
     for(auto surface: surfaces) {
         float t = surface->get_intersection_point(light_ray);
-        if (t > 0 && t < t_light && fabsf(t) > surface_delta)
+        if (t > surface_delta && t < t_light &&
+                fabsf(t) > surface_delta)
             return true;
     }
 
