@@ -75,6 +75,7 @@ color compute_spd (
     const Ray &ray,
     const vector<Surface *> &surfaces,
     const vector<PointLight *> &lights,
+    const color& ambient_light,
     int bounces_left,
     int incident_surface_index
 )
@@ -111,6 +112,11 @@ color compute_spd (
         }
     }
 
+    // add ambient
+    spd.red += surface->material->diffuse.red * ambient_light.red;
+    spd.green += surface->material->diffuse.green * ambient_light.green;
+    spd.blue += surface->material->diffuse.blue * ambient_light.blue;
+
     color reflective = surface->material->ideal_specular;
 
     /* not reflective surface; return */
@@ -124,8 +130,8 @@ color compute_spd (
 
     /* recursively compute reflection shading */
     color reflected_spd = compute_spd(reflected_ray, surfaces,
-                                     lights, bounces_left - 1,
-                                     surface_index);
+                                     lights, ambient_light,
+                                     bounces_left - 1, surface_index);
 
     return {
         .red = spd.red + reflected_spd.red * reflective.red,
@@ -178,17 +184,13 @@ int main(int argc, char** argv)
             point origin = camera.get_center();
             Ray ray(origin, dir);
 
-            /* compute compute_spd */
-            color c = compute_spd(ray, surfaces, lights, MAX_REFLECTIONS, -1);
+            /* compute spectral power distribution */
+            color c = compute_spd(ray, surfaces, lights, ambient_light,
+                                  MAX_REFLECTIONS, -1);
 
             /* finally assign shading to the pixel */
             Rgba &px = pixels[y][x];
             px.r = c.red; px.g = c.green; px.b = c.blue; px.a = 1;
-
-            /* add ambient light */
-            px.r += ambient_light.red;
-            px.g += ambient_light.green;
-            px.b += ambient_light.blue;
         }
     }
 
