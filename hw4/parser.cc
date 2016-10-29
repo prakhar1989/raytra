@@ -127,8 +127,8 @@ int Parser::parse_file (
                     exit(1);
 
                 // build triangles
-                int n_tri = (int) (tris.size() / 3);
-                for (int i = 0; i < n_tri / 3; i++) {
+                int n_tri = (int) tris.size() / 3;
+                for (int i = 0; i < n_tri; i++) {
                     // the ith triangle has vertices
                     int a_index = tris[3*i];
                     int b_index = tris[3*i + 1];

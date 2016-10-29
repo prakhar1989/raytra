@@ -8,7 +8,7 @@ Triangle::Triangle(float ax, float ay, float az,
     p2 = {.x = bx, .y = by, .z = bz};
     p3 = {.x = cx, .y = cy, .z = cz};
 
-    normal = norm(cross(p2 - p1, p3 - p2));
+    normal = norm(cross(p2 - p1, p3 - p1));
 }
 
 void Triangle::print()
