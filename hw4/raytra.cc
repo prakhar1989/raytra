@@ -112,15 +112,20 @@ color compute_spd (
         }
     }
 
-    // add ambient
-    spd.red += surface->material->diffuse.red * ambient_light.red;
-    spd.green += surface->material->diffuse.green * ambient_light.green;
-    spd.blue += surface->material->diffuse.blue * ambient_light.blue;
+    if (incident_surface_index == -1) {
+        // add ambient only once. this condition ensures
+        // that the ambient light is added only to the primary
+        // camera ray
+        spd.red += surface->material->diffuse.red * ambient_light.red;
+        spd.green += surface->material->diffuse.green * ambient_light.green;
+        spd.blue += surface->material->diffuse.blue * ambient_light.blue;
+    }
 
     color reflective = surface->material->ideal_specular;
 
     /* not reflective surface; return */
-    if (!surface->material->is_reflective())
+    if (!surface->material->is_reflective() ||
+            !surface->is_front_facing(ray))
         return spd;
 
     /* compute the reflected ray */

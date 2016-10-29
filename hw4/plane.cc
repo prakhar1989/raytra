@@ -26,3 +26,8 @@ vec Plane::get_normal(const point &p) const
 {
     return normal;
 }
+
+bool Plane::is_front_facing(const Ray &ray) const
+{
+    return dot(normal, ray.dir) < 0;
+}

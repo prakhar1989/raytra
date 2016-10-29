@@ -10,7 +10,7 @@ public:
     virtual void print() = 0;
     virtual float get_intersection_point(const Ray& ray) = 0;
     virtual vec get_normal(const point& p) const = 0;
-    virtual bool is_one_sided() const = 0;
+    virtual bool is_front_facing(const Ray& ray) const = 0;
 
     virtual ~Surface() {};
     std::shared_ptr<Material> material;

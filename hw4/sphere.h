@@ -10,7 +10,7 @@ public:
     void print();
     float get_intersection_point(const Ray& ray);
     vec get_normal(const point& p) const;
-    bool is_one_sided() const { return false; }
+    bool is_front_facing(const Ray& ray) const { return true; }
 
 private:
     Raytra::point center;

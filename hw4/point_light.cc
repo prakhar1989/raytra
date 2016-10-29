@@ -6,63 +6,6 @@ PointLight::PointLight(float x, float y, float z, float r, float g, float b)
     position = {.x = x, .y = y, .z = z};
     intensity = 1;
 }
-
-/**
- * Computes specular shading at a surface for a point light
- *
- * @param surface - the surface for which shading has to be computed
- * @param point - the point at which the camera ray and surface intersect
- * @param camera_ray - the camera ray at the point of intersection
- *
- * @Returns - a color (r,g,b triple) to denote the shading at the point
- */
-color PointLight::specular_shading (
-        const Surface* surface,
-        const Ray& camera_ray,
-        const Raytra::point& point
-)
-{
-    vec surface_normal = surface->get_normal(point);
-    vec light_ray = norm(position - point);
-    vec bisector = norm(-camera_ray.dir + light_ray);
-
-    float cosalpha = fmaxf(0, dot(surface_normal, bisector));
-    float multiplier = intensity * powf(cosalpha, surface->material->phong);
-    color ks = surface->material->specular;
-    return {
-            .red = ks.red * multiplier * c.red,
-            .green = ks.green * multiplier * c.green,
-            .blue = ks.blue * multiplier * c.blue,
-    };
-}
-
-/**
- * Computes diffuse shading at a surface for a point light
- *
- * @param surface - the surface for which shading has to be computed
- * @param point - the point at which the camera ray and surface intersect
- *
- * @Returns - a color (r,g,b triple) to denote the shading at the point
- */
-color PointLight::diffuse_shading (
-        const Surface* surface,
-        const Raytra::point& point
-)
-{
-    // diffuse computation
-    vec surface_normal = surface->get_normal(point);
-    vec light_ray = norm(position - point);
-
-    float cosine = fmaxf(0, dot(surface_normal, light_ray));
-    color kd = surface->material->diffuse;
-
-    return {
-            .red   = kd.red * c.red * cosine * intensity,
-            .green = kd.green * c.green * cosine * intensity,
-            .blue  = kd.blue * c.blue * cosine * intensity,
-    };
-}
-
 /**
  * Checks whether a point on a surface is
  * occluded by any other surface between the point
@@ -115,15 +58,37 @@ color PointLight::compute_shading (
         const Raytra::point &point
 )
 {
+    vec surface_normal = surface->get_normal(point);
+    const vec light_ray = norm(position - point);
+    const vec bisector = norm(-camera_ray.dir + light_ray);
     const float d2 = dist2(position, point);
 
-    // backside of a one-sided surface. color yellow for debugging
-    if (surface->is_one_sided() &&
-            dot(surface->get_normal(point), -camera_ray.dir) < 0)
-        return { .red = 1, .green = 1, .blue = 0 };
 
-    const color diffuse  = diffuse_shading(surface, point);
-    const color specular = specular_shading(surface, camera_ray, point);
+    color kd, ks;
+    if (surface->is_front_facing(camera_ray)) {
+        kd = surface->material->diffuse;
+        ks = surface->material->specular;
+    } else {
+        kd = { .red = 1, .green = 1, .blue = 0 };
+        ks = { .red = 0, .green = 0, .blue = 0 };
+        surface_normal = -surface_normal;
+    }
+
+    const float cosine = fmaxf(0, dot(surface_normal, light_ray));
+    const color diffuse = {
+            .red = kd.red * c.red * cosine * intensity,
+            .green = kd.green * c.green * cosine * intensity,
+            .blue = kd.blue * c.blue * cosine * intensity,
+    };
+
+    const float cosalpha = fmaxf(0, dot(surface_normal, bisector));
+    const float multiplier = intensity * powf(cosalpha, surface->material->phong);
+
+    const color specular = {
+            .red = ks.red * multiplier * c.red,
+            .green = ks.green * multiplier * c.green,
+            .blue = ks.blue * multiplier * c.blue,
+    };
 
     return {
             .red = (diffuse.red + specular.red)/d2,
@@ -131,4 +96,3 @@ color PointLight::compute_shading (
             .blue = (diffuse.blue + specular.blue)/d2,
     };
 }
-

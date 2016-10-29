@@ -55,3 +55,8 @@ float Triangle::get_intersection_point(const Ray &ray)
 
     return t;
 }
+
+bool Triangle::is_front_facing(const Ray &ray) const
+{
+    return dot(normal, ray.dir) < 0;
+}

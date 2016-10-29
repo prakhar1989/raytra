@@ -12,7 +12,7 @@ public:
     void print();
     vec get_normal(const point& p) const;
     float get_intersection_point(const Ray& ray);
-    bool is_one_sided() const { return true; }
+    bool is_front_facing(const Ray& ray) const;
 private:
     point p1, p2, p3;
     vec normal;
