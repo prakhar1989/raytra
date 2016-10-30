@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="hw5"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/Users/prakhar/Documents/study/comp-graphics/assigns/hw5/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/prakhar/Documents/study/comp-graphics/assigns/hw5/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/prakhar/Documents/study/comp-graphics/assigns/hw5/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/prakhar/Documents/study/comp-graphics/assigns/hw5/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/prakhar/Documents/study/comp-graphics/assigns/hw5/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="/Users/prakhar/Documents/study/comp-graphics/assigns/hw5/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/prakhar/Documents/study/comp-graphics/assigns/hw5/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/prakhar/Documents/study/comp-graphics/assigns/hw5/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/prakhar/Documents/study/comp-graphics/assigns/hw5/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/prakhar/Documents/study/comp-graphics/assigns/hw5/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="/Users/prakhar/Documents/study/comp-graphics/assigns/hw5/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/prakhar/Documents/study/comp-graphics/assigns/hw5/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/prakhar/Documents/study/comp-graphics/assigns/hw5/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/prakhar/Documents/study/comp-graphics/assigns/hw5/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/prakhar/Documents/study/comp-graphics/assigns/hw5/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="hw5_test">
+				<Option output="/Users/prakhar/Documents/study/comp-graphics/assigns/hw5/cmake-build-debug/hw5_test" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/prakhar/Documents/study/comp-graphics/assigns/hw5/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/local/include/OpenEXR"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/8.0.0/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/prakhar/Documents/study/comp-graphics/assigns/hw5/cmake-build-debug/Makefile&quot;  VERBOSE=1 hw5_test"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/prakhar/Documents/study/comp-graphics/assigns/hw5/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/prakhar/Documents/study/comp-graphics/assigns/hw5/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/prakhar/Documents/study/comp-graphics/assigns/hw5/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="hw5_test/fast">
+				<Option output="/Users/prakhar/Documents/study/comp-graphics/assigns/hw5/cmake-build-debug/hw5_test" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/prakhar/Documents/study/comp-graphics/assigns/hw5/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/local/include/OpenEXR"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/8.0.0/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/prakhar/Documents/study/comp-graphics/assigns/hw5/cmake-build-debug/Makefile&quot;  VERBOSE=1 hw5_test/fast"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/prakhar/Documents/study/comp-graphics/assigns/hw5/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/prakhar/Documents/study/comp-graphics/assigns/hw5/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/prakhar/Documents/study/comp-graphics/assigns/hw5/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="hw5">
+				<Option output="/Users/prakhar/Documents/study/comp-graphics/assigns/hw5/cmake-build-debug/hw5" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/prakhar/Documents/study/comp-graphics/assigns/hw5/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/local/include/OpenEXR"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/8.0.0/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/prakhar/Documents/study/comp-graphics/assigns/hw5/cmake-build-debug/Makefile&quot;  VERBOSE=1 hw5"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/prakhar/Documents/study/comp-graphics/assigns/hw5/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/prakhar/Documents/study/comp-graphics/assigns/hw5/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/prakhar/Documents/study/comp-graphics/assigns/hw5/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="hw5/fast">
+				<Option output="/Users/prakhar/Documents/study/comp-graphics/assigns/hw5/cmake-build-debug/hw5" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/prakhar/Documents/study/comp-graphics/assigns/hw5/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/local/include/OpenEXR"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/8.0.0/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/prakhar/Documents/study/comp-graphics/assigns/hw5/cmake-build-debug/Makefile&quot;  VERBOSE=1 hw5/fast"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/prakhar/Documents/study/comp-graphics/assigns/hw5/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/prakhar/Documents/study/comp-graphics/assigns/hw5/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/prakhar/Documents/study/comp-graphics/assigns/hw5/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/Users/prakhar/Documents/study/comp-graphics/assigns/hw5/Material.cc">
+			<Option target="hw5"/>
+		</Unit>
+		<Unit filename="/Users/prakhar/Documents/study/comp-graphics/assigns/hw5/Material.h">
+			<Option target="hw5"/>
+		</Unit>
+		<Unit filename="/Users/prakhar/Documents/study/comp-graphics/assigns/hw5/camera.cc">
+			<Option target="hw5"/>
+		</Unit>
+		<Unit filename="/Users/prakhar/Documents/study/comp-graphics/assigns/hw5/camera.h">
+			<Option target="hw5"/>
+		</Unit>
+		<Unit filename="/Users/prakhar/Documents/study/comp-graphics/assigns/hw5/exr.cc">
+			<Option target="hw5"/>
+		</Unit>
+		<Unit filename="/Users/prakhar/Documents/study/comp-graphics/assigns/hw5/exr.h">
+			<Option target="hw5"/>
+		</Unit>
+		<Unit filename="/Users/prakhar/Documents/study/comp-graphics/assigns/hw5/parser.cc">
+			<Option target="hw5"/>
+		</Unit>
+		<Unit filename="/Users/prakhar/Documents/study/comp-graphics/assigns/hw5/parser.h">
+			<Option target="hw5"/>
+		</Unit>
+		<Unit filename="/Users/prakhar/Documents/study/comp-graphics/assigns/hw5/plane.cc">
+			<Option target="hw5"/>
+		</Unit>
+		<Unit filename="/Users/prakhar/Documents/study/comp-graphics/assigns/hw5/plane.h">
+			<Option target="hw5"/>
+		</Unit>
+		<Unit filename="/Users/prakhar/Documents/study/comp-graphics/assigns/hw5/point_light.cc">
+			<Option target="hw5"/>
+		</Unit>
+		<Unit filename="/Users/prakhar/Documents/study/comp-graphics/assigns/hw5/point_light.h">
+			<Option target="hw5"/>
+		</Unit>
+		<Unit filename="/Users/prakhar/Documents/study/comp-graphics/assigns/hw5/raytra.cc">
+			<Option target="hw5"/>
+		</Unit>
+		<Unit filename="/Users/prakhar/Documents/study/comp-graphics/assigns/hw5/raytra.h">
+			<Option target="hw5"/>
+		</Unit>
+		<Unit filename="/Users/prakhar/Documents/study/comp-graphics/assigns/hw5/sphere.cc">
+			<Option target="hw5"/>
+		</Unit>
+		<Unit filename="/Users/prakhar/Documents/study/comp-graphics/assigns/hw5/sphere.h">
+			<Option target="hw5"/>
+		</Unit>
+		<Unit filename="/Users/prakhar/Documents/study/comp-graphics/assigns/hw5/tests/test.cc">
+			<Option target="hw5_test"/>
+		</Unit>
+		<Unit filename="/Users/prakhar/Documents/study/comp-graphics/assigns/hw5/triangle.cc">
+			<Option target="hw5_test"/>
+			<Option target="hw5"/>
+		</Unit>
+		<Unit filename="/Users/prakhar/Documents/study/comp-graphics/assigns/hw5/triangle.h">
+			<Option target="hw5_test"/>
+		</Unit>
+		<Unit filename="/Users/prakhar/Documents/study/comp-graphics/assigns/hw5/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>
