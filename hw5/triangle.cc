@@ -10,14 +10,11 @@ Triangle::Triangle(float ax, float ay, float az,
 
     normal = norm(cross(p2 - p1, p3 - p1));
 
-    /*
     box = new BoundingBox(
         std::min({ax, bx, cx}), std::max({ax, bx, cx}),
         std::min({ay, by, cy}), std::max({ay, by, cy}),
         std::min({az, bz, cz}), std::max({az, bz, cz})
     );
-     */
-    box = new BoundingBox(10, 20, 30, 40, 50, 60);
 }
 
 BoundingBox* Triangle::get_bounding_box() const {
@@ -32,6 +29,9 @@ vec Triangle::get_normal(const point& p) const
 /* as derived using Cramer's rule */
 float Triangle::get_intersection_point(const Ray &ray)
 {
+    if (!box->does_intersect(ray))
+        return -1;
+
     float a = p1.x - p2.x; float b = p1.y - p2.y; float c = p1.z - p2.z;
     float d = p1.x - p3.x; float e = p1.y - p3.y; float f = p1.z - p3.z;
     float g = ray.dir.x; float h = ray.dir.y; float i = ray.dir.z;

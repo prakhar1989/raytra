@@ -27,3 +27,49 @@ void BoundingBox::set_surface_index(int idx)
 {
     surface_index = idx;
 }
+
+bool BoundingBox::does_intersect(const Ray &ray) const
+{
+    float hit_min = 0;
+    float hit_max = std::numeric_limits<float>::infinity();
+
+    /* for X */
+    if (ray.dir.x == 0 && (ray.origin.x < xmin || ray.origin.x > xmax))
+        return false;
+
+    float tx_min = (xmin - ray.origin.x) / ray.dir.x;
+    float tx_max = (xmax - ray.origin.x) / ray.dir.x;
+
+    if (ray.dir.x < 0)
+        std::swap(tx_min, tx_max);
+
+    if (tx_min > hit_min) hit_min = tx_min;
+    if (tx_max < hit_max) hit_max = tx_max;
+    if (hit_min > hit_max) return false;
+
+    /* for Y */
+    if (ray.dir.y == 0 && (ray.origin.y < ymin || ray.origin.y > ymax))
+        return false;
+
+    float ty_min = (ymin - ray.origin.y) / ray.dir.y;
+    float ty_max = (ymax - ray.origin.y) / ray.dir.y;
+
+    if (ray.dir.y < 0) std::swap(ty_min, ty_max);
+    if (ty_min > hit_min) hit_min = ty_min;
+    if (ty_max < hit_max) hit_max = ty_max;
+    if (hit_min > hit_max) return false;
+
+    /* for Z */
+    if (ray.dir.z == 0 && (ray.origin.z < zmin || ray.origin.z > zmax))
+        return false;
+
+    float tz_min = (zmin - ray.origin.z) / ray.dir.z;
+    float tz_max = (zmax - ray.origin.z) / ray.dir.z;
+
+    if (ray.dir.z < 0)
+        std::swap(tz_min, tz_max);
+
+    if (tz_min > hit_min) hit_min = tz_min;
+    if (tz_max < hit_max) hit_max = tz_max;
+    return hit_min < hit_max;
+}
