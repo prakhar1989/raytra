@@ -5,6 +5,7 @@
 #include "bounding_box.h"
 #include <limits>
 #include "ProgressBar.hpp"
+#include "BVHTree.h"
 
 using namespace Raytra;
 using namespace std;
@@ -171,7 +172,13 @@ int main(int argc, char** argv)
 
     Parser::parse_file(scene_file, surfaces, camera, lights, ambient_light);
 
-    vector<BoundingBox*> boundingBoxes;
+    // set up a collection of bounding boxes
+    vector<BoundingBox*> bounding_boxes;
+    for (int i = 0; i < surfaces.size(); i++) {
+        BoundingBox* box = surfaces[i]->get_bounding_box();
+        box->set_surface_index(i);
+        bounding_boxes.push_back(box);
+    }
 
     Array2D<Rgba> pixels;
     pixels.resizeErase(camera.pixelsY(), camera.pixelsX());

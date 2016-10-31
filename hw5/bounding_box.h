@@ -5,6 +5,10 @@
 #include "ray.h"
 #include <limits>
 
+enum SortDirection { X, Y, Z };
+
+SortDirection get_next_direction(SortDirection dir);
+
 class BoundingBox {
 public:
     BoundingBox(float x_min, float x_max,

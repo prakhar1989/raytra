@@ -16,6 +16,9 @@ public:
     virtual BoundingBox* get_bounding_box() const = 0;
     virtual ~Surface() {};
     std::shared_ptr<Material> material;
+
+private:
+    BoundingBox* box;
 };
 
 #endif //HW_SURFACE_H

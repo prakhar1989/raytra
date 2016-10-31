@@ -64,3 +64,9 @@ TEST_CASE("triangles have correct normals") {
     REQUIRE(n.y == 1/sqrtf(3));
     REQUIRE(n.z == 1/sqrtf(3));
 }
+
+TEST_CASE("Sort Directions cycle correctly") {
+    REQUIRE(get_next_direction(SortDirection::X) == SortDirection::Y);
+    REQUIRE(get_next_direction(SortDirection::Y) == SortDirection::Z);
+    REQUIRE(get_next_direction(SortDirection::Z) == SortDirection::X);
+}

@@ -1,5 +1,14 @@
 #include "bounding_box.h"
 
+SortDirection get_next_direction(SortDirection dir)
+{
+    switch(dir)
+    {
+        case SortDirection::X  : return SortDirection::Y;
+        case SortDirection::Y  : return SortDirection::Z;
+        case SortDirection::Z  : return SortDirection::X;
+    }
+}
 
 BoundingBox::BoundingBox(float x_min, float x_max,
                          float y_min, float y_max,
