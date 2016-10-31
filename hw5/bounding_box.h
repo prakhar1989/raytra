@@ -5,7 +5,7 @@
 #include "ray.h"
 #include <limits>
 
-enum SortDirection { X, Y, Z };
+enum class SortDirection { X, Y, Z };
 
 SortDirection get_next_direction(SortDirection dir);
 
