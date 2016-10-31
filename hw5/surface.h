@@ -3,8 +3,8 @@
 
 #include <memory>
 #include "Material.h"
-#include "bounding_box.h"
 #include "ray.h"
+#include "bounding_box.h"
 
 class Surface {
 public:

@@ -73,12 +73,13 @@ int Parser::parse_file (
 
             case 'p':
             {
+                // not parsing planes anymore
+                continue;
                 float nx, ny, nz, d;
                 iss >> nx >> ny >> nz >> d;
                 Plane* p = new Plane(nx, ny, nz, d);
                 p->material = m;
                 surfaces.push_back(p);
-                break;
             }
 
             case 't':

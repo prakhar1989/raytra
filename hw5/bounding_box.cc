@@ -17,3 +17,13 @@ BoundingBox::BoundingBox(float x_min, float x_max,
     // -1 implies not assigned to a surface
     surface_index = -1;
 }
+
+int BoundingBox::get_surface_index()
+{
+    return surface_index;
+}
+
+void BoundingBox::set_surface_index(int idx)
+{
+    surface_index = idx;
+}

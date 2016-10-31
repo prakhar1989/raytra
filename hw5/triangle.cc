@@ -10,15 +10,17 @@ Triangle::Triangle(float ax, float ay, float az,
 
     normal = norm(cross(p2 - p1, p3 - p1));
 
+    /*
     box = new BoundingBox(
         std::min({ax, bx, cx}), std::max({ax, bx, cx}),
         std::min({ay, by, cy}), std::max({ay, by, cy}),
         std::min({az, bz, cz}), std::max({az, bz, cz})
     );
+     */
+    box = new BoundingBox(10, 20, 30, 40, 50, 60);
 }
 
-BoundingBox* Triangle::get_bounding_box() const
-{
+BoundingBox* Triangle::get_bounding_box() const {
     return box;
 }
 
@@ -63,4 +65,9 @@ float Triangle::get_intersection_point(const Ray &ray)
 bool Triangle::is_front_facing(const Ray &ray) const
 {
     return dot(normal, ray.dir) < 0;
+}
+
+void Triangle::print()
+{
+    std::cout << "Triangle" << std::endl;
 }

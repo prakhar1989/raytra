@@ -11,10 +11,12 @@ public:
     float get_intersection_point(const Ray& ray);
     vec get_normal(const point& p) const;
     bool is_front_facing(const Ray& ray) const;
+    BoundingBox* get_bounding_box() const { return box; }
 
 private:
     vec normal;
     float dist;
+    BoundingBox* box = nullptr;
 };
 
 

@@ -132,6 +132,14 @@
 		<Unit filename="/Users/prakhar/Documents/study/comp-graphics/assigns/hw5/Material.h">
 			<Option target="hw5"/>
 		</Unit>
+		<Unit filename="/Users/prakhar/Documents/study/comp-graphics/assigns/hw5/bounding_box.cc">
+			<Option target="hw5_test"/>
+			<Option target="hw5"/>
+		</Unit>
+		<Unit filename="/Users/prakhar/Documents/study/comp-graphics/assigns/hw5/bounding_box.h">
+			<Option target="hw5_test"/>
+			<Option target="hw5"/>
+		</Unit>
 		<Unit filename="/Users/prakhar/Documents/study/comp-graphics/assigns/hw5/camera.cc">
 			<Option target="hw5"/>
 		</Unit>
