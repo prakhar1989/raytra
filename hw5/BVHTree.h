@@ -6,13 +6,13 @@
 
 class BVHTree {
 public:
-    static BVHTree make_bvhtree (
+    static BVHTree* make_bvhtree (
             std::vector<BoundingBox*>::iterator begin,
             std::vector<BoundingBox*>::iterator end,
             SortDirection dir
     );
 private:
-    BoundingBox bbox;
+    BoundingBox *bbox = nullptr;
     BVHTree *left = nullptr;
     BVHTree *right = nullptr;
 };

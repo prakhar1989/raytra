@@ -180,6 +180,13 @@ int main(int argc, char** argv)
         bounding_boxes.push_back(box);
     }
 
+    // build the BVHTree
+    BVHTree* tree = BVHTree::make_bvhtree (
+            bounding_boxes.begin(),
+            bounding_boxes.end(),
+            SortDirection::X
+    );
+
     Array2D<Rgba> pixels;
     pixels.resizeErase(camera.pixelsY(), camera.pixelsX());
 

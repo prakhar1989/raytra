@@ -17,7 +17,8 @@ Triangle::Triangle(float ax, float ay, float az,
     );
 }
 
-BoundingBox* Triangle::get_bounding_box() const {
+BoundingBox* Triangle::get_bounding_box() const
+{
     return box;
 }
 

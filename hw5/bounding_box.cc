@@ -1,5 +1,19 @@
 #include "bounding_box.h"
 
+bool BoundingBox::box_compare_along_dir (
+        const BoundingBox* a,
+        const BoundingBox* b,
+        SortDirection direction
+)
+{
+    switch(direction)
+    {
+        case SortDirection::X : return a->center.x > b->center.x;
+        case SortDirection::Y : return a->center.y > b->center.y;
+        case SortDirection::Z : return a->center.z > b->center.z;
+    }
+}
+
 SortDirection get_next_direction(SortDirection dir)
 {
     switch(dir)

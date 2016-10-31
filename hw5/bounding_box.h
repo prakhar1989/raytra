@@ -18,6 +18,12 @@ public:
     int get_surface_index();
     void set_surface_index(int idx);
     bool does_intersect(const Ray& ray) const;
+
+    static bool box_compare_along_dir (
+            const BoundingBox* a,
+            const BoundingBox* b,
+            SortDirection direction
+    );
 private:
     float xmin, xmax, ymin, ymax, zmax, zmin;
     int surface_index;
