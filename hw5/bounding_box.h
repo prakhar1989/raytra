@@ -1,6 +1,9 @@
 #ifndef HW_BOUNDING_BOX_H
 #define HW_BOUNDING_BOX_H
+
 #include "raytra.h"
+#include "ray.h"
+#include <limits>
 
 class BoundingBox {
 public:
@@ -10,6 +13,7 @@ public:
     Raytra::point center;
     int get_surface_index();
     void set_surface_index(int idx);
+    bool does_intersect(const Ray& ray) const;
 private:
     float xmin, xmax, ymin, ymax, zmax, zmin;
     int surface_index;
