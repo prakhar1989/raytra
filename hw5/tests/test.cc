@@ -70,3 +70,21 @@ TEST_CASE("Sort Directions cycle correctly") {
     REQUIRE(get_next_direction(SortDirection::Y) == SortDirection::Z);
     REQUIRE(get_next_direction(SortDirection::Z) == SortDirection::X);
 }
+
+TEST_CASE("Bounding Boxes can be compared on axis correctly") {
+
+    BoundingBox box1(1, 2, 13, 14, 5, 6);
+    BoundingBox box2(10, 12, 3, 4, 50, 60);
+
+    REQUIRE(!BoundingBox::box_compare_along_dir (
+            &box1, &box2, SortDirection::X
+    ));
+
+    REQUIRE(BoundingBox::box_compare_along_dir (
+            &box1, &box2, SortDirection::Y
+    ));
+
+    REQUIRE(!BoundingBox::box_compare_along_dir (
+            &box1, &box2, SortDirection::Z
+    ));
+}
