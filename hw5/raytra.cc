@@ -2,6 +2,7 @@
 #include "exr.h"
 #include <fstream>
 #include "point_light.h"
+#include "bounding_box.h"
 #include <limits>
 #include "ProgressBar.hpp"
 
@@ -169,6 +170,8 @@ int main(int argc, char** argv)
     color ambient_light;
 
     Parser::parse_file(scene_file, surfaces, camera, lights, ambient_light);
+
+    vector<BoundingBox*> boundingBoxes;
 
     Array2D<Rgba> pixels;
     pixels.resizeErase(camera.pixelsY(), camera.pixelsX());

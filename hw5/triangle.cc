@@ -9,17 +9,21 @@ Triangle::Triangle(float ax, float ay, float az,
     p3 = {.x = cx, .y = cy, .z = cz};
 
     normal = norm(cross(p2 - p1, p3 - p1));
+
+    box = new BoundingBox(
+        std::min({ax, bx, cx}), std::max({ax, bx, cx}),
+        std::min({ay, by, cy}), std::max({ay, by, cy}),
+        std::min({az, bz, cz}), std::max({az, bz, cz})
+    );
 }
 
-void Triangle::print()
+BoundingBox* Triangle::get_bounding_box() const
 {
-    std::cout << "Triangle: p1 " << p1
-              << ", p2 " << p2
-              << ", p3 " << p3
-              << std::endl;
+    return box;
 }
 
-vec Triangle::get_normal(const point& p) const {
+vec Triangle::get_normal(const point& p) const
+{
     return normal;
 }
 

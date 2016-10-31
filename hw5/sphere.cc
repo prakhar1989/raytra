@@ -4,6 +4,7 @@ Sphere::Sphere(float x, float y, float z, float r)
 {
     center = { .x = x, .y = y, .z = z };
     radius = r;
+    box = new BoundingBox(x-r, x+r, y-r, y+r, z-r, z+r);
 }
 
 void Sphere::print()
@@ -37,4 +38,9 @@ float Sphere::get_intersection_point(const Ray &ray)
 vec Sphere::get_normal(const point &p) const
 {
     return norm(p - center);
+}
+
+BoundingBox* Sphere::get_bounding_box() const
+{
+    return box;
 }

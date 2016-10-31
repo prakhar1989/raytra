@@ -11,10 +11,12 @@ public:
     float get_intersection_point(const Ray& ray);
     vec get_normal(const point& p) const;
     bool is_front_facing(const Ray& ray) const { return true; }
+    BoundingBox* get_bounding_box() const;
 
 private:
     Raytra::point center;
     float radius;
+    BoundingBox* box;
 };
 
 
