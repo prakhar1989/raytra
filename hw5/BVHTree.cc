@@ -77,3 +77,10 @@ void BVHTree::print()
         right->print();
     std::cout << " )";
 }
+
+BVHTree::~BVHTree()
+{
+    delete left;
+    delete right;
+    delete bbox;
+}

@@ -20,6 +20,8 @@ public:
     BoundingBox(float x_min, float x_max,
                 float y_min, float y_max,
                 float z_min, float z_max);
+
+    virtual ~BoundingBox() {};
     Raytra::point center;
     int get_surface_index();
     void set_surface_index(int idx);

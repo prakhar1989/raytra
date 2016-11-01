@@ -13,6 +13,7 @@ public:
         Axis axis
     );
 
+    virtual ~BVHTree();
     int get_depth();
     void compute_intersections (
         const Ray& ray,

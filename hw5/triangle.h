@@ -8,7 +8,7 @@ public:
     Triangle(float ax, float ay, float az,
              float bx, float by, float bz,
              float cx, float cy, float cz);
-    virtual ~Triangle() { delete box; }
+    virtual ~Triangle() {}
     void print();
     vec get_normal(const point& p) const;
     float get_intersection_point(const Ray& ray);
