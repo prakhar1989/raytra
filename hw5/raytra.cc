@@ -13,13 +13,16 @@ using namespace std;
 const int MAX_REFLECTIONS = 20;
 
 void cleanup(vector<Surface*>& surfaces,
-             vector<PointLight*>& lights)
+             vector<PointLight*>& lights,
+             BVHTree* tree)
 {
     for (auto s: surfaces)
         delete s;
 
     for (auto l: lights)
         delete l;
+
+    delete tree;
 }
 
 /**
@@ -235,5 +238,5 @@ int main(int argc, char** argv)
     printf("\nImage generated: %s\n", output_file);
 
     /* cleanup up surfaces */
-    cleanup(surfaces, lights);
+    cleanup(surfaces, lights, tree);
 }

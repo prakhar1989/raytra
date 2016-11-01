@@ -9,7 +9,7 @@ Triangle::Triangle(float ax, float ay, float az,
 
     normal = norm(cross(p2 - p1, p3 - p1));
 
-    box = new BoundingBox(
+    box = new BoundingBox (
         fminf(ax, fminf(bx, cx)), fmaxf(ax, fmaxf(bx, cx)),
         fminf(ay, fminf(by, cy)), fmaxf(ay, fmaxf(by, cy)),
         fminf(az, fminf(bz, cz)), fmaxf(az, fmaxf(bz, cz))
