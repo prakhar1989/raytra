@@ -60,6 +60,9 @@ BVHTree* BVHTree::make_bvhtree (
     return node;
 }
 
+/**
+ * @return the depth of the tree
+ */
 int BVHTree::get_depth() const
 {
     if (bbox == nullptr)
@@ -78,9 +81,9 @@ int BVHTree::get_depth() const
  * inside the tree. To return the surfaces that the
  * ray intersects with, it mutates the passed in indices vector
  *
- *
  * @param ray - The ray with the intersections have to be computed
- * @param indices -
+ * @param indices - the vector which contains the indices on the
+ * completion of this function.
  */
 void BVHTree::compute_intersections (
         const Ray &ray,

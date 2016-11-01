@@ -88,3 +88,12 @@ TEST_CASE("Bounding Boxes can be compared on axis correctly") {
             &box1, &box2, Axis::Z
     ));
 }
+
+TEST_CASE("Bounding boxes correctly intersect with rays") {
+    BoundingBox box1(0, 10, 0, 10, 0, 10);
+    BoundingBox box2(-20, 20, -20, 20, -20, 20);
+    Ray ray({-10, -10, -10}, {1, 0, 0});
+
+    REQUIRE(!box1.does_intersect(ray));
+    REQUIRE(box2.does_intersect(ray));
+}
