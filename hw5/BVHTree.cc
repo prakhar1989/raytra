@@ -3,7 +3,7 @@
 BVHTree* BVHTree::make_bvhtree (
         const std::vector<BoundingBox *>::iterator begin,
         const std::vector<BoundingBox *>::iterator end,
-        Axis axis
+        const Axis axis
 )
 {
     if (std::distance(begin, end) == 0)
@@ -33,7 +33,7 @@ BVHTree* BVHTree::make_bvhtree (
     return node;
 }
 
-int BVHTree::get_depth()
+int BVHTree::get_depth() const
 {
     if (bbox == nullptr)
         return 0;
@@ -67,15 +67,15 @@ void BVHTree::compute_intersections (
         right->compute_intersections(ray, indices);
 }
 
-void BVHTree::print()
+void BVHTree::print() const
 {
-    std::cout << "( ";
+    std::cout << "< ";
     if (left != nullptr)
         left->print();
     std::cout << bbox->id;
     if (right != nullptr)
         right->print();
-    std::cout << " )";
+    std::cout << " >";
 }
 
 BVHTree::~BVHTree()

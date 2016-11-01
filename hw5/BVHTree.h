@@ -2,24 +2,27 @@
 #define HW_BVHTREE_H
 
 #include <vector>
-#include "bounding_box.h"
 #include <algorithm>
+#include "bounding_box.h"
 
 class BVHTree {
 public:
     static BVHTree* make_bvhtree (
-        std::vector<BoundingBox*>::iterator begin,
-        std::vector<BoundingBox*>::iterator end,
-        Axis axis
+        const std::vector<BoundingBox*>::iterator begin,
+        const std::vector<BoundingBox*>::iterator end,
+        const Axis axis
     );
 
     virtual ~BVHTree();
-    int get_depth();
     void compute_intersections (
         const Ray& ray,
         std::vector<int>& indices
     ) const;
-    void print();
+
+    /* useful for debugging */
+    void print() const;
+    int get_depth() const;
+
 private:
     BoundingBox *bbox = nullptr;
     BVHTree *left = nullptr;
