@@ -3,6 +3,7 @@
 
 #include <vector>
 #include "bounding_box.h"
+#include <algorithm>
 
 class BVHTree {
 public:

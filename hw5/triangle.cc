@@ -10,9 +10,9 @@ Triangle::Triangle(float ax, float ay, float az,
     normal = norm(cross(p2 - p1, p3 - p1));
 
     box = new BoundingBox(
-        std::min({ax, bx, cx}), std::max({ax, bx, cx}),
-        std::min({ay, by, cy}), std::max({ay, by, cy}),
-        std::min({az, bz, cz}), std::max({az, bz, cz})
+        fminf(ax, fminf(bx, cx)), fmaxf(ax, fmaxf(bx, cx)),
+        fminf(ay, fminf(by, cy)), fmaxf(ay, fmaxf(by, cy)),
+        fminf(az, fminf(bz, cz)), fmaxf(az, fmaxf(bz, cz))
     );
 }
 

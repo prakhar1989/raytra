@@ -33,22 +33,20 @@ bool BoundingBox::box_compare_along_dir (
         Axis axis
 )
 {
-    switch(axis)
-    {
-        case Axis::X : return a->center.x > b->center.x;
-        case Axis::Y : return a->center.y > b->center.y;
-        case Axis::Z : return a->center.z > b->center.z;
-    }
+    if (axis == Axis::X)
+        return a->center.x > b->center.x;
+    if (axis == Axis::Y)
+         return a->center.y > b->center.y;
+    return a->center.z > b->center.z;
 }
 
-Axis get_next_direction(Axis dir)
+Axis get_next_direction(Axis axis)
 {
-    switch(dir)
-    {
-        case Axis::X  : return Axis::Y;
-        case Axis::Y  : return Axis::Z;
-        case Axis::Z  : return Axis::X;
-    }
+    if (axis == Axis::X)
+        return Axis::Y;
+    if (axis == Axis::Y)
+        return Axis::Z;
+    return Axis::X;
 }
 
 BoundingBox::BoundingBox(float x_min, float x_max,
