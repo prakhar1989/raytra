@@ -8,8 +8,8 @@
 class BVHTree {
 public:
     static BVHTree* make_bvhtree (
-        const std::vector<BoundingBox*>::iterator begin,
-        const std::vector<BoundingBox*>::iterator end,
+        std::vector<BoundingBox*>::iterator begin,
+        std::vector<BoundingBox*>::iterator end,
         const Axis axis
     );
 
