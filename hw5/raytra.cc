@@ -58,7 +58,7 @@ pair<int, float> get_nearest_surface (
     if (tree != nullptr) {
         tree->compute_intersections(ray, surface_indices);
     } else {
-        for (int j = 0; j < surfaces.size(); j++)
+        for (unsigned int j = 0; j < surfaces.size(); j++)
             surface_indices.push_back(j);
     }
 
