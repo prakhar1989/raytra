@@ -44,20 +44,27 @@ bool does_file_exist(const string& filename)
 pair<int, float> get_nearest_surface (
         const Ray& ray,
         const vector<Surface*>& surfaces,
-        int incident_surface_index
+        int incident_surface_index,
+        BVHTree* tree
 )
 {
     float min_t = numeric_limits<float>::infinity();
     int min_index = -1;
 
-    for (int i = 0; i < (int) surfaces.size(); i++) {
-        float t = surfaces[i]->get_intersection_point(ray);
-        if (t > 0.001 && t < min_t &&
-                i != incident_surface_index) {
-            min_t = t;
-            min_index = i;
+    vector<int> surface_indices;
+    tree->compute_intersections(ray, surface_indices);
+
+    for (int index: surface_indices) {
+        if (index != incident_surface_index) {
+            Surface *s = surfaces[index];
+            float t = s->get_intersection_point(ray);
+            if (t > 0.001 && t < min_t) {
+                min_t = t;
+                min_index = index;
+            }
         }
     }
+
     return make_pair(min_index, min_t);
 }
 
@@ -79,7 +86,8 @@ color compute_spd (
     const vector<PointLight *> &lights,
     const color& ambient_light,
     int bounces_left,
-    int incident_surface_index
+    int incident_surface_index,
+    BVHTree* tree
 )
 {
     color spd = {.red = 0, .green = 0, .blue = 0};
@@ -88,7 +96,12 @@ color compute_spd (
         return spd;
 
     /* Step 2 - Ray Intersection */
-    pair<int, float> hit = get_nearest_surface(ray, surfaces, incident_surface_index);
+    pair<int, float> hit = get_nearest_surface(
+            ray,
+            surfaces,
+            incident_surface_index,
+            tree
+    );
     int surface_index = hit.first;
 
     /* no intersection - color black */
@@ -138,7 +151,7 @@ color compute_spd (
     /* recursively compute reflection shading */
     color reflected_spd = compute_spd(reflected_ray, surfaces,
                                      lights, ambient_light,
-                                     bounces_left - 1, surface_index);
+                                     bounces_left - 1, surface_index, tree);
 
     return {
         .red = spd.red + reflected_spd.red * reflective.red,
@@ -187,8 +200,6 @@ int main(int argc, char** argv)
             Axis::X
     );
 
-    std::cout << "Tree size: " << tree->get_depth() << std::endl;
-
     Array2D<Rgba> pixels;
     pixels.resizeErase(camera.pixelsY(), camera.pixelsX());
 
@@ -210,7 +221,7 @@ int main(int argc, char** argv)
 
             /* compute spectral power distribution */
             color c = compute_spd(ray, surfaces, lights, ambient_light,
-                                  MAX_REFLECTIONS, -1);
+                                  MAX_REFLECTIONS, -1, tree);
 
             /* finally assign shading to the pixel */
             Rgba &px = pixels[y][x];

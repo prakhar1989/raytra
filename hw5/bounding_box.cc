@@ -1,8 +1,8 @@
 #include "bounding_box.h"
 
 BoundingBox* BoundingBox::combine (
-    std::vector<BoundingBox *>::iterator first,
-    std::vector<BoundingBox *>::iterator last
+    const std::vector<BoundingBox *>::iterator first,
+    const std::vector<BoundingBox *>::iterator last
 )
 {
     float x_min = std::numeric_limits<float>::infinity();
@@ -66,6 +66,8 @@ BoundingBox::BoundingBox(float x_min, float x_max,
 
     // -1 implies not assigned to a surface
     surface_index = -1;
+
+    id = std::rand() % 100;
 }
 
 int BoundingBox::get_surface_index()
@@ -84,7 +86,7 @@ bool BoundingBox::does_intersect(const Ray &ray) const
     float hit_max = std::numeric_limits<float>::infinity();
 
     /* for X */
-    if (ray.dir.x == 0 && (ray.origin.x < xmin || ray.origin.x > xmax))
+    if ((ray.origin.x < xmin || ray.origin.x > xmax) && ray.dir.x == 0)
         return false;
 
     float tx_min = (xmin - ray.origin.x) / ray.dir.x;

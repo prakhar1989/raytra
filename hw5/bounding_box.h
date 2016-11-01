@@ -31,6 +31,7 @@ public:
             Axis direction
     );
     float xmin, xmax, ymin, ymax, zmax, zmin;
+    int id;
 private:
     int surface_index;
 };

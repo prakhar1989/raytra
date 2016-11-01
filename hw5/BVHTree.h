@@ -13,6 +13,11 @@ public:
     );
 
     int get_depth();
+    void compute_intersections (
+        const Ray& ray,
+        std::vector<int>& indices
+    );
+    void print();
 private:
     BoundingBox *bbox = nullptr;
     BVHTree *left = nullptr;
