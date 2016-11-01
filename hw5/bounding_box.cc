@@ -123,5 +123,5 @@ bool BoundingBox::does_intersect(const Ray &ray) const
 
     if (tz_min > hit_min) hit_min = tz_min;
     if (tz_max < hit_max) hit_max = tz_max;
-    return hit_min < hit_max;
+    return hit_min <= hit_max;
 }

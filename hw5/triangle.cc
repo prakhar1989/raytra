@@ -30,9 +30,6 @@ vec Triangle::get_normal(const point& p) const
 /* as derived using Cramer's rule */
 float Triangle::get_intersection_point(const Ray &ray)
 {
-    if (!box->does_intersect(ray))
-        return -1;
-
     float a = p1.x - p2.x; float b = p1.y - p2.y; float c = p1.z - p2.z;
     float d = p1.x - p3.x; float e = p1.y - p3.y; float f = p1.z - p3.z;
     float g = ray.dir.x; float h = ray.dir.y; float i = ray.dir.z;

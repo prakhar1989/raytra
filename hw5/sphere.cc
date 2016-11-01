@@ -14,9 +14,6 @@ void Sphere::print()
 
 float Sphere::get_intersection_point(const Ray &ray)
 {
-    if (!box->does_intersect(ray))
-        return -1;
-
     vec v = ray.origin - center;
 
     float d2 = dot(ray.dir, ray.dir);
