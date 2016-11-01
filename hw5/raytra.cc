@@ -186,7 +186,7 @@ int main(int argc, char** argv)
 
     // set up a collection of bounding boxes
     vector<BoundingBox*> bounding_boxes;
-    for (auto i = 0; i < surfaces.size(); i++) {
+    for (unsigned int i = 0; i < surfaces.size(); i++) {
         BoundingBox* box = surfaces[i]->get_bounding_box();
         box->set_surface_index(i);
         bounding_boxes.push_back(box);
