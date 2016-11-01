@@ -30,8 +30,8 @@ public:
             const BoundingBox* b,
             Axis direction
     );
-private:
     float xmin, xmax, ymin, ymax, zmax, zmin;
+private:
     int surface_index;
 };
 

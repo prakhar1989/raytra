@@ -14,8 +14,9 @@ BVHTree* BVHTree::make_bvhtree (
 
     auto mid = begin + (end-begin)/2;
     BVHTree* node = new BVHTree();
-    // node->bbox = combine(begin, end)
+    node->bbox = BoundingBox::combine(begin, end);
 
+    // partition
     std::nth_element(begin, mid, end,
          [&axis](const BoundingBox* a, const BoundingBox* b) -> bool {
              return BoundingBox::box_compare_along_dir(a, b, axis);

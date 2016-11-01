@@ -5,11 +5,26 @@ BoundingBox* BoundingBox::combine (
     std::vector<BoundingBox *>::iterator last
 )
 {
-    return nullptr;
-    /*
+    float x_min = std::numeric_limits<float>::infinity();
+    float y_min = std::numeric_limits<float>::infinity();
+    float z_min = std::numeric_limits<float>::infinity();
+
+    float x_max = -std::numeric_limits<float>::infinity();
+    float y_max = -std::numeric_limits<float>::infinity();
+    float z_max = -std::numeric_limits<float>::infinity();
+
     for (auto p = first; p != last; ++p) {
+        BoundingBox *&box = *p;
+        x_min = fminf(x_min, box->xmin);
+        y_min = fminf(y_min, box->ymin);
+        z_min = fminf(z_min, box->zmin);
+
+        x_max = fmaxf(x_max, box->xmax);
+        y_max = fmaxf(y_max, box->ymax);
+        z_max = fmaxf(z_max, box->zmax);
     }
-     */
+
+    return new BoundingBox(x_min, x_max, y_min, y_max, z_min, z_max);
 }
 
 bool BoundingBox::box_compare_along_dir (
