@@ -16,7 +16,7 @@ public:
     void compute_intersections (
         const Ray& ray,
         std::vector<int>& indices
-    );
+    ) const;
     void print();
 private:
     BoundingBox *bbox = nullptr;

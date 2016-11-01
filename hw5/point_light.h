@@ -5,6 +5,7 @@
 #include <vector>
 #include "ray.h"
 #include "surface.h"
+#include "BVHTree.h"
 
 using namespace Raytra;
 
@@ -13,28 +14,18 @@ public:
     PointLight() {};
     PointLight(float x, float y, float z, float r, float g, float b);
     color compute_shading (
-            const Surface* surface,
-            const Ray& camera_ray,
-            const Raytra::point& point
+        const Surface* surface,
+        const Ray& camera_ray,
+        const Raytra::point& point
     );
 
     bool is_occluded_by (
-            const Raytra::point& point,
-            const std::vector<Surface*>& surfaces
+        const Raytra::point& point,
+        const std::vector<Surface*>& surfaces,
+        const BVHTree* tree
     );
 
 private:
-    color diffuse_shading (
-            const Surface* surface,
-            const Raytra::point& point
-    );
-
-    color specular_shading (
-            const Surface* surface,
-            const Ray& camera_ray,
-            const Raytra::point& point
-    );
-
     point position;
     color c;
     float intensity;

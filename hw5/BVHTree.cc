@@ -38,8 +38,7 @@ int BVHTree::get_depth()
     if (bbox == nullptr)
         return 0;
 
-    std::cout << bbox->center << std::endl;
-
+    std::cout << "id: " << bbox->id << ", " << bbox->center << std::endl;
     if (left == nullptr && right == nullptr)
         return 1;
     int ld = left == nullptr ? 0 : left->get_depth();
@@ -50,7 +49,8 @@ int BVHTree::get_depth()
 void BVHTree::compute_intersections (
         const Ray &ray,
         std::vector<int>& indices
-) {
+) const
+{
     if (bbox == nullptr || !bbox->does_intersect(ray))
         return;
 

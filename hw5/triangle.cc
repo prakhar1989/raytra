@@ -2,8 +2,7 @@
 
 Triangle::Triangle(float ax, float ay, float az,
                    float bx, float by, float bz,
-                   float cx, float cy, float cz)
-{
+                   float cx, float cy, float cz) {
     p1 = {.x = ax, .y = ay, .z = az};
     p2 = {.x = bx, .y = by, .z = bz};
     p3 = {.x = cx, .y = cy, .z = cz};

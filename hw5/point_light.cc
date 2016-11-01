@@ -19,7 +19,8 @@ PointLight::PointLight(float x, float y, float z, float r, float g, float b)
  */
 bool PointLight::is_occluded_by (
         const Raytra::point& point,
-        const std::vector<Surface*>& surfaces
+        const std::vector<Surface*>& surfaces,
+        const BVHTree* tree
 )
 {
     /* to avoid shadow rounding errors */
@@ -32,14 +33,17 @@ bool PointLight::is_occluded_by (
     /* the t at which the light is located */
     float t_light = light_ray.offset(position);
 
+    std::vector<int> surface_indices;
+    tree->compute_intersections(light_ray, surface_indices);
+
     /* compute intersection of light ray with all surfaces */
-    for(auto surface: surfaces) {
+    for (int i: surface_indices) {
+        Surface* surface = surfaces[i];
         float t = surface->get_intersection_point(light_ray);
         if (t > surface_delta && t < t_light &&
-                fabsf(t) > surface_delta)
+            fabsf(t) > surface_delta)
             return true;
     }
-
     return false;
 }
 

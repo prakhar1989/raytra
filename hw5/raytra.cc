@@ -64,17 +64,6 @@ pair<int, float> get_nearest_surface (
         }
     }
 
-    /*
-    for (int i = 0; i < (int) surfaces.size(); i++) {
-        float t = surfaces[i]->get_intersection_point(ray);
-        if (t > 0.001 && t < min_t &&
-            i != incident_surface_index) {
-            min_t = t;
-            min_index = i;
-        }
-    }
-    */
-
     return make_pair(min_index, min_t);
 }
 
@@ -129,7 +118,7 @@ color compute_spd (
         /* compute shading only if the light to the surface
          * at the intersection point is not occluded by another surface
          */
-        if (!light->is_occluded_by(intersection_pt, surfaces)) {
+        if (!light->is_occluded_by(intersection_pt, surfaces, tree)) {
             c = light->compute_shading(surface, ray, intersection_pt);
             spd.red += c.red;
             spd.green += c.green;
