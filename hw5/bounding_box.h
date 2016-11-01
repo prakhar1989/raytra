@@ -4,13 +4,19 @@
 #include "raytra.h"
 #include "ray.h"
 #include <limits>
+#include <vector>
 
-enum class SortDirection { X, Y, Z };
+enum class Axis { X, Y, Z };
 
-SortDirection get_next_direction(SortDirection dir);
+Axis get_next_direction(Axis dir);
 
 class BoundingBox {
 public:
+    static BoundingBox* combine(
+            std::vector<BoundingBox*>::iterator first,
+            std::vector<BoundingBox*>::iterator last
+    );
+
     BoundingBox(float x_min, float x_max,
                 float y_min, float y_max,
                 float z_min, float z_max);
@@ -22,7 +28,7 @@ public:
     static bool box_compare_along_dir (
             const BoundingBox* a,
             const BoundingBox* b,
-            SortDirection direction
+            Axis direction
     );
 private:
     float xmin, xmax, ymin, ymax, zmax, zmin;

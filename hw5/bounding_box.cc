@@ -1,26 +1,38 @@
 #include "bounding_box.h"
 
+BoundingBox* BoundingBox::combine (
+    std::vector<BoundingBox *>::iterator first,
+    std::vector<BoundingBox *>::iterator last
+)
+{
+    return nullptr;
+    /*
+    for (auto p = first; p != last; ++p) {
+    }
+     */
+}
+
 bool BoundingBox::box_compare_along_dir (
         const BoundingBox* a,
         const BoundingBox* b,
-        SortDirection direction
+        Axis axis
 )
 {
-    switch(direction)
+    switch(axis)
     {
-        case SortDirection::X : return a->center.x > b->center.x;
-        case SortDirection::Y : return a->center.y > b->center.y;
-        case SortDirection::Z : return a->center.z > b->center.z;
+        case Axis::X : return a->center.x > b->center.x;
+        case Axis::Y : return a->center.y > b->center.y;
+        case Axis::Z : return a->center.z > b->center.z;
     }
 }
 
-SortDirection get_next_direction(SortDirection dir)
+Axis get_next_direction(Axis dir)
 {
     switch(dir)
     {
-        case SortDirection::X  : return SortDirection::Y;
-        case SortDirection::Y  : return SortDirection::Z;
-        case SortDirection::Z  : return SortDirection::X;
+        case Axis::X  : return Axis::Y;
+        case Axis::Y  : return Axis::Z;
+        case Axis::Z  : return Axis::X;
     }
 }
 

@@ -184,8 +184,10 @@ int main(int argc, char** argv)
     BVHTree* tree = BVHTree::make_bvhtree (
             bounding_boxes.begin(),
             bounding_boxes.end(),
-            SortDirection::X
+            Axis::X
     );
+
+    std::cout << "Tree size: " << tree->get_depth() << std::endl;
 
     Array2D<Rgba> pixels;
     pixels.resizeErase(camera.pixelsY(), camera.pixelsX());

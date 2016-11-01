@@ -7,10 +7,12 @@
 class BVHTree {
 public:
     static BVHTree* make_bvhtree (
-            std::vector<BoundingBox*>::iterator begin,
-            std::vector<BoundingBox*>::iterator end,
-            SortDirection dir
+        std::vector<BoundingBox*>::iterator begin,
+        std::vector<BoundingBox*>::iterator end,
+        Axis axis
     );
+
+    int get_depth();
 private:
     BoundingBox *bbox = nullptr;
     BVHTree *left = nullptr;
