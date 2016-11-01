@@ -54,16 +54,26 @@ pair<int, float> get_nearest_surface (
     vector<int> surface_indices;
     tree->compute_intersections(ray, surface_indices);
 
-    for (int index: surface_indices) {
-        if (index != incident_surface_index) {
-            Surface *s = surfaces[index];
-            float t = s->get_intersection_point(ray);
-            if (t > 0.001 && t < min_t) {
+    for (int i: surface_indices) {
+        if (i != incident_surface_index) {
+            float t = surfaces[i]->get_intersection_point(ray);
+            if (t > 0.001 && t < min_t ) {
                 min_t = t;
-                min_index = index;
+                min_index = i;
             }
         }
     }
+
+    /*
+    for (int i = 0; i < (int) surfaces.size(); i++) {
+        float t = surfaces[i]->get_intersection_point(ray);
+        if (t > 0.001 && t < min_t &&
+            i != incident_surface_index) {
+            min_t = t;
+            min_index = i;
+        }
+    }
+    */
 
     return make_pair(min_index, min_t);
 }
