@@ -55,7 +55,12 @@ pair<int, float> get_nearest_surface (
     int min_index = -1;
 
     vector<int> surface_indices;
-    tree->compute_intersections(ray, surface_indices);
+    if (tree != nullptr) {
+        tree->compute_intersections(ray, surface_indices);
+    } else {
+        for (int j = 0; j < surfaces.size(); j++)
+            surface_indices.push_back(j);
+    }
 
     for (int i: surface_indices) {
         if (i != incident_surface_index) {
@@ -174,6 +179,15 @@ int main(int argc, char** argv)
 
     string scene_file {argv[1]};
     char* output_file {argv[2]};
+    int flag_render_bboxes = -1;
+
+    if (argc == 4)
+        flag_render_bboxes = atoi(argv[3]);
+
+    if (flag_render_bboxes > 1 || flag_render_bboxes < -1) {
+        cerr << "error: invalid 3rd argument" << endl;
+        return -1;
+    }
 
     if (!does_file_exist(scene_file)) {
         cerr << "error: scene file doesn't exist" << endl;
@@ -195,12 +209,16 @@ int main(int argc, char** argv)
         bounding_boxes.push_back(box);
     }
 
-    // build the BVHTree
-    BVHTree* tree = BVHTree::make_bvhtree (
-            bounding_boxes.begin(),
-            bounding_boxes.end(),
-            Axis::X
-    );
+    BVHTree* tree = nullptr;
+
+    if (flag_render_bboxes != 0) {
+        // build the BVHTree
+        tree = BVHTree::make_bvhtree (
+                bounding_boxes.begin(),
+                bounding_boxes.end(),
+                Axis::X
+        );
+    }
 
     Array2D<Rgba> pixels;
     pixels.resizeErase(camera.pixelsY(), camera.pixelsX());
