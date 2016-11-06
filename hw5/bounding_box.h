@@ -25,7 +25,7 @@ public:
     Raytra::point center;
     int get_surface_index();
     void set_surface_index(int idx);
-    bool does_intersect(const Ray& ray) const;
+    float does_intersect(const Ray& ray) const;
 
     static bool box_compare_along_dir (
             const BoundingBox* a,

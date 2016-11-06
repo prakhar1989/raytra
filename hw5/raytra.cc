@@ -48,7 +48,8 @@ pair<int, float> get_nearest_surface (
         const Ray& ray,
         const vector<Surface*>& surfaces,
         int incident_surface_index,
-        BVHTree* tree
+        BVHTree* tree,
+        bool show_bounding_box
 )
 {
     float min_t = numeric_limits<float>::infinity();
@@ -60,6 +61,15 @@ pair<int, float> get_nearest_surface (
     } else {
         for (unsigned int j = 0; j < surfaces.size(); j++)
             surface_indices.push_back(j);
+    }
+
+    /*
+     * if bounding boxes are needed to be rendered,
+     * compute the min hit from the bounding boxes
+     * rather than return the t from surface intersections
+     */
+    if (show_bounding_box) {
+
     }
 
     for (int i: surface_indices) {
@@ -94,7 +104,8 @@ color compute_spd (
     const color& ambient_light,
     int bounces_left,
     int incident_surface_index,
-    BVHTree* tree
+    BVHTree* tree,
+    bool show_bounding_box
 )
 {
     color spd = {.red = 0, .green = 0, .blue = 0};
@@ -103,11 +114,12 @@ color compute_spd (
         return spd;
 
     /* Step 2 - Ray Intersection */
-    pair<int, float> hit = get_nearest_surface(
+    pair<int, float> hit = get_nearest_surface (
             ray,
             surfaces,
             incident_surface_index,
-            tree
+            tree,
+            show_bounding_box
     );
     int surface_index = hit.first;
 
@@ -158,7 +170,8 @@ color compute_spd (
     /* recursively compute reflection shading */
     color reflected_spd = compute_spd(reflected_ray, surfaces,
                                      lights, ambient_light,
-                                     bounces_left - 1, surface_index, tree);
+                                     bounces_left - 1, surface_index,
+                                     tree, show_bounding_box);
 
     return {
         .red = spd.red + reflected_spd.red * reflective.red,
@@ -188,6 +201,8 @@ int main(int argc, char** argv)
         cerr << "error: invalid 3rd argument" << endl;
         return -1;
     }
+
+    bool show_bounding_box = (flag_render_bboxes == 1);
 
     if (!does_file_exist(scene_file)) {
         cerr << "error: scene file doesn't exist" << endl;
@@ -241,7 +256,8 @@ int main(int argc, char** argv)
 
             /* compute spectral power distribution */
             color c = compute_spd(ray, surfaces, lights, ambient_light,
-                                  MAX_REFLECTIONS, -1, tree);
+                                  MAX_REFLECTIONS, -1,
+                                  tree, show_bounding_box);
 
             /* finally assign shading to the pixel */
             Rgba &px = pixels[y][x];

@@ -90,7 +90,7 @@ void BVHTree::compute_intersections (
         std::vector<int>& indices
 ) const
 {
-    if (bbox == nullptr || !bbox->does_intersect(ray))
+    if (bbox == nullptr || bbox->does_intersect(ray) < 0)
         return;
 
     // on the leaf node
