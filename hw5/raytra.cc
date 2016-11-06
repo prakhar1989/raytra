@@ -63,18 +63,19 @@ pair<int, float> get_nearest_surface (
             surface_indices.push_back(j);
     }
 
-    /*
-     * if bounding boxes are needed to be rendered,
-     * compute the min hit from the bounding boxes
-     * rather than return the t from surface intersections
-     */
-    if (show_bounding_box) {
-
-    }
-
     for (int i: surface_indices) {
         if (i != incident_surface_index) {
-            float t = surfaces[i]->get_intersection_point(ray);
+            float t;
+            if (show_bounding_box) {
+                /*
+                 * if bounding boxes are needed to be rendered,
+                 * compute the min hit from the bounding boxes
+                 * rather than return the t from surface intersections
+                 */
+                t = surfaces[i]->get_bounding_box()->get_intersection_point(ray);
+            } else {
+                t = surfaces[i]->get_intersection_point(ray);
+            }
             if (t > 0.001 && t < min_t ) {
                 min_t = t;
                 min_index = i;
@@ -138,14 +139,19 @@ color compute_spd (
         /* compute shading only if the light to the surface
          * at the intersection point is not occluded by another surface
          */
-        if (!light->is_occluded_by(intersection_pt, surfaces, tree)) {
-            c = light->compute_shading(surface, ray, intersection_pt);
+        if (!light->is_occluded_by(intersection_pt,
+                                   surfaces,
+                                   tree,
+                                   show_bounding_box)) {
+            c = light->compute_shading(surface, ray,
+                    intersection_pt, show_bounding_box);
             spd.red += c.red;
             spd.green += c.green;
             spd.blue += c.blue;
         }
     }
 
+    /** AMBIENT LIGHTING COMPUTATION */
     if (incident_surface_index == -1) {
         // add ambient only once. this condition ensures
         // that the ambient light is added only to the primary
@@ -155,15 +161,19 @@ color compute_spd (
         spd.blue += surface->material->diffuse.blue * ambient_light.blue;
     }
 
+    /** REFLECTIVE LIGHTING COMPUTATION */
     color reflective = surface->material->ideal_specular;
 
     /* not reflective surface; return */
     if (!surface->material->is_reflective() ||
-            !surface->is_front_facing(ray))
+            (!surface->is_front_facing(ray) && !show_bounding_box))
         return spd;
 
     /* compute the reflected ray */
-    vec N = surface->get_normal(intersection_pt);
+    vec N = show_bounding_box
+            ? surface->get_bounding_box()->get_normal(intersection_pt)
+            : surface->get_normal(intersection_pt);
+
     vec reflect_dir = norm(ray.dir + (-2 * dot(ray.dir, N) * N));
     Ray reflected_ray(intersection_pt, reflect_dir);
 

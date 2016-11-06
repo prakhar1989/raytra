@@ -5,6 +5,7 @@
 #include "ray.h"
 #include <limits>
 #include <vector>
+#include "assert.h"
 
 enum class Axis { X, Y, Z };
 
@@ -25,7 +26,9 @@ public:
     Raytra::point center;
     int get_surface_index();
     void set_surface_index(int idx);
-    float does_intersect(const Ray& ray) const;
+    float get_intersection_point(const Ray &ray) const;
+
+    vec get_normal(const point& p) const;
 
     static bool box_compare_along_dir (
             const BoundingBox* a,

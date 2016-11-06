@@ -94,6 +94,6 @@ TEST_CASE("Bounding boxes correctly intersect with rays") {
     BoundingBox box2(-20, 20, -20, 20, -20, 20);
     Ray ray({-10, -10, -10}, {1, 0, 0});
 
-    REQUIRE(!box1.does_intersect(ray));
-    REQUIRE(box2.does_intersect(ray));
+    REQUIRE(box1.get_intersection_point(ray) < 0);
+    REQUIRE(box2.get_intersection_point(ray) >= 0);
 }

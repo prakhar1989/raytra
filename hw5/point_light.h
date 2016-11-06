@@ -16,14 +16,14 @@ public:
     color compute_shading (
         const Surface* surface,
         const Ray& camera_ray,
-        const Raytra::point& point
+        const Raytra::point& point,
+        bool show_bounding_box
     );
 
-    bool is_occluded_by (
-        const Raytra::point& point,
-        const std::vector<Surface*>& surfaces,
-        const BVHTree* tree
-    );
+    bool is_occluded_by(const Raytra::point &point,
+                        const std::vector<Surface *> &surfaces,
+                        const BVHTree *tree,
+                        bool show_bounding_box);
 
 private:
     point position;

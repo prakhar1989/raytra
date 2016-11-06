@@ -17,10 +17,11 @@ PointLight::PointLight(float x, float y, float z, float r, float g, float b)
  * to be calculated
  * @return true to indicate if the surface is occluded.
  */
-bool PointLight::is_occluded_by (
-        const Raytra::point& point,
-        const std::vector<Surface*>& surfaces,
-        const BVHTree* tree
+bool PointLight::is_occluded_by(
+        const Raytra::point &point,
+        const std::vector<Surface *> &surfaces,
+        const BVHTree *tree,
+        bool show_bounding_box
 )
 {
     /* to avoid shadow rounding errors */
@@ -43,10 +44,14 @@ bool PointLight::is_occluded_by (
 
     /* compute intersection of light ray with all surfaces */
     for (int i: surface_indices) {
-        Surface* surface = surfaces[i];
-        float t = surface->get_intersection_point(light_ray);
-        if (t > surface_delta && t < t_light &&
-            fabsf(t) > surface_delta)
+        float t;
+        if (show_bounding_box) {
+            BoundingBox *bbox = surfaces[i]->get_bounding_box();
+            t = bbox->get_intersection_point(light_ray);
+        } else {
+            t = surfaces[i]->get_intersection_point(light_ray);
+        }
+        if (t > surface_delta && t < t_light && fabsf(t) > surface_delta)
             return true;
     }
     return false;
@@ -64,10 +69,17 @@ bool PointLight::is_occluded_by (
 color PointLight::compute_shading (
         const Surface *surface,
         const Ray &camera_ray,
-        const Raytra::point &point
+        const Raytra::point &point,
+        bool show_bounding_box
 )
 {
-    vec surface_normal = surface->get_normal(point);
+    vec surface_normal;
+
+    if (show_bounding_box)
+        surface_normal = surface->get_bounding_box()->get_normal(point);
+    else
+        surface_normal = surface->get_normal(point);
+
     const vec light_ray = norm(position - point);
     const vec bisector = norm(-camera_ray.dir + light_ray);
     const float d2 = dist2(position, point);

@@ -78,7 +78,30 @@ void BoundingBox::set_surface_index(int idx)
     surface_index = idx;
 }
 
-float BoundingBox::does_intersect(const Ray &ray) const
+vec BoundingBox::get_normal(const point& p) const
+{
+    if (p.x == xmin)
+        return { -1, 0, 0 };
+
+    if (p.x == xmax)
+        return { 1, 0, 0 };
+
+    if (p.y == ymin)
+        return { 0, -1, 0 };
+
+    if (p.y == ymax)
+        return { 0, 1, 0 };
+
+    if (p.z == zmax)
+        return { 0, 0, 1};
+
+    if (p.z == zmin)
+        return { 0, 0, -1};
+
+    return { -1, -1, -1 };
+}
+
+float BoundingBox::get_intersection_point(const Ray &ray) const
 {
     float hit_min = 0;
     float hit_max = std::numeric_limits<float>::infinity();
