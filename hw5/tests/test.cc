@@ -66,9 +66,9 @@ TEST_CASE("triangles have correct normals") {
 }
 
 TEST_CASE("Sort Directions cycle correctly") {
-    REQUIRE(get_next_direction(Axis::X) == Axis::Y);
-    REQUIRE(get_next_direction(Axis::Y) == Axis::Z);
-    REQUIRE(get_next_direction(Axis::Z) == Axis::X);
+    REQUIRE(next_axis(Axis::X) == Axis::Y);
+    REQUIRE(next_axis(Axis::Y) == Axis::Z);
+    REQUIRE(next_axis(Axis::Z) == Axis::X);
 }
 
 TEST_CASE("Bounding Boxes can be compared on axis correctly") {
@@ -76,15 +76,15 @@ TEST_CASE("Bounding Boxes can be compared on axis correctly") {
     BoundingBox box1(1, 2, 13, 14, 5, 6);
     BoundingBox box2(10, 12, 3, 4, 50, 60);
 
-    REQUIRE(!BoundingBox::box_compare_along_dir (
+    REQUIRE(!BoundingBox::compare_along_axis(
             &box1, &box2, Axis::X
     ));
 
-    REQUIRE(BoundingBox::box_compare_along_dir (
+    REQUIRE(BoundingBox::compare_along_axis(
             &box1, &box2, Axis::Y
     ));
 
-    REQUIRE(!BoundingBox::box_compare_along_dir (
+    REQUIRE(!BoundingBox::compare_along_axis(
             &box1, &box2, Axis::Z
     ));
 }

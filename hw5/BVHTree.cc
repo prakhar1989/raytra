@@ -46,7 +46,7 @@ BVHTree* BVHTree::make_bvhtree (
     auto mid = begin + std::distance(begin, end)/2;
     std::nth_element(begin, mid, end,
          [&axis](const BoundingBox* a, const BoundingBox* b) -> bool {
-             return BoundingBox::box_compare_along_dir(a, b, axis);
+             return BoundingBox::compare_along_axis(a, b, axis);
          }
     );
 
@@ -54,7 +54,7 @@ BVHTree* BVHTree::make_bvhtree (
      * recursively construct the left and right subtrees
      * and pass the next axis as the sort direction
      */
-    Axis nextDir = get_next_direction(axis);
+    Axis nextDir = next_axis(axis);
     node->left = make_bvhtree(begin, mid, nextDir);
     node->right = make_bvhtree(mid, end, nextDir);
     return node;

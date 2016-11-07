@@ -1,5 +1,9 @@
 #include "bounding_box.h"
 
+/**
+ * Combines two bounding boxes to return a new bounding box
+ * that encompasses both of them.
+ */
 BoundingBox* BoundingBox::combine (
     const std::vector<BoundingBox *>::iterator first,
     const std::vector<BoundingBox *>::iterator last
@@ -27,9 +31,14 @@ BoundingBox* BoundingBox::combine (
     return new BoundingBox(x_min, x_max, y_min, y_max, z_min, z_max);
 }
 
-bool BoundingBox::box_compare_along_dir (
-        const BoundingBox* a,
-        const BoundingBox* b,
+/**
+ * Compares two bounding boxes along an axis and returns
+ * true if the former lies further away from the origin than
+ * the latter
+ */
+bool BoundingBox::compare_along_axis(
+        const BoundingBox *a,
+        const BoundingBox *b,
         Axis axis
 )
 {
@@ -40,7 +49,11 @@ bool BoundingBox::box_compare_along_dir (
     return a->center.z > b->center.z;
 }
 
-Axis get_next_direction(Axis axis)
+/**
+ * Given a direction, returns the next direction
+ * Useful for cycling through the directions
+ */
+Axis next_axis(Axis axis)
 {
     if (axis == Axis::X)
         return Axis::Y;
@@ -49,16 +62,18 @@ Axis get_next_direction(Axis axis)
     return Axis::X;
 }
 
+/**
+ * Returns a new bounding box that has a gauranteed thickness
+ * and that is unassigned to a surface
+ */
 BoundingBox::BoundingBox(float x_min, float x_max,
                          float y_min, float y_max,
                          float z_min, float z_max)
 {
-    xmin = x_min; xmax = x_max; ymin = y_min; ymax = y_max;
-    zmin = z_min; zmax = z_max;
+    xmin = x_min; xmax = x_max; ymin = y_min;
+    ymax = y_max; zmin = z_min; zmax = z_max;
 
-    /*
-     * give a thickness to the bounding box
-     */
+    /* give a thickness to the bounding box */
     if (xmax == xmin)
         xmax += 0.01;
 
@@ -74,22 +89,15 @@ BoundingBox::BoundingBox(float x_min, float x_max,
             .z = (zmin + zmax) / 2
     };
 
-    // -1 implies not assigned to a surface
+    /* at init, do not assign it to any surface */
     surface_index = -1;
 
     id = std::rand() % 100;
 }
 
-int BoundingBox::get_surface_index()
-{
-    return surface_index;
-}
-
-void BoundingBox::set_surface_index(int idx)
-{
-    surface_index = idx;
-}
-
+/**
+ * Returns the normal at the point
+ */
 vec BoundingBox::get_normal(const point& p) const
 {
     if (approx_equal(p.x, xmin))
@@ -113,6 +121,10 @@ vec BoundingBox::get_normal(const point& p) const
     return { -1, -1, -1 };
 }
 
+/**
+ * Returns the parameter at the intersection point of a bounding box
+ * with a incident ray if it intersects or -1 otherwise
+ */
 float BoundingBox::get_intersection_point(const Ray &ray) const
 {
     float hit_min = 0;

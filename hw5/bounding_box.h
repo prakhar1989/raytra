@@ -5,17 +5,20 @@
 #include "ray.h"
 #include <limits>
 #include <vector>
-#include "assert.h"
 
 enum class Axis { X, Y, Z };
-
-Axis get_next_direction(Axis dir);
+Axis next_axis(Axis dir);
 
 class BoundingBox {
 public:
-    static BoundingBox* combine(
-            std::vector<BoundingBox*>::iterator first,
-            std::vector<BoundingBox*>::iterator last
+    /* static functions */
+    static BoundingBox* combine (
+            const std::vector<BoundingBox*>::iterator first,
+            const std::vector<BoundingBox*>::iterator last
+    );
+
+    static bool compare_along_axis (
+            const BoundingBox*, const BoundingBox*, Axis
     );
 
     BoundingBox(float x_min, float x_max,
@@ -23,18 +26,15 @@ public:
                 float z_min, float z_max);
 
     virtual ~BoundingBox() {};
-    Raytra::point center;
-    int get_surface_index();
-    void set_surface_index(int idx);
-    float get_intersection_point(const Ray &ray) const;
 
+    /* getter/setter for surface index */
+    int get_surface_index() { return surface_index; }
+    void set_surface_index(int idx) { surface_index = idx; }
+
+    float get_intersection_point(const Ray &ray) const;
     vec get_normal(const point& p) const;
 
-    static bool box_compare_along_dir (
-            const BoundingBox* a,
-            const BoundingBox* b,
-            Axis direction
-    );
+    Raytra::point center;
     float xmin, xmax, ymin, ymax, zmax, zmin;
     int id;
 private:
