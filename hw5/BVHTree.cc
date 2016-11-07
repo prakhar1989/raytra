@@ -16,9 +16,7 @@ BVHTree* BVHTree::make_bvhtree (
         const Axis axis
 )
 {
-    /*
-     * testing the base case
-     */
+    /* testing the base case */
     if (std::distance(begin, end) == 0)
         return nullptr;
 
@@ -54,9 +52,8 @@ BVHTree* BVHTree::make_bvhtree (
      * recursively construct the left and right subtrees
      * and pass the next axis as the sort direction
      */
-    Axis nextDir = next_axis(axis);
-    node->left = make_bvhtree(begin, mid, nextDir);
-    node->right = make_bvhtree(mid, end, nextDir);
+    node->left = make_bvhtree(begin, mid, next_axis(axis));
+    node->right = make_bvhtree(mid, end, next_axis(axis));
     return node;
 }
 

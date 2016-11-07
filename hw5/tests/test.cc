@@ -2,6 +2,7 @@
 #include "catch.hpp"
 #include "../raytra.h"
 #include "../triangle.h"
+#include "../BVHTree.h"
 
 using namespace Raytra;
 
@@ -103,4 +104,20 @@ TEST_CASE("Bounding boxes have finite thickness") {
     Ray ray({-1, 0, 0}, {1, 0, 0});
 
     REQUIRE(box1.get_intersection_point(ray) >= 0);
+}
+
+TEST_CASE("BVH Trees are built correctly") {
+    // two boxes lying on the x axis
+    BoundingBox box1{-3, -1, 0, 2, 0, 2};
+    BoundingBox box2{1, 3, 0, 2, 0, 2};
+
+    std::vector<BoundingBox*> bboxes;
+    bboxes.push_back(&box1);
+    bboxes.push_back(&box2);
+
+    BVHTree *tree = BVHTree::make_bvhtree (
+            bboxes.begin(), bboxes.end(), Axis::X
+    );
+
+    REQUIRE(tree->get_depth() == 2);
 }
