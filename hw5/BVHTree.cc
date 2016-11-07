@@ -87,7 +87,7 @@ int BVHTree::get_depth() const
  */
 void BVHTree::compute_intersections (
         const Ray &ray,
-        std::vector<int>& indices
+        std::vector<unsigned int>& indices
 ) const
 {
     if (bbox == nullptr || bbox->get_intersection_point(ray) < 0)

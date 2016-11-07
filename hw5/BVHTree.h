@@ -16,7 +16,7 @@ public:
     virtual ~BVHTree();
     void compute_intersections (
         const Ray& ray,
-        std::vector<int>& indices
+        std::vector<unsigned int>& indices
     ) const;
 
     /* useful for debugging */

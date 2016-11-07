@@ -55,7 +55,7 @@ pair<int, float> get_nearest_surface (
     float min_t = numeric_limits<float>::infinity();
     int min_index = -1;
 
-    vector<int> surface_indices;
+    vector<unsigned int> surface_indices;
     if (tree != nullptr) {
         tree->compute_intersections(ray, surface_indices);
     } else {
@@ -63,23 +63,21 @@ pair<int, float> get_nearest_surface (
             surface_indices.push_back(j);
     }
 
-    for (int i: surface_indices) {
-        if (i != incident_surface_index) {
-            float t;
-            if (show_bounding_box) {
-                /*
-                 * if bounding boxes are needed to be rendered,
-                 * compute the min hit from the bounding boxes
-                 * rather than return the t from surface intersections
-                 */
-                t = surfaces[i]->get_bounding_box()->get_intersection_point(ray);
-            } else {
-                t = surfaces[i]->get_intersection_point(ray);
-            }
-            if (t > 0.001 && t < min_t ) {
-                min_t = t;
-                min_index = i;
-            }
+    for (auto i: surface_indices) {
+        float t;
+        if (show_bounding_box) {
+            /*
+             * if bounding boxes are needed to be rendered,
+             * compute the min hit from the bounding boxes
+             * rather than return the t from surface intersections
+             */
+            t = surfaces[i]->get_bounding_box()->get_intersection_point(ray);
+        } else {
+            t = surfaces[i]->get_intersection_point(ray);
+        }
+        if (t > 0.001 && t < min_t ) {
+            min_t = t;
+            min_index = i;
         }
     }
 
