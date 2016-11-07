@@ -97,3 +97,10 @@ TEST_CASE("Bounding boxes correctly intersect with rays") {
     REQUIRE(box1.get_intersection_point(ray) < 0);
     REQUIRE(box2.get_intersection_point(ray) >= 0);
 }
+
+TEST_CASE("Bounding boxes have finite thickness") {
+    BoundingBox box1{0, 0, 0, 0, 0, 0};
+    Ray ray({-1, 0, 0}, {1, 0, 0});
+
+    REQUIRE(box1.get_intersection_point(ray) >= 0);
+}

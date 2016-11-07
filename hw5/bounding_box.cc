@@ -92,6 +92,7 @@ BoundingBox::BoundingBox(float x_min, float x_max,
     /* at init, do not assign it to any surface */
     surface_index = -1;
 
+    /* set a random id to the box, useful for debugging */
     id = std::rand() % 100;
 }
 
@@ -118,6 +119,7 @@ vec BoundingBox::get_normal(const point& p) const
     if (approx_equal(p.z, zmin))
         return { 0, 0, -1};
 
+    /* ideally: this should not be reachable */
     return { -1, -1, -1 };
 }
 
