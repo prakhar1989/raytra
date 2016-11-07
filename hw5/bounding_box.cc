@@ -80,22 +80,22 @@ void BoundingBox::set_surface_index(int idx)
 
 vec BoundingBox::get_normal(const point& p) const
 {
-    if (p.x == xmin)
+    if (approx_equal(p.x, xmin))
         return { -1, 0, 0 };
 
-    if (p.x == xmax)
+    if (approx_equal(p.x, xmax))
         return { 1, 0, 0 };
 
-    if (p.y == ymin)
+    if (approx_equal(p.y, ymin))
         return { 0, -1, 0 };
 
-    if (p.y == ymax)
+    if (approx_equal(p.y, ymax))
         return { 0, 1, 0 };
 
-    if (p.z == zmax)
+    if (approx_equal(p.z, zmax))
         return { 0, 0, 1};
 
-    if (p.z == zmin)
+    if (approx_equal(p.z, zmin))
         return { 0, 0, -1};
 
     return { -1, -1, -1 };

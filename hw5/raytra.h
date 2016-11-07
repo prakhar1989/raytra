@@ -17,6 +17,11 @@ namespace Raytra {
         float x, y, z;
     };
 
+    inline bool approx_equal(float a, float b)
+    {
+        return fabsf(a - b) <= 0.001;
+    }
+
     // returns true if a string is all whitespaces
     inline bool is_blank(const std::string& line)
     {
