@@ -172,3 +172,12 @@ float BoundingBox::get_intersection_point(const Ray &ray) const
     if (hit_min > hit_max) return -1;
     return hit_min;
 }
+
+/**
+ * Prints the id and the center of the bounding box.
+ * Useful for debugging.
+ */
+void BoundingBox::print()
+{
+    std::cout << "id: " << id << ", " << center << std::endl;
+}

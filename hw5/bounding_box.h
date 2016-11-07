@@ -11,7 +11,6 @@ Axis next_axis(Axis dir);
 
 class BoundingBox {
 public:
-    /* static functions */
     static BoundingBox* combine (
             const std::vector<BoundingBox*>::iterator first,
             const std::vector<BoundingBox*>::iterator last
@@ -34,10 +33,11 @@ public:
     float get_intersection_point(const Ray &ray) const;
     vec get_normal(const point& p) const;
 
-    Raytra::point center;
+    void print();
+private:
     float xmin, xmax, ymin, ymax, zmax, zmin;
     int id;
-private:
+    Raytra::point center;
     int surface_index;
 };
 

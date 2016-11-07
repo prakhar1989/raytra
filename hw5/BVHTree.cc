@@ -68,7 +68,6 @@ int BVHTree::get_depth() const
     if (bbox == nullptr)
         return 0;
 
-    std::cout << "id: " << bbox->id << ", " << bbox->center << std::endl;
     if (left == nullptr && right == nullptr)
         return 1;
     int ld = left == nullptr ? 0 : left->get_depth();
@@ -114,7 +113,7 @@ void BVHTree::print() const
     std::cout << "< ";
     if (left != nullptr)
         left->print();
-    std::cout << bbox->id;
+    bbox->print();
     if (right != nullptr)
         right->print();
     std::cout << " >";
