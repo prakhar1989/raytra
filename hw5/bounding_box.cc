@@ -56,6 +56,18 @@ BoundingBox::BoundingBox(float x_min, float x_max,
     xmin = x_min; xmax = x_max; ymin = y_min; ymax = y_max;
     zmin = z_min; zmax = z_max;
 
+    /*
+     * give a thickness to the bounding box
+     */
+    if (xmax == xmin)
+        xmax += 0.01;
+
+    if (ymax == ymin)
+        ymax += 0.01;
+
+    if (zmax == zmin)
+        zmax += 0.01;
+
     center = {
             .x = (xmin + xmax) / 2,
             .y = (ymin + ymax) / 2,
