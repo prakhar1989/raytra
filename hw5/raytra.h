@@ -25,7 +25,7 @@ namespace Raytra {
     // returns true if a string is all whitespaces
     inline bool is_blank(const std::string& line)
     {
-        return line.find_first_not_of(' ') == std::string::npos;
+        return line.find_first_not_of("\n\t ") == std::string::npos;
     }
 
     /* --- VECTOR OPERATIONS ----- */

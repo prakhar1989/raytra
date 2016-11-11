@@ -26,12 +26,18 @@ int Parser::parse_file (
     int camera_count = 0;
     int light_count = 0;
     int ambient_count = 0;
+    int line_number = 0;
 
     for (string line; getline(in, line);) {
-        if (line.empty() || is_blank(line))
-            continue;
 
-        char cmd;
+        ++line_number;
+
+        if (line.empty() || is_blank(line)) {
+            std::cout << "blank line at: " << line_number << std::endl;
+            continue;
+        }
+
+        char cmd {'\0'};
 
         istringstream iss(line);
         iss >> cmd;

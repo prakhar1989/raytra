@@ -8,6 +8,8 @@ using namespace Raytra;
 
 TEST_CASE ("detect blank strings correctly") {
     REQUIRE(!is_blank("asdad"));
+    REQUIRE(is_blank("\n"));
+    REQUIRE(is_blank("\t"));
     REQUIRE(is_blank("  "));
 }
 
