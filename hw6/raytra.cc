@@ -190,27 +190,28 @@ color compute_spd (
 
 int main(int argc, char** argv)
 {
-    if (argc < 3) {
-        cerr << "USAGE: raytra <scene_file> <output_file>" << endl;
+    if (argc < 4) {
+        cerr << "USAGE: raytra <scene_file> <output_file> <ray samples>" << endl;
         return -1;
     }
 
-    auto version = "0.3";
+    auto version = "0.5";
     printf("Raytra v%s\n", version);
 
     string scene_file {argv[1]};
     char* output_file {argv[2]};
-    int flag_render_bboxes = -1;
 
-    if (argc == 4)
-        flag_render_bboxes = atoi(argv[3]);
+    unsigned int ray_samples;
 
-    if (flag_render_bboxes > 1 || flag_render_bboxes < -1) {
-        cerr << "error: invalid 3rd argument" << endl;
-        return -1;
+    if (argc == 4) {
+        int s = atoi(argv[3]);
+        if (s < 1)
+            cerr << "error: sample count should be positive" << endl;
+
+        ray_samples = (unsigned int) (s);
     }
 
-    bool show_bounding_box = (flag_render_bboxes == 1);
+    bool show_bounding_box = false;
 
     if (!does_file_exist(scene_file)) {
         cerr << "error: scene file doesn't exist" << endl;
@@ -234,25 +235,21 @@ int main(int argc, char** argv)
 
     BVHTree* tree = nullptr;
 
-    if (flag_render_bboxes != 0) {
-        // build the BVHTree
-        tree = BVHTree::make_bvhtree (
-                bounding_boxes.begin(),
-                bounding_boxes.end(),
-                Axis::X
-        );
-    }
+    // build the BVHTree
+    tree = BVHTree::make_bvhtree (
+            bounding_boxes.begin(),
+            bounding_boxes.end(),
+            Axis::X
+    );
 
     Array2D<Rgba> pixels;
     pixels.resizeErase(camera.pixelsY(), camera.pixelsX());
 
     ProgressBar progressBar(camera.pixelsX() * camera.pixelsY(), 70);
 
-    unsigned int PRIMARY_RAY_SAMPLES = 2;
-    auto n2 = PRIMARY_RAY_SAMPLES * PRIMARY_RAY_SAMPLES;
-
     cout << "Rendering..." << endl;
 
+    auto n2 = ray_samples * ray_samples;
     for (int y = 0; y < camera.pixelsY(); y++) {
         for (int x = 0; x < camera.pixelsX(); x++) {
 
@@ -262,11 +259,11 @@ int main(int argc, char** argv)
 
             color c = {0, 0, 0};
 
-            for (unsigned int i = 0; i < PRIMARY_RAY_SAMPLES; i++) {
-                for (unsigned int j = 0; j < PRIMARY_RAY_SAMPLES; j++) {
+            for (unsigned int i = 0; i < ray_samples; i++) {
+                for (unsigned int j = 0; j < ray_samples; j++) {
 
                     /* step 1: generate ray */
-                    vec dir = camera.ray_direction(x, y, i, j, PRIMARY_RAY_SAMPLES);
+                    vec dir = camera.ray_direction(x, y, i, j, ray_samples);
                     point origin = camera.get_center();
                     Ray ray(origin, dir);
 
