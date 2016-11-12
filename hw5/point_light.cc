@@ -86,7 +86,7 @@ color PointLight::compute_shading (
 
 
     color kd, ks;
-    if (surface->is_front_facing(camera_ray)) {
+    if (surface->is_front_facing(camera_ray) || show_bounding_box) {
         kd = surface->material->diffuse;
         ks = surface->material->specular;
     } else {
