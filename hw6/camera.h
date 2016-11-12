@@ -15,7 +15,10 @@ public:
             float d, float iw, float ih, int pw, int ph);
 
     void copy_to_camera(Camera& cam);
-    vec ray_direction(float x, float y);
+    vec ray_direction(float x, float y,
+                      unsigned int i,
+                      unsigned int j,
+                      unsigned int strata_count);
     int pixelsX();
     int pixelsY();
     point get_center();

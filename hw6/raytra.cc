@@ -249,6 +249,7 @@ int main(int argc, char** argv)
     ProgressBar progressBar(camera.pixelsX() * camera.pixelsY(), 70);
 
     unsigned int PRIMARY_RAY_SAMPLES = 2;
+    auto n2 = PRIMARY_RAY_SAMPLES * PRIMARY_RAY_SAMPLES;
 
     cout << "Rendering..." << endl;
 
@@ -259,12 +260,13 @@ int main(int argc, char** argv)
             if (++progressBar % 1000 == 0)
                 progressBar.display();
 
-            color c;
+            color c = {0, 0, 0};
 
             for (unsigned int i = 0; i < PRIMARY_RAY_SAMPLES; i++) {
                 for (unsigned int j = 0; j < PRIMARY_RAY_SAMPLES; j++) {
+
                     /* step 1: generate ray */
-                    vec dir = camera.ray_direction(x, y);
+                    vec dir = camera.ray_direction(x, y, i, j, PRIMARY_RAY_SAMPLES);
                     point origin = camera.get_center();
                     Ray ray(origin, dir);
 
@@ -275,9 +277,10 @@ int main(int argc, char** argv)
                 }
             }
 
+
             /* finally assign shading to the pixel */
             Rgba &px = pixels[y][x];
-            px.r = c.red; px.g = c.green; px.b = c.blue; px.a = 1;
+            px.r = c.red/n2; px.g = c.green/n2; px.b = c.blue/n2; px.a = 1;
         }
     }
 

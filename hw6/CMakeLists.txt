@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.6)
-project(hw5)
+project(hw6)
 
 set(CMAKE_CXX_STANDARD 11)
 
@@ -11,9 +11,9 @@ link_directories(/usr/local/lib)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-register")
 file(GLOB SOURCE_FILES  "*.cc")
-add_executable(hw5 ${SOURCE_FILES})
-target_link_libraries(hw5 ${EXR_LIBS})
+add_executable(hw6 ${SOURCE_FILES})
+target_link_libraries(hw6 ${EXR_LIBS})
 
 set(TESTABLE_SOURCES triangle.h triangle.cc bounding_box.cc BVHTree.cc)
 file(GLOB TEST_FILES "tests/*.cc")
-add_executable(hw5_test ${TEST_FILES} ${TESTABLE_SOURCES})
+add_executable(hw6_test ${TEST_FILES} ${TESTABLE_SOURCES})

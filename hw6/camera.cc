@@ -40,16 +40,27 @@ void Camera::copy_to_camera(Camera &camera)
 }
 
 /**
- * Calculates the direction of camera ray to point (x, y)
- * @param x
- * @param y
+ * Calculates the direction of camera ray to pixel (x, y)
+ * @param x - x coordinate of pixel
+ * @param y - y coordinate of pixel
+ * @param i - x coordinate of strata
+ * @param j - y coordinate of strata
+ * @param strata_count - total number of strata
  * @return A vector denoting the direction of the camera
- * ray to point (x, y) on the image plane
+ * ray to pixel (x, y) on the image plane
  */
-vec Camera::ray_direction(float x, float y)
+vec Camera::ray_direction (
+        float x,
+        float y,
+        unsigned int i,
+        unsigned int j,
+        unsigned int strata_count
+)
 {
-    float centerX = left + (right - left) * (x + 0.5f)/nx;
-    float centerY = bottom + (top - bottom) * (y + 0.5f)/ny;
+    float x_disp = (((float) rand()/RAND_MAX) + i) / strata_count;
+    float y_disp = (((float) rand()/RAND_MAX) + j) / strata_count;
+    float centerX = left + (right - left) * (x + x_disp)/nx;
+    float centerY = bottom + (top - bottom) * (y + y_disp)/ny;
     return norm((-focal_length * w) + (centerX * u) + (centerY * v));
 }
 
