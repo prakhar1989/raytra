@@ -22,6 +22,11 @@ namespace Raytra {
         return fabsf(a - b) <= 0.001;
     }
 
+    inline float get_rand()
+    {
+        return ((float) rand()) / RAND_MAX;
+    }
+
     // returns true if a string is all whitespaces
     inline bool is_blank(const std::string& line)
     {

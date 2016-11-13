@@ -57,8 +57,8 @@ vec Camera::ray_direction (
         unsigned int strata_count
 )
 {
-    float x_disp = (((float) rand()/RAND_MAX) + i) / strata_count;
-    float y_disp = (((float) rand()/RAND_MAX) + j) / strata_count;
+    float x_disp = (get_rand() + i) / strata_count;
+    float y_disp = (get_rand() + j) / strata_count;
     float centerX = left + (right - left) * (x + x_disp)/nx;
     float centerY = bottom + (top - bottom) * (y + y_disp)/ny;
     return norm((-focal_length * w) + (centerX * u) + (centerY * v));
