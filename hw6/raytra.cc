@@ -147,7 +147,7 @@ color compute_spd (
         }
     }
 
-    const unsigned int shadow_ray_samples = 1;
+    const unsigned int shadow_ray_samples = 2;
     const unsigned int n2 = shadow_ray_samples * shadow_ray_samples;
 
     for (auto light: area_lights) {

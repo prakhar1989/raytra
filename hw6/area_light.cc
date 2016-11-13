@@ -75,7 +75,10 @@ color AreaLight::compute_shading (
     vec surface_normal;
     surface_normal = surface->get_normal(intersection_point);
 
+
     const vec light_ray = norm(point_on_light - intersection_point);
+    const float cos_area_light = dot(-light_ray, normal);
+
     const vec bisector = norm(-camera_ray.dir + light_ray);
     const float d2 = dist2(point_on_light, intersection_point);
 
@@ -92,18 +95,18 @@ color AreaLight::compute_shading (
     const float cosine = fmaxf(0, dot(surface_normal, light_ray));
 
     const color diffuse = {
-            .red = kd.red * c.red * cosine,
-            .green = kd.green * c.green * cosine,
-            .blue = kd.blue * c.blue * cosine,
+            .red = kd.red * c.red * cosine * cos_area_light,
+            .green = kd.green * c.green * cosine * cos_area_light,
+            .blue = kd.blue * c.blue * cosine * cos_area_light,
     };
 
     const float cosalpha = fmaxf(0, dot(surface_normal, bisector));
     const float multiplier = powf(cosalpha, surface->material->phong);
 
     const color specular = {
-            .red = ks.red * multiplier * c.red,
-            .green = ks.green * multiplier * c.green,
-            .blue = ks.blue * multiplier * c.blue,
+            .red = ks.red * multiplier * c.red * cos_area_light,
+            .green = ks.green * multiplier * c.green * cos_area_light,
+            .blue = ks.blue * multiplier * c.blue * cos_area_light,
     };
 
     return {
