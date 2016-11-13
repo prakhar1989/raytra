@@ -15,12 +15,16 @@ const int MAX_REFLECTIONS = 20;
 
 void cleanup(vector<Surface*>& surfaces,
              vector<PointLight*>& lights,
+             vector<AreaLight*>& area_lights,
              BVHTree* tree)
 {
     for (auto s: surfaces)
         delete s;
 
     for (auto l: lights)
+        delete l;
+
+    for (auto l: area_lights)
         delete l;
 
     delete tree;
@@ -34,7 +38,6 @@ bool does_file_exist(const string& filename)
     std::ifstream infile(filename);
     return infile.good();
 }
-
 
 /**
  * @param ray - the camera ray for which the nearest surface has to be computed
@@ -103,6 +106,7 @@ color compute_spd (
     const vector<PointLight *> &point_lights,
     const vector<AreaLight *> &area_lights,
     const color& ambient_light,
+    unsigned int shadow_ray_samples,
     int bounces_left,
     int incident_surface_index,
     BVHTree* tree,
@@ -147,8 +151,7 @@ color compute_spd (
         }
     }
 
-    const unsigned int shadow_ray_samples = 2;
-    const unsigned int n2 = shadow_ray_samples * shadow_ray_samples;
+    unsigned int strata_size = shadow_ray_samples * shadow_ray_samples;
 
     for (auto light: area_lights) {
         for (unsigned int i = 0; i < shadow_ray_samples; i++) {
@@ -159,9 +162,9 @@ color compute_spd (
 
                 if (!light->is_occluded_by(point_on_light, intersection_pt,surfaces, tree)) {
                     c = light->compute_shading(surface, ray, intersection_pt, point_on_light);
-                    spd.red += c.red / n2;
-                    spd.green += c.green / n2;
-                    spd.blue += c.blue / n2;
+                    spd.red += c.red / strata_size;
+                    spd.green += c.green / strata_size;
+                    spd.blue += c.blue / strata_size;
                 }
             }
         }
@@ -196,8 +199,8 @@ color compute_spd (
     /* recursively compute reflection shading */
     color reflected_spd = compute_spd(reflected_ray, surfaces,
                                      point_lights, area_lights, ambient_light,
-                                     bounces_left - 1, surface_index,
-                                     tree, show_bounding_box);
+                                     shadow_ray_samples, bounces_left - 1,
+                                     surface_index, tree, show_bounding_box);
 
     return {
         .red = spd.red + reflected_spd.red * reflective.red,
@@ -208,8 +211,9 @@ color compute_spd (
 
 int main(int argc, char** argv)
 {
-    if (argc < 4) {
-        cerr << "USAGE: raytra <scene_file> <output_file> <ray samples>" << endl;
+    if (argc < 5) {
+        cerr << "USAGE: raytra <scene_file> "
+                "<output_file> <ray samples> <shadow samples>" << endl;
         return -1;
     }
 
@@ -219,33 +223,27 @@ int main(int argc, char** argv)
     string scene_file {argv[1]};
     char* output_file {argv[2]};
 
-    unsigned int ray_samples;
-
-    if (argc == 4) {
-        int s = atoi(argv[3]);
-        if (s < 1)
-            cerr << "error: sample count should be positive" << endl;
-
-        ray_samples = (unsigned int) (s);
-    }
-
-    bool show_bounding_box = false;
+    const unsigned int ray_samples = (unsigned int) (atoi(argv[3]));
+    const unsigned int shadow_samples = (unsigned int) (atoi(argv[4]));
+    const bool show_bounding_box = false;
 
     if (!does_file_exist(scene_file)) {
         cerr << "error: scene file doesn't exist" << endl;
         return -1;
     }
 
+    /* setting up objects in the scene */
     vector<Surface*> surfaces;
     vector<PointLight*> point_lights;
     vector<AreaLight*> area_lights;
     Camera camera;
     color ambient_light;
 
+    /* parse the scene file & populate the objects */
     Parser::parse_file(scene_file, surfaces, camera,
                        point_lights, area_lights, ambient_light);
 
-    // set up a collection of bounding boxes
+    /* set up a collection of bounding boxes */
     vector<BoundingBox*> bounding_boxes;
     for (unsigned int i = 0; i < surfaces.size(); i++) {
         BoundingBox* box = surfaces[i]->get_bounding_box();
@@ -253,14 +251,8 @@ int main(int argc, char** argv)
         bounding_boxes.push_back(box);
     }
 
-    BVHTree* tree = nullptr;
-
-    // build the BVHTree
-    tree = BVHTree::make_bvhtree (
-            bounding_boxes.begin(),
-            bounding_boxes.end(),
-            Axis::X
-    );
+    /* construct the BVHTree using the bounding boxes */
+    BVHTree* tree = BVHTree::make_bvhtree(bounding_boxes.begin(), bounding_boxes.end(), Axis::X);
 
     Array2D<Rgba> pixels;
     pixels.resizeErase(camera.pixelsY(), camera.pixelsX());
@@ -269,7 +261,8 @@ int main(int argc, char** argv)
 
     cout << "Rendering..." << endl;
 
-    auto n2 = ray_samples * ray_samples;
+    auto strata_size = ray_samples * ray_samples;
+
     for (int y = 0; y < camera.pixelsY(); y++) {
         for (int x = 0; x < camera.pixelsX(); x++) {
 
@@ -288,26 +281,29 @@ int main(int argc, char** argv)
                     Ray ray(origin, dir);
 
                     /* compute spectral power distribution */
-                    c = c + compute_spd(ray, surfaces,
-                                        point_lights, area_lights,
-                                        ambient_light, MAX_REFLECTIONS,
-                                        -1, tree, show_bounding_box);
+                    c = c + compute_spd (
+                            ray, surfaces,
+                            point_lights, area_lights,
+                            ambient_light, shadow_samples,
+                            MAX_REFLECTIONS, -1,
+                            tree, show_bounding_box
+                    );
                 }
             }
 
-
-            /* finally assign shading to the pixel */
             Rgba &px = pixels[y][x];
-            px.r = c.red/n2; px.g = c.green/n2; px.b = c.blue/n2; px.a = 1;
+            px.a = 1;
+            px.r = c.red/strata_size;
+            px.g = c.green/strata_size;
+            px.b = c.blue/strata_size;
         }
     }
 
-    exr::writeRgba(output_file, &pixels[0][0],
-                   camera.pixelsX(), camera.pixelsY());
+    exr::writeRgba(output_file, &pixels[0][0], camera.pixelsX(), camera.pixelsY());
 
     progressBar.display();
     printf("\nImage generated: %s\n", output_file);
 
     /* cleanup up surfaces */
-    cleanup(surfaces, point_lights, tree);
+    cleanup(surfaces, point_lights, area_lights, tree);
 }

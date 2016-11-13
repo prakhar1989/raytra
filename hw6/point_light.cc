@@ -17,7 +17,7 @@ PointLight::PointLight(float x, float y, float z, float r, float g, float b)
  * to be calculated
  * @return true to indicate if the surface is occluded.
  */
-bool PointLight::is_occluded_by(
+bool PointLight::is_occluded_by (
         const Raytra::point &intersection_point,
         const std::vector<Surface *> &surfaces,
         const BVHTree *tree,
