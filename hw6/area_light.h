@@ -2,6 +2,9 @@
 #define HW6_AREALIGHT_H
 
 #include "raytra.h"
+#include <vector>
+#include "surface.h"
+#include "BVHTree.h"
 
 using namespace Raytra;
 
@@ -17,9 +20,18 @@ public:
         float r, float g, float b       // exitance
     );
 
+    Raytra::point get_point(float i, float j, unsigned int strata_count);
+
+    bool is_occluded_by (
+        const Raytra::point &point_on_light,
+        const Raytra::point &intersection_point,
+        const std::vector<Surface*> &surfaces,
+        const BVHTree *tree
+    );
+
 private:
     color c;
-    point position;
+    Raytra::point position;
     float side_length;
     vec normal;
     vec U;

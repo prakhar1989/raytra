@@ -35,12 +35,7 @@ bool PointLight::is_occluded_by(
     float t_light = light_ray.offset(position);
 
     std::vector<unsigned int> surface_indices;
-    if (tree != nullptr) {
-        tree->compute_intersections(light_ray, surface_indices);
-    } else {
-        for (unsigned int j = 0; j < surfaces.size(); j++)
-            surface_indices.push_back(j);
-    }
+    tree->compute_intersections(light_ray, surface_indices);
 
     /* compute intersection of light ray with all surfaces */
     for (auto i: surface_indices) {

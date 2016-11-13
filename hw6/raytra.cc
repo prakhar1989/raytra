@@ -91,7 +91,7 @@ pair<int, float> get_nearest_surface (
  * shading model and reflections
  * @param ray - camera ray
  * @param surfaces - list of all surfaces in the scene
- * @param lights - list of all lights in the scene
+ * @param point_lights - list of all lights in the scene
  * @param bounces_left - number of light bounces left
  * @param incident_surface_index - index of the incident surface
  * useful for making sure surfaces don't reflect themselves.
@@ -100,7 +100,8 @@ pair<int, float> get_nearest_surface (
 color compute_spd (
     const Ray &ray,
     const vector<Surface *> &surfaces,
-    const vector<PointLight *> &lights,
+    const vector<PointLight *> &point_lights,
+    const vector<AreaLight *> &area_lights,
     const color& ambient_light,
     int bounces_left,
     int incident_surface_index,
@@ -134,7 +135,7 @@ color compute_spd (
     point intersection_pt = ray.get_point(hit.second);
     color c;
 
-    for (auto light: lights) {
+    for (auto light: point_lights) {
         /* compute shading only if the light to the surface
          * at the intersection point is not occluded by another surface
          */
@@ -147,6 +148,24 @@ color compute_spd (
             spd.red += c.red;
             spd.green += c.green;
             spd.blue += c.blue;
+        }
+    }
+
+    const unsigned int shadow_ray_samples = 1;
+
+    for (auto light: area_lights) {
+        for (unsigned int i = 0; i < shadow_ray_samples; i++) {
+            for (unsigned int j = 0; j < shadow_ray_samples; j++) {
+
+                /* compute point located on the light */
+                point point_on_light = light->get_point(i, j, shadow_ray_samples);
+
+                if (!light->is_occluded_by(point_on_light, intersection_pt,surfaces, tree))
+                {
+
+
+                }
+            }
         }
     }
 
@@ -178,7 +197,7 @@ color compute_spd (
 
     /* recursively compute reflection shading */
     color reflected_spd = compute_spd(reflected_ray, surfaces,
-                                     lights, ambient_light,
+                                     point_lights, area_lights, ambient_light,
                                      bounces_left - 1, surface_index,
                                      tree, show_bounding_box);
 
@@ -271,9 +290,10 @@ int main(int argc, char** argv)
                     Ray ray(origin, dir);
 
                     /* compute spectral power distribution */
-                    c = c + compute_spd(ray, surfaces, point_lights, ambient_light,
-                                          MAX_REFLECTIONS, -1,
-                                          tree, show_bounding_box);
+                    c = c + compute_spd(ray, surfaces,
+                                        point_lights, area_lights,
+                                        ambient_light, MAX_REFLECTIONS,
+                                        -1, tree, show_bounding_box);
                 }
             }
 
