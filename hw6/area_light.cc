@@ -77,7 +77,7 @@ color AreaLight::compute_shading (
 
 
     const vec light_ray = norm(point_on_light - intersection_point);
-    const float cos_area_light = dot(-light_ray, normal);
+    const float cos_area_light = fmaxf(0, dot(-light_ray, normal));
 
     const vec bisector = norm(-camera_ray.dir + light_ray);
     const float d2 = dist2(point_on_light, intersection_point);
