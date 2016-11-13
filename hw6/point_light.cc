@@ -11,14 +11,14 @@ PointLight::PointLight(float x, float y, float z, float r, float g, float b)
  * occluded by any other surface between the point
  * and the light. Used for computing shadows.
  *
- * @param point - point of intersection
+ * @param intersection_point - point of intersection
  * @param surfaces - a vector of surfaces in the scene
  * @param light - a point light from which the occlusion has
  * to be calculated
  * @return true to indicate if the surface is occluded.
  */
 bool PointLight::is_occluded_by(
-        const Raytra::point &point,
+        const Raytra::point &intersection_point,
         const std::vector<Surface *> &surfaces,
         const BVHTree *tree,
         bool show_bounding_box
@@ -27,9 +27,9 @@ bool PointLight::is_occluded_by(
     /* to avoid shadow rounding errors */
     const float surface_delta = 0.001;
 
-    /* generate ray from point to light */
-    vec light_dir = norm(position - point);
-    Ray light_ray(point, light_dir);
+    /* generate ray from intersection_point to light */
+    vec light_dir = norm(position - intersection_point);
+    Ray light_ray(intersection_point, light_dir);
 
     /* the t at which the light is located */
     float t_light = light_ray.offset(position);

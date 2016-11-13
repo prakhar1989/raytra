@@ -125,6 +125,7 @@ int Parser::parse_file (
                         x, y, z, nx, ny, nz,
                         ux, uy, uz, len, r, g, b
                     );
+                    area_lights.push_back(a);
                     ++area_lights_count;
                 }
                 break;

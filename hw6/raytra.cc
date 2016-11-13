@@ -139,12 +139,8 @@ color compute_spd (
         /* compute shading only if the light to the surface
          * at the intersection point is not occluded by another surface
          */
-        if (!light->is_occluded_by(intersection_pt,
-                                   surfaces,
-                                   tree,
-                                   show_bounding_box)) {
-            c = light->compute_shading(surface, ray,
-                    intersection_pt, show_bounding_box);
+        if (!light->is_occluded_by(intersection_pt, surfaces, tree, show_bounding_box)) {
+            c = light->compute_shading(surface, ray, intersection_pt, show_bounding_box);
             spd.red += c.red;
             spd.green += c.green;
             spd.blue += c.blue;
@@ -152,6 +148,7 @@ color compute_spd (
     }
 
     const unsigned int shadow_ray_samples = 1;
+    const unsigned int n2 = shadow_ray_samples * shadow_ray_samples;
 
     for (auto light: area_lights) {
         for (unsigned int i = 0; i < shadow_ray_samples; i++) {
@@ -160,10 +157,11 @@ color compute_spd (
                 /* compute point located on the light */
                 point point_on_light = light->get_point(i, j, shadow_ray_samples);
 
-                if (!light->is_occluded_by(point_on_light, intersection_pt,surfaces, tree))
-                {
-
-
+                if (!light->is_occluded_by(point_on_light, intersection_pt,surfaces, tree)) {
+                    c = light->compute_shading(surface, ray, intersection_pt, point_on_light);
+                    spd.red += c.red / n2;
+                    spd.green += c.green / n2;
+                    spd.blue += c.blue / n2;
                 }
             }
         }

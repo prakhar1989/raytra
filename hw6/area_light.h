@@ -29,6 +29,13 @@ public:
         const BVHTree *tree
     );
 
+    color compute_shading (
+        const Surface* surface,
+        const Ray& camera_ray,
+        const Raytra::point& intersection_point,
+        const Raytra::point& point_on_light
+    );
+
 private:
     color c;
     Raytra::point position;

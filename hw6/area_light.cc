@@ -64,3 +64,51 @@ bool AreaLight::is_occluded_by (
 
     return false;
 }
+
+color AreaLight::compute_shading (
+    const Surface *surface,
+    const Ray &camera_ray,
+    const Raytra::point &intersection_point,
+    const Raytra::point &point_on_light
+)
+{
+    vec surface_normal;
+    surface_normal = surface->get_normal(intersection_point);
+
+    const vec light_ray = norm(point_on_light - intersection_point);
+    const vec bisector = norm(-camera_ray.dir + light_ray);
+    const float d2 = dist2(point_on_light, intersection_point);
+
+    color kd, ks;
+    if (surface->is_front_facing(camera_ray)) {
+        kd = surface->material->diffuse;
+        ks = surface->material->specular;
+    } else {
+        kd = { .red = 1, .green = 1, .blue = 0 };
+        ks = { .red = 0, .green = 0, .blue = 0 };
+        surface_normal = -surface_normal;
+    }
+
+    const float cosine = fmaxf(0, dot(surface_normal, light_ray));
+
+    const color diffuse = {
+            .red = kd.red * c.red * cosine,
+            .green = kd.green * c.green * cosine,
+            .blue = kd.blue * c.blue * cosine,
+    };
+
+    const float cosalpha = fmaxf(0, dot(surface_normal, bisector));
+    const float multiplier = powf(cosalpha, surface->material->phong);
+
+    const color specular = {
+            .red = ks.red * multiplier * c.red,
+            .green = ks.green * multiplier * c.green,
+            .blue = ks.blue * multiplier * c.blue,
+    };
+
+    return {
+            .red = (diffuse.red + specular.red)/d2,
+            .green = (diffuse.green + specular.green)/d2,
+            .blue = (diffuse.blue + specular.blue)/d2,
+    };
+}
