@@ -20,8 +20,7 @@ PointLight::PointLight(float x, float y, float z, float r, float g, float b)
 bool PointLight::is_occluded_by (
         const Raytra::point &intersection_point,
         const std::vector<Surface *> &surfaces,
-        const BVHTree *tree,
-        bool show_bounding_box
+        const BVHTree *tree
 )
 {
     /* to avoid shadow rounding errors */
@@ -39,13 +38,7 @@ bool PointLight::is_occluded_by (
 
     /* compute intersection of light ray with all surfaces */
     for (auto i: surface_indices) {
-        float t;
-        if (show_bounding_box) {
-            BoundingBox *bbox = surfaces[i]->get_bounding_box();
-            t = bbox->get_intersection_point(light_ray);
-        } else {
-            t = surfaces[i]->get_intersection_point(light_ray);
-        }
+        float t = surfaces[i]->get_intersection_point(light_ray);
         if (t > surface_delta && t < t_light && fabsf(t) > surface_delta)
             return true;
     }
@@ -64,24 +57,17 @@ bool PointLight::is_occluded_by (
 color PointLight::compute_shading (
         const Surface *surface,
         const Ray &camera_ray,
-        const Raytra::point &point,
-        bool show_bounding_box
+        const Raytra::point &point
 )
 {
-    vec surface_normal;
-
-    if (show_bounding_box)
-        surface_normal = surface->get_bounding_box()->get_normal(point);
-    else
-        surface_normal = surface->get_normal(point);
-
+    vec surface_normal = surface->get_normal(point);
     const vec light_ray = norm(position - point);
     const vec bisector = norm(-camera_ray.dir + light_ray);
     const float d2 = dist2(position, point);
 
 
     color kd, ks;
-    if (surface->is_front_facing(camera_ray) || show_bounding_box) {
+    if (surface->is_front_facing(camera_ray)) {
         kd = surface->material->diffuse;
         ks = surface->material->specular;
     } else {

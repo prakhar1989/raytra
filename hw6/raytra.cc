@@ -51,8 +51,7 @@ bool does_file_exist(const string& filename)
 pair<int, float> get_nearest_surface (
         const Ray& ray,
         const vector<Surface*>& surfaces,
-        BVHTree* tree,
-        bool show_bounding_box
+        BVHTree* tree
 )
 {
     float min_t = numeric_limits<float>::infinity();
@@ -67,17 +66,7 @@ pair<int, float> get_nearest_surface (
     }
 
     for (auto i: surface_indices) {
-        float t;
-        if (show_bounding_box) {
-            /*
-             * if bounding boxes are needed to be rendered,
-             * compute the min hit from the bounding boxes
-             * rather than return the t from surface intersections
-             */
-            t = surfaces[i]->get_bounding_box()->get_intersection_point(ray);
-        } else {
-            t = surfaces[i]->get_intersection_point(ray);
-        }
+        float t = surfaces[i]->get_intersection_point(ray);
         if (t > 0.001 && t < min_t ) {
             min_t = t;
             min_index = i;
@@ -93,10 +82,12 @@ pair<int, float> get_nearest_surface (
  * shading model and reflections
  * @param ray - camera ray
  * @param surfaces - list of all surfaces in the scene
- * @param point_lights - list of all lights in the scene
+ * @param point_lights - list of all point lights in the scene
+ * @param area_lights - list of all area lights in the scene
  * @param bounces_left - number of light bounces left
  * @param incident_surface_index - index of the incident surface
  * useful for making sure surfaces don't reflect themselves.
+ * @param tree - the bounding volume hierarchy tree for the scene
  * @return
  */
 color compute_spd (
@@ -108,8 +99,7 @@ color compute_spd (
     unsigned int shadow_ray_samples,
     int bounces_left,
     int incident_surface_index,
-    BVHTree* tree,
-    bool show_bounding_box
+    BVHTree* tree
 )
 {
     color spd = {.red = 0, .green = 0, .blue = 0};
@@ -118,9 +108,7 @@ color compute_spd (
         return spd;
 
     /* Step 2 - Ray Intersection */
-    pair<int, float> hit = get_nearest_surface (
-            ray, surfaces, tree, show_bounding_box
-    );
+    pair<int, float> hit = get_nearest_surface(ray, surfaces, tree);
     int surface_index = hit.first;
 
     /* no intersection - color black */
@@ -134,18 +122,19 @@ color compute_spd (
     point intersection_pt = ray.get_point(hit.second);
     color c;
 
+    /* computing spectral power distribution contribution by
+     * point lights which generate hard shadows */
     for (auto light: point_lights) {
-        /* compute shading only if the light to the surface
-         * at the intersection point is not occluded by another surface
-         */
-        if (!light->is_occluded_by(intersection_pt, surfaces, tree, show_bounding_box)) {
-            c = light->compute_shading(surface, ray, intersection_pt, show_bounding_box);
+        if (!light->is_occluded_by(intersection_pt, surfaces, tree)) {
+            c = light->compute_shading(surface, ray, intersection_pt);
             spd.red += c.red;
             spd.green += c.green;
             spd.blue += c.blue;
         }
     }
 
+    /* computing specular power distribution contribution by
+     * area lights which generate soft shadows */
     for (auto light: area_lights) {
         for (unsigned int i = 0; i < shadow_ray_samples; i++) {
             for (unsigned int j = 0; j < shadow_ray_samples; j++) {
@@ -178,23 +167,22 @@ color compute_spd (
     color reflective = surface->material->ideal_specular;
 
     /* not reflective surface; return */
-    if (!surface->material->is_reflective() ||
-            (!surface->is_front_facing(ray) && !show_bounding_box))
+    if (!surface->material->is_reflective() || !surface->is_front_facing(ray))
         return spd;
 
     /* compute the reflected ray */
-    vec N = show_bounding_box
-            ? surface->get_bounding_box()->get_normal(intersection_pt)
-            : surface->get_normal(intersection_pt);
+    vec N = surface->get_normal(intersection_pt);
 
     vec reflect_dir = norm(ray.dir + (-2 * dot(ray.dir, N) * N));
     Ray reflected_ray(intersection_pt, reflect_dir);
 
     /* recursively compute reflection shading */
-    color reflected_spd = compute_spd(reflected_ray, surfaces,
-                                     point_lights, area_lights, ambient_light,
-                                     shadow_ray_samples, bounces_left - 1,
-                                     surface_index, tree, show_bounding_box);
+    color reflected_spd = compute_spd (
+            reflected_ray, surfaces,
+            point_lights, area_lights, ambient_light,
+            shadow_ray_samples, bounces_left - 1,
+            surface_index, tree
+    );
 
     return {
         .red = spd.red + reflected_spd.red * reflective.red,
@@ -219,7 +207,6 @@ int main(int argc, char** argv)
 
     const unsigned int ray_samples = (unsigned int) (atoi(argv[3]));
     const unsigned int shadow_samples = (unsigned int) (atoi(argv[4]));
-    const bool show_bounding_box = false;
 
     if (!does_file_exist(scene_file)) {
         cerr << "error: scene file doesn't exist" << endl;
@@ -278,11 +265,9 @@ int main(int argc, char** argv)
 
                     /* compute spectral power distribution */
                     c = c + compute_spd (
-                            ray, surfaces,
-                            point_lights, area_lights,
+                            ray, surfaces, point_lights, area_lights,
                             ambient_light, shadow_samples,
-                            MAX_REFLECTIONS, -1,
-                            tree, show_bounding_box
+                            MAX_REFLECTIONS, -1, tree
                     );
                 }
             }

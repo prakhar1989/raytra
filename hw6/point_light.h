@@ -17,15 +17,13 @@ public:
     color compute_shading (
         const Surface* surface,
         const Ray& camera_ray,
-        const Raytra::point& point,
-        bool show_bounding_box
+        const Raytra::point& point
     );
 
-    bool is_occluded_by(
+    bool is_occluded_by (
         const Raytra::point &intersection_point,
         const std::vector<Surface *> &surfaces,
-        const BVHTree *tree,
-        bool show_bounding_box
+        const BVHTree *tree
     );
 
 private:
