@@ -8,7 +8,8 @@ int Parser::parse_file (
         const string file_name,
         vector<Surface*>& surfaces,
         Camera& camera,
-        vector<PointLight*>& lights,
+        vector<PointLight*>& point_lights,
+        vector<AreaLight*>& area_lights,
         color& ambient_light
 )
 {
@@ -26,6 +27,7 @@ int Parser::parse_file (
     int camera_count = 0;
     int light_count = 0;
     int ambient_count = 0;
+    int area_lights_count = 0;
 
     for (string line; getline(in, line);) {
 
@@ -103,7 +105,7 @@ int Parser::parse_file (
                     iss >> x >> y >> z >> r >> g >> b;
 
                     PointLight* l = new PointLight(x, y, z, r, g, b);
-                    lights.push_back(l);
+                    point_lights.push_back(l);
                     ++light_count;
                 } else if (light_type == 'a') {
                     float x, y, z;
@@ -113,8 +115,17 @@ int Parser::parse_file (
                     ambient_light.blue = z;
 
                     ++ambient_count;
-                } else {
-                    // ignore direction lights for now
+                } else if (light_type == 's') {
+                    float x, y, z, nx, ny, nz, ux, uy, uz, len, r, g, b;
+
+                    iss >> x >> y >> z >> nx >> ny >> nz
+                        >> ux >> uy >> uz >> len >> r >> g >> b;
+
+                    AreaLight* a = new AreaLight (
+                        x, y, z, nx, ny, nz,
+                        ux, uy, uz, len, r, g, b
+                    );
+                    ++area_lights_count;
                 }
                 break;
             }
@@ -163,8 +174,10 @@ int Parser::parse_file (
         exit(1);
     }
 
-    printf("Read %lu surface(s), %d material(s) & %d light(s) \n",
-           surfaces.size(), material_count, light_count);
+    printf("Read %lu surface(s), %d material(s), %d point light(s) "
+                   "& %d area light(s) \n",
+           surfaces.size(), material_count,
+           light_count, area_lights_count);
 
     return 0;
 }

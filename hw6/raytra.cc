@@ -3,6 +3,7 @@
 #include <fstream>
 #include "point_light.h"
 #include "bounding_box.h"
+#include "area_light.h"
 #include <limits>
 #include "ProgressBar.hpp"
 #include "BVHTree.h"
@@ -219,11 +220,13 @@ int main(int argc, char** argv)
     }
 
     vector<Surface*> surfaces;
-    vector<PointLight*> lights;
+    vector<PointLight*> point_lights;
+    vector<AreaLight*> area_lights;
     Camera camera;
     color ambient_light;
 
-    Parser::parse_file(scene_file, surfaces, camera, lights, ambient_light);
+    Parser::parse_file(scene_file, surfaces, camera,
+                       point_lights, area_lights, ambient_light);
 
     // set up a collection of bounding boxes
     vector<BoundingBox*> bounding_boxes;
@@ -268,7 +271,7 @@ int main(int argc, char** argv)
                     Ray ray(origin, dir);
 
                     /* compute spectral power distribution */
-                    c = c + compute_spd(ray, surfaces, lights, ambient_light,
+                    c = c + compute_spd(ray, surfaces, point_lights, ambient_light,
                                           MAX_REFLECTIONS, -1,
                                           tree, show_bounding_box);
                 }
@@ -288,5 +291,5 @@ int main(int argc, char** argv)
     printf("\nImage generated: %s\n", output_file);
 
     /* cleanup up surfaces */
-    cleanup(surfaces, lights, tree);
+    cleanup(surfaces, point_lights, tree);
 }

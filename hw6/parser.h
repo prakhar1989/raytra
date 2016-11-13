@@ -9,6 +9,7 @@
 #include "triangle.h"
 #include "plane.h"
 #include "point_light.h"
+#include "area_light.h"
 
 class Parser {
 public:
@@ -16,7 +17,8 @@ public:
             std::string file_name,
             std::vector<Surface*>& surfaces,
             Camera& camera,
-            std::vector<PointLight*>& lights,
+            std::vector<PointLight*>& point_lights,
+            std::vector<AreaLight*>& area_lights,
             color& ambient_light
     );
 
