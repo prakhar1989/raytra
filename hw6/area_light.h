@@ -33,7 +33,8 @@ public:
         const Surface* surface,
         const Ray& camera_ray,
         const Raytra::point& intersection_point,
-        const Raytra::point& point_on_light
+        const Raytra::point& point_on_light,
+        unsigned int shadow_ray_samples
     );
 
 private:

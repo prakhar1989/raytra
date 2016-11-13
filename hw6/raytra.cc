@@ -51,7 +51,6 @@ bool does_file_exist(const string& filename)
 pair<int, float> get_nearest_surface (
         const Ray& ray,
         const vector<Surface*>& surfaces,
-        int incident_surface_index,
         BVHTree* tree,
         bool show_bounding_box
 )
@@ -120,11 +119,7 @@ color compute_spd (
 
     /* Step 2 - Ray Intersection */
     pair<int, float> hit = get_nearest_surface (
-            ray,
-            surfaces,
-            incident_surface_index,
-            tree,
-            show_bounding_box
+            ray, surfaces, tree, show_bounding_box
     );
     int surface_index = hit.first;
 
@@ -151,8 +146,6 @@ color compute_spd (
         }
     }
 
-    unsigned int strata_size = shadow_ray_samples * shadow_ray_samples;
-
     for (auto light: area_lights) {
         for (unsigned int i = 0; i < shadow_ray_samples; i++) {
             for (unsigned int j = 0; j < shadow_ray_samples; j++) {
@@ -161,10 +154,11 @@ color compute_spd (
                 point point_on_light = light->get_point(i, j, shadow_ray_samples);
 
                 if (!light->is_occluded_by(point_on_light, intersection_pt,surfaces, tree)) {
-                    c = light->compute_shading(surface, ray, intersection_pt, point_on_light);
-                    spd.red += c.red / strata_size;
-                    spd.green += c.green / strata_size;
-                    spd.blue += c.blue / strata_size;
+                    c = light->compute_shading(
+                            surface, ray,
+                            intersection_pt, point_on_light, shadow_ray_samples
+                    );
+                    spd.red += c.red; spd.green += c.green; spd.blue += c.blue;
                 }
             }
         }
@@ -261,12 +255,14 @@ int main(int argc, char** argv)
 
     cout << "Rendering..." << endl;
 
+    /* The number of stratas we devide each pixel into.
+     * for implementing stratefied monte-carlo sampling */
     auto strata_size = ray_samples * ray_samples;
 
     for (int y = 0; y < camera.pixelsY(); y++) {
         for (int x = 0; x < camera.pixelsX(); x++) {
 
-            /* Step 0: show progress */
+            /* Step 0: update progress bar */
             if (++progressBar % 1000 == 0)
                 progressBar.display();
 

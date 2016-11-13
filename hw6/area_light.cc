@@ -69,7 +69,8 @@ color AreaLight::compute_shading (
     const Surface *surface,
     const Ray &camera_ray,
     const Raytra::point &intersection_point,
-    const Raytra::point &point_on_light
+    const Raytra::point &point_on_light,
+    unsigned int shadow_ray_samples
 )
 {
     vec surface_normal;
@@ -109,9 +110,12 @@ color AreaLight::compute_shading (
             .blue = ks.blue * multiplier * c.blue * cos_area_light,
     };
 
+    auto strata_size = shadow_ray_samples * shadow_ray_samples;
+    auto denom = d2 * strata_size;
+
     return {
-            .red = (diffuse.red + specular.red)/d2,
-            .green = (diffuse.green + specular.green)/d2,
-            .blue = (diffuse.blue + specular.blue)/d2,
+            .red = (diffuse.red + specular.red)/denom,
+            .green = (diffuse.green + specular.green)/denom,
+            .blue = (diffuse.blue + specular.blue)/denom,
     };
 }

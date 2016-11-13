@@ -21,10 +21,12 @@ public:
         bool show_bounding_box
     );
 
-    bool is_occluded_by(const Raytra::point &intersection_point,
-                        const std::vector<Surface *> &surfaces,
-                        const BVHTree *tree,
-                        bool show_bounding_box);
+    bool is_occluded_by(
+        const Raytra::point &intersection_point,
+        const std::vector<Surface *> &surfaces,
+        const BVHTree *tree,
+        bool show_bounding_box
+    );
 
 private:
     point position;
