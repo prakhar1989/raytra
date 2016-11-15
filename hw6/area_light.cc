@@ -73,10 +73,6 @@ color AreaLight::compute_shading (
     unsigned int shadow_ray_samples
 )
 {
-    vec surface_normal;
-    surface_normal = surface->get_normal(intersection_point);
-
-
     const vec light_ray = norm(point_on_light - intersection_point);
     const float cos_area_light = fmaxf(0, dot(-light_ray, normal));
 
@@ -84,6 +80,8 @@ color AreaLight::compute_shading (
     const float d2 = dist2(point_on_light, intersection_point);
 
     color kd, ks;
+
+    vec surface_normal = surface->get_normal(intersection_point);
     if (surface->is_front_facing(camera_ray)) {
         kd = surface->material->diffuse;
         ks = surface->material->specular;

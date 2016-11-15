@@ -115,13 +115,12 @@ color compute_spd (
     if (surface_index < 0)
         return spd;
 
-    /* on intersection, compute shading
-     * by summing contributions from each light source
-     */
+    /* Step 3 - Compute various contributions at intersection point */
     Surface* surface = surfaces[surface_index];
     point intersection_pt = ray.get_point(hit.second);
     color c;
 
+    /** POINT LIGHTS COMPUTATION */
     /* computing spectral power distribution contribution by
      * point lights which generate hard shadows */
     for (auto light: point_lights) {
@@ -133,6 +132,7 @@ color compute_spd (
         }
     }
 
+    /** AREAL LIGHTS COMPUTATION */
     /* computing specular power distribution contribution by
      * area lights which generate soft shadows */
     for (auto light: area_lights) {
@@ -184,6 +184,7 @@ color compute_spd (
             surface_index, tree
     );
 
+    /** TOTAL CONTRIBUTION */
     return {
         .red = spd.red + reflected_spd.red * reflective.red,
         .green = spd.green + reflected_spd.green * reflective.green,
@@ -212,6 +213,9 @@ int main(int argc, char** argv)
         cerr << "error: scene file doesn't exist" << endl;
         return -1;
     }
+
+    /* initialize RNG */
+    srand(1);
 
     /* setting up objects in the scene */
     vector<Surface*> surfaces;
