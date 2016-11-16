@@ -8,7 +8,7 @@ AreaLight::AreaLight (
         float r, float g, float b       // exitance
 )
 {
-    c = {.red = r, .blue = b, .green = g};
+    c = {.red = r, .green = g,  .blue = b};
     side_length = len;
     position = {x, y, z};
     normal = {nx, ny, nz};
