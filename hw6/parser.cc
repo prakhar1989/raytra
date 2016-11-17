@@ -145,13 +145,13 @@ int Parser::parse_file (
                 vec normals[normals_counts];
 
                 // init to zero
-                for (int i = 0; i < normals_counts; i++) {
+                for (int i = 0; i < normals_counts; i++)
                     normals[i] = {0, 0, 0};
-                }
 
                 // build triangles
                 int n_tri = (int) tris.size() / 3;
                 for (int i = 0; i < n_tri; i++) {
+
                     // the ith triangle has vertices
                     int a_index = tris[3*i];
                     int b_index = tris[3*i + 1];
@@ -164,7 +164,7 @@ int Parser::parse_file (
                     );
 
                     // add the normal
-                    vec tNormal = t->get_normal({0, 0, 0});
+                    vec tNormal = t->get_normal();
                     normals[a_index] = normals[a_index] + tNormal;
                     normals[b_index] = normals[b_index] + tNormal;
                     normals[c_index] = normals[c_index] + tNormal;
@@ -172,6 +172,11 @@ int Parser::parse_file (
                     t->material = m;
                     surfaces.push_back(t);
                 }
+
+                // normalize the normals
+                for (int i = 0; i < normals_counts; i++)
+                    normals[i] = norm(normals[i]);
+
                 break;
             }
 

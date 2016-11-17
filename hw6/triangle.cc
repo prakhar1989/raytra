@@ -16,6 +16,14 @@ Triangle::Triangle(float ax, float ay, float az,
     );
 }
 
+/* sets the vertex normals for the triangle in the mesh */
+void Triangle::set_vertex_normals (
+    const vec &v1, const vec &v2, const vec &v3
+)
+{
+    n1 = v1; n2 = v2; n3 = v3; in_mesh = true;
+}
+
 BoundingBox* Triangle::get_bounding_box() const
 {
     return box;
@@ -23,7 +31,14 @@ BoundingBox* Triangle::get_bounding_box() const
 
 vec Triangle::get_normal(const point& p) const
 {
+    if (!in_mesh)
+        return normal;
+
+    /* if the triangle is in mesh, return its
+     * barycentric normal for smooth normal
+     */
     return normal;
+
 }
 
 /* as derived using Cramer's rule */
