@@ -140,6 +140,15 @@ int Parser::parse_file (
                 if (parse_obj(fname, tris, vertices) < 0)
                     exit(1);
 
+                // build the normals at vertices
+                unsigned long normals_counts = vertices.size() / 3;
+                vec normals[normals_counts];
+
+                // init to zero
+                for (int i = 0; i < normals_counts; i++) {
+                    normals[i] = {0, 0, 0};
+                }
+
                 // build triangles
                 int n_tri = (int) tris.size() / 3;
                 for (int i = 0; i < n_tri; i++) {
@@ -153,6 +162,13 @@ int Parser::parse_file (
                         vertices[3*b_index], vertices[3*b_index+1], vertices[3*b_index+2],
                         vertices[3*c_index], vertices[3*c_index+1], vertices[3*c_index+2]
                     );
+
+                    // add the normal
+                    vec tNormal = t->get_normal({0, 0, 0});
+                    normals[a_index] = normals[a_index] + tNormal;
+                    normals[b_index] = normals[b_index] + tNormal;
+                    normals[c_index] = normals[c_index] + tNormal;
+
                     t->material = m;
                     surfaces.push_back(t);
                 }
