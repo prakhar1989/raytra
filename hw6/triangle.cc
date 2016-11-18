@@ -52,6 +52,8 @@ vec Triangle::get_normal(const point& p) const
     float dheg = d * h - e * g;
 
     float M = a * eihf + b * gfdi + c * dheg;
+    if (M == 0)
+        return normal;
 
     float gamma = - (f * akjb + e * jcal + d * blkc) / M;
     float alpha =  (j * eihf + k * gfdi + l * dheg) / M;

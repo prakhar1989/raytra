@@ -13,7 +13,7 @@ m 1.0 1.0 1.0 0.7 0.7 0.7 100. 0.0 0.0 0.0
 w scenes/whitesquares_40.obj
     
 / one area light, white
-l s 50. 50. 50. 0.0 -1.0 0.0 1.0 0.0 0.0 10. 1300. 1300. 1300.
+l s 50. 50. 50. 0.0 -1.0 0.0 1.0 0.0 0.0 10. 13000. 13000. 13000.
     
 / camera: pointing towards X, 35mmx25mm "film", 35mm focal length
 c -20.0 10.0 0.0 1.0 0.0 0.0 35.0 35.0 25.0 640 480
