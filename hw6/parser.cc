@@ -143,11 +143,11 @@ int Parser::parse_file (
                     exit(1);
 
                 // build the normals at vertices
-                unsigned long normals_counts = vertices.size() / 3;
-                vec normals[normals_counts];
+                unsigned long n_counts = vertices.size() / 3;
+                vec normals[n_counts];
 
                 // init to zero
-                for (int i = 0; i < normals_counts; i++)
+                for (unsigned int i = 0; i < n_counts; i++)
                     normals[i] = {0, 0, 0};
 
                 // build triangles
@@ -177,10 +177,10 @@ int Parser::parse_file (
                 }
 
                 // normalize the normals
-                for (int i = 0; i < normals_counts; i++)
+                for (unsigned int i = 0; i < n_counts; i++)
                     normals[i] = norm(normals[i]);
 
-                for (int i = 0; i < n_tri; i++) {
+                for (unsigned int i = 0; i < n_tri; i++) {
                     // the ith triangle has vertices
                     int a_index = tris[3*i];
                     int b_index = tris[3*i + 1];
