@@ -137,6 +137,8 @@ int Parser::parse_file (
                 iss >> fname;
                 std::vector<int> tris;
                 std::vector<float> vertices;
+                std::vector<Triangle*> triangles;
+
                 if (parse_obj(fname, tris, vertices) < 0)
                     exit(1);
 
@@ -171,12 +173,23 @@ int Parser::parse_file (
 
                     t->material = m;
                     surfaces.push_back(t);
+                    triangles.push_back(t);
                 }
 
                 // normalize the normals
                 for (int i = 0; i < normals_counts; i++)
                     normals[i] = norm(normals[i]);
 
+
+                for (int i = 0; i < n_tri; i++) {
+                    // the ith triangle has vertices
+                    int a_index = tris[3*i];
+                    int b_index = tris[3*i + 1];
+                    int c_index = tris[3*i + 2];
+
+                    Triangle* t = triangles.at(i);
+                    t->set_vertex_normals(normals[a_index], normals[b_index], normals[c_index]);
+                }
                 break;
             }
 
