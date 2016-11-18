@@ -1,0 +1,19 @@
+/a green material, w/ white specular highlight, no reflection
+m 0.0 0.678 0.0 0.7 0.7 0.7 100. 0.0 0.0 0.0
+
+/one sphere in the above material
+s 50. 10. 0. 10.
+  
+/ a black material with specular, no reflection
+m 0.0 0.0 0.0 0.7 0.7 0.7 100. 0.0 0.0 0.0
+w scenes/blacksquares_40.obj
+
+/ a white material with specular, no reflection
+m 1.0 1.0 1.0 0.7 0.7 0.7 100. 0.0 0.0 0.0
+w scenes/whitesquares_40.obj
+    
+/ one area light, white
+l s 50. 50. 50. 0.0 -1.0 0.0 1.0 0.0 0.0 10. 1300. 1300. 1300.
+    
+/ camera: pointing towards X, 35mmx25mm "film", 35mm focal length
+c -20.0 10.0 0.0 1.0 0.0 0.0 35.0 35.0 25.0 640 480
