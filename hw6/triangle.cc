@@ -34,11 +34,30 @@ vec Triangle::get_normal(const point& p) const
     if (!in_mesh)
         return normal;
 
-    /* if the triangle is in mesh, return its
-     * barycentric normal for smooth normal
+    /* If the triangle is in mesh, return its
+     * barycentric normal for smooth normal.
+     *
+     * Using cramer's rule to solve this
      */
-    return normal;
+    float a = p1.x; float b = p1.y; float c = p1.z;
+    float d = p2.x; float e = p2.y; float f = p2.z;
+    float g = p3.x; float h = p3.y; float i = p3.z;
+    float j = p.x; float k = p.y; float l = p.z;
 
+    float akjb = a * k - j * b;
+    float jcal = j * c - a * l;
+    float blkc = b * l - k * c;
+    float eihf = e * i - f * h;
+    float gfdi = g * f - d * i;
+    float dheg = d * h - e * g;
+
+    float M = a * eihf + b * gfdi + c * dheg;
+
+    float gamma = - (f * akjb + e * jcal + d * blkc) / M;
+    float alpha =  (j * eihf + k * gfdi + l * dheg) / M;
+    float beta = (i * akjb + h * jcal + g * blkc) / M;
+
+    return norm(alpha * n1 + beta * n2 + gamma * n3);
 }
 
 /* as derived using Cramer's rule */
