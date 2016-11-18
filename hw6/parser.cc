@@ -180,7 +180,7 @@ int Parser::parse_file (
                 for (unsigned int i = 0; i < n_counts; i++)
                     normals[i] = norm(normals[i]);
 
-                for (unsigned int i = 0; i < n_tri; i++) {
+                for (int i = 0; i < n_tri; i++) {
                     // the ith triangle has vertices
                     int a_index = tris[3*i];
                     int b_index = tris[3*i + 1];
