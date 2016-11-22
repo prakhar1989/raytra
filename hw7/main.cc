@@ -36,8 +36,8 @@ color4 colors[NumVertices];
 mat4x4 ctm;
 
 float theta = 0.0;  // mouse rotation around the Y (up) axis
-float posx = 0.0;   // translation along X
-float posy = 0.0;   // translation along Y
+double posx = 0.0;   // translation along X
+double posy = 0.0;   // translation along Y
 
 
 // transform the triangle's vertex data and put it into the points array.
@@ -158,19 +158,14 @@ void init(GLint& mvp_location)
 // on how the mouse has moved.
 static void mouse_move_rotate (GLFWwindow* window, double x, double y)
 {
-
-    static int lastx = 0;// keep track of where the mouse was last:
-
-    int amntX = x - lastx;
-    if (amntX != 0) {
-        theta +=  amntX;
+    static double last_x = 0;// keep track of where the mouse was last:
+    double delta = x - last_x;
+    if (delta != 0) {
+        theta += delta;
         if (theta > 360.0 ) theta -= 360.0;
         if (theta < 0.0 ) theta += 360.0;
-
-        lastx = x;
+        last_x = x;
     }
-
-    //  std::cout << theta << std::endl;
 }
 
 // use this motionfunc to demonstrate translation - it adjusts posx and
@@ -179,20 +174,6 @@ static void mouse_move_rotate (GLFWwindow* window, double x, double y)
 // to all the vertices before they are displayed:
 static void mouse_move_translate (GLFWwindow* window, double x, double y)
 {
-
-    static int lastx = 0;
-    static int lasty = 0;
-
-    // if we want relative motion, keep track of where the mouse was last:
-//
-//    if (x - lastx < 0) --posx;
-//    else if (x - lastx > 0) ++posx;
-//    lastx = x;
-//
-//    if (y - lasty < 0) --posy;
-//    else if (y - lasty > 0) ++posy;
-//    lasty = y;
-
     posx = x;
     posy = -y;
 }
