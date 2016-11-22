@@ -4,22 +4,12 @@
 #include <stdlib.h>
 #include <vector>
 #include <stdio.h>
+#include "utils.h"
 #include <iostream>
 #include <fstream>
 #include "parser.h"
 
-typedef vec4 point4;
-typedef vec4 color4;
 using namespace std;
-
-/**
- * Checks if a file exist
- */
-bool does_file_exist(const string& filename)
-{
-    std::ifstream infile(filename);
-    return infile.good();
-}
 
 // source provided for function to load and compile shaders
 GLuint InitShader(const char* vertexShaderFile, const char* fragmentShaderFile);
@@ -57,34 +47,10 @@ color4 colors[NumVertices];
 // vertex:
 mat4x4 ctm;
 
-
-// "names" for the various buffers, shaders, programs etc:
-GLuint vertex_buffer, program;
-GLint mvp_location, vpos_location, vcol_location;
-
 float theta = 0.0;  // mouse rotation around the Y (up) axis
 float posx = 0.0;   // translation along X
 float posy = 0.0;   // translation along Y
 
-
-// three helper functions for the vec4 class:
-void vecproduct (vec4 &res, const vec4 &v1, const vec4 &v2) {
-    for (int i = 0; i < 4; ++i)
-        res[i] = v1[i] * v2[i];
-}
-
-void vecset(vec4 &res, const vec4 &v1)
-{
-    for (int i = 0; i < 4; ++i)
-        res[i] = v1[i];
-}
-
-void vecclear(vec4 &res)
-{
-    for (int i = 0; i < 3; ++i)
-        res[i] = 0.0;
-    res[3] = 1.0;
-}
 
 // transform the triangle's vertex data and put it into the points array.
 // also, compute the lighting at each vertex, and put that into the colors
@@ -129,6 +95,8 @@ void tri()
 
     dd = vec4_mul_inner(half, n);
 
+    const float material_shininess = 100.0;
+
     if(dd > 0.0) {
         color4 spec_prod;
         vecproduct(spec_prod, light_specular, material_specular);
@@ -137,7 +105,6 @@ void tri()
     }
     else
         vecclear(specular_color);
-
 
     vec4_add (colors[0], ambient_color, diffuse_color);
     vec4_add (colors[0], colors[0], specular_color);
@@ -149,21 +116,17 @@ void tri()
     vec4_add (colors[2], colors[2], specular_color);
 }
 
-
-
-static void error_callback(int error, const char* description)
-{
-    fprintf(stderr, "Error: %s\n", description);
-}
-
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         glfwSetWindowShouldClose(window, GLFW_TRUE);
 }
 
-void init()
+void init(GLint& mvp_location)
 {
+    // "names" for the various buffers, shaders, programs etc:
+    GLuint vertex_buffer, program;
+    GLint vpos_location, vcol_location;
 
     // set up vertex buffer object - this will be memory on the GPU where
     // we are going to store our vertex data (that is currently in the "points"
@@ -235,11 +198,11 @@ static void mouse_move_translate (GLFWwindow* window, double x, double y)
     static int lasty = 0;
 
     // if we want relative motion, keep track of where the mouse was last:
-//    
+//
 //    if (x - lastx < 0) --posx;
 //    else if (x - lastx > 0) ++posx;
 //    lastx = x;
-//    
+//
 //    if (y - lasty < 0) --posy;
 //    else if (y - lasty > 0) ++posy;
 //    lasty = y;
@@ -267,15 +230,15 @@ int main(int argc, char* argv[])
     std::vector<float> verts;
     Parser::parse_obj(obj_file, tris, verts);
 
-    // build an array of vertices
+    // build an array of myvertices
     auto n_vertices = verts.size()/3;
-    point4 vertices[n_vertices];
+    point4 myvertices[n_vertices];
 
     for (auto i = 0; i < n_vertices; i++) {
-        vertices[i][0] = verts[3*i];
-        vertices[i][1] = verts[3*i + 1];
-        vertices[i][2] = verts[3*i + 2];
-        vertices[i][3] = 1.0;
+        myvertices[i][0] = verts[3*i];
+        myvertices[i][1] = verts[3*i + 1];
+        myvertices[i][2] = verts[3*i + 2];
+        myvertices[i][3] = 1.0;
     }
 
     // if there are errors, call this routine:
@@ -312,7 +275,8 @@ int main(int argc, char* argv[])
     gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
     glfwSwapInterval(1);
 
-    init();
+    GLint mvp_location;
+    init(mvp_location);
 
     while (!glfwWindowShouldClose(window))
     {

@@ -17,7 +17,7 @@ IF(APPLE)
 ENDIF()
 
 set(GLAD "${GLFW_SOURCE_DIR}/deps/glad.c")
-set(SOURCE_FILES parser.h parser.cc initshader.cc main.cc)
+set(SOURCE_FILES utils.h  parser.cc initshader.cc main.cc)
 
 add_executable(hw7 ${GLAD} ${SOURCE_FILES})
 target_link_libraries(hw7 ${FRAMEWORKS} ${GL_LIBS} pthread dl)
