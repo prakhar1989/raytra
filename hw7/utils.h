@@ -5,6 +5,20 @@
 typedef vec4 point4;
 typedef vec4 color4;
 
+struct light_properties {
+    point4 position;
+    color4 ambient;
+    color4 diffuse;
+    color4 specular;
+};
+
+struct material_properties {
+    color4 ambient;
+    color4 diffuse;
+    color4 specular;
+    float shininess;
+};
+
 void inline error_callback(int error, const char* description)
 {
     fprintf(stderr, "Error: %s\n", description);

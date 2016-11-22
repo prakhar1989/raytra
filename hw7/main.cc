@@ -6,7 +6,6 @@
 #include <stdio.h>
 #include "utils.h"
 #include <iostream>
-#include <fstream>
 #include "parser.h"
 
 using namespace std;
@@ -24,17 +23,6 @@ point4 vertices[3] = {
 
 // viewer's position, for lighting calculations
 point4 viewer = {0.0, 0.0, -1.0, 1.0};
-
-// light & material definitions, again for lighting calculations:
-point4 light_position = {0.0, 0.0, -1.0, 1.0};
-color4 light_ambient = {0.2, 0.2, 0.2, 1.0};
-color4 light_diffuse = {1.0, 1.0, 1.0, 1.0};
-color4 light_specular = {1.0, 1.0, 1.0, 1.0};
-
-color4 material_ambient = {1.0, 0.0, 1.0, 1.0};
-color4 material_diffuse = {1.0, 0.8, 0.0, 1.0};
-color4 material_specular = {1.0, 0.8, 0.0, 1.0};
-float material_shininess = 100.0;
 
 // we will copy our transformed points to here:
 point4 points[NumVertices];
@@ -55,7 +43,7 @@ float posy = 0.0;   // translation along Y
 // transform the triangle's vertex data and put it into the points array.
 // also, compute the lighting at each vertex, and put that into the colors
 // array.
-void tri()
+void tri(light_properties& light, material_properties& material)
 {
     // compute the lighting at each vertex, then set it as the color there:
 
@@ -74,19 +62,19 @@ void tri()
 
     vec4 n = {n1[0], n1[1], n1[2], 1.0};
     vec4 light_pos_viewer;
-    vec4_add (light_pos_viewer, light_position, viewer);
+    vec4_add (light_pos_viewer, light.position, viewer);
     vec4 half;
     vec4_norm(half, light_pos_viewer);
 
     color4 ambient_color, diffuse_color, specular_color;
 
-    vecproduct(ambient_color, material_ambient, light_ambient);
+    vecproduct(ambient_color, material.ambient, light.ambient);
 
-    float dd = vec4_mul_inner(light_position, n);
+    float dd = vec4_mul_inner(light.position, n);
 
     if(dd>0.0) {
         color4 diffuse_product;
-        vecproduct(diffuse_product, light_diffuse, material_diffuse);
+        vecproduct(diffuse_product, light.diffuse, material.diffuse);
         vec4_scale (diffuse_product, diffuse_product, dd);
         vecset(diffuse_color, diffuse_product);
     }
@@ -95,12 +83,10 @@ void tri()
 
     dd = vec4_mul_inner(half, n);
 
-    const float material_shininess = 100.0;
-
     if(dd > 0.0) {
         color4 spec_prod;
-        vecproduct(spec_prod, light_specular, material_specular);
-        vec4_scale (spec_prod,spec_prod, exp(material_shininess*log(dd)));
+        vecproduct(spec_prod, light.specular, material.specular);
+        vec4_scale (spec_prod,spec_prod, exp(material.shininess*log(dd)));
         vecset(specular_color, spec_prod);
     }
     else
@@ -270,13 +256,27 @@ int main(int argc, char* argv[])
     // call only once: demo for rotation:
     glfwSetCursorPosCallback(window, mouse_move_rotate);
 
-
     glfwMakeContextCurrent(window);
     gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
     glfwSwapInterval(1);
 
     GLint mvp_location;
     init(mvp_location);
+
+    light_properties light = {
+            .position   = {0.0, 0.0, -1.0, 1.0},
+            .ambient    = {0.2, 0.2, 0.2, 1.0},
+            .diffuse    = {1.0, 1.0, 1.0, 1.0},
+            .specular   = {1.0, 1.0, 1.0, 1.0}
+    };
+
+    material_properties material = {
+            .ambient    = {1.0, 0.0, 1.0, 1.0},
+            .diffuse    = { 1.0, 0.8, 0.0, 1.0 },
+            .specular   = { 1.0, 0.8, 0.0, 1.0 },
+            .shininess  = 100.0
+    };
+
 
     while (!glfwWindowShouldClose(window))
     {
@@ -300,7 +300,7 @@ int main(int argc, char* argv[])
         mat4x4_rotate_Y(ctm, ctm, theta / 180.0);
 
         // tri() will multiply the points by ctm, and figure out the lighting
-        tri();
+        tri(light, material);
 
         // tell the VBO to re-get the data from the points and colors arrays:
         glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(points), points);
