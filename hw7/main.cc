@@ -13,23 +13,8 @@ using namespace std;
 // source provided for function to load and compile shaders
 GLuint InitShader(const char* vertexShaderFile, const char* fragmentShaderFile);
 
-const int NumVertices = 3;
-
-point4 vertices[3] = {
-        { -0.25,0.0,0.0, 1.0},
-        { 0.25,0.0,0.0, 1.0},
-        { 0.0, 0.5,0.0, 1.0}
-};
-
 // viewer's position, for lighting calculations
 point4 viewer = {0.0, 0.0, -1.0, 1.0};
-
-// we will copy our transformed points to here:
-point4 points[NumVertices];
-
-// and we will store the colors, per face per vertex, here. since there is
-// only 1 triangle, with 3 vertices, there will just be 3 here:
-color4 colors[NumVertices];
 
 // a transformation matrix, for the rotation, which we will apply to every
 // vertex:
@@ -39,14 +24,15 @@ float theta = 0.0;  // mouse rotation around the Y (up) axis
 double posx = 0.0;   // translation along X
 double posy = 0.0;   // translation along Y
 
-
 // transform the triangle's vertex data and put it into the points array.
 // also, compute the lighting at each vertex, and put that into the colors
 // array.
-void tri(light_properties& light, material_properties& material)
+void tri (
+        light_properties& light, material_properties& material,
+        point4 vertices[], point4 points[], color4 colors[]
+    )
 {
     // compute the lighting at each vertex, then set it as the color there:
-
     mat4x4_mul_vec4 (points[0], ctm, vertices[0]);
     mat4x4_mul_vec4 (points[1], ctm, vertices[1]);
     mat4x4_mul_vec4 (points[2], ctm, vertices[2]);
@@ -56,6 +42,7 @@ void tri(light_properties& light, material_properties& material)
 
     vec4 e2;
     vec4_sub(e2, points[2], points[0]);
+
     vec4 n1;
     vec4_mul_cross(n1, e1, e2);
     vec4_norm(n1, n1);
@@ -108,7 +95,8 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
         glfwSetWindowShouldClose(window, GLFW_TRUE);
 }
 
-void init(GLint& mvp_location)
+void init (GLint& mvp_location, point4 vertices[],
+           int n_colors, int n_points)
 {
     // "names" for the various buffers, shaders, programs etc:
     GLuint vertex_buffer, program;
@@ -124,7 +112,7 @@ void init(GLint& mvp_location)
     // specify that its part of a VAO, what its size is, and where the
     // data is located, and finally a "hint" about how we are going to use
     // the data (the driver will put it in a good memory location, hopefully)
-    glBufferData(GL_ARRAY_BUFFER, sizeof(points) + sizeof(colors),
+    glBufferData(GL_ARRAY_BUFFER, (n_colors + n_points) * sizeof(vec4),
                  vertices, GL_DYNAMIC_DRAW);
 
     // load in these two shaders...  (note: InitShader is defined in the
@@ -151,7 +139,7 @@ void init(GLint& mvp_location)
 
     glEnableVertexAttribArray(vcol_location);
     glVertexAttribPointer(vcol_location, 4, GL_FLOAT, GL_FALSE,
-                          0, (void*) (sizeof(points)));
+                          0, (void*) (n_points * sizeof(vec4)));
 }
 
 // use this motionfunc to demonstrate rotation - it adjusts "theta" based
@@ -241,9 +229,6 @@ int main(int argc, char* argv[])
     gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
     glfwSwapInterval(1);
 
-    GLint mvp_location;
-    init(mvp_location);
-
     light_properties light = {
             .position   = {0.0, 0.0, -1.0, 1.0},
             .ambient    = {0.2, 0.2, 0.2, 1.0},
@@ -258,6 +243,23 @@ int main(int argc, char* argv[])
             .shininess  = 100.0
     };
 
+    const int NumVertices = 3;
+
+    point4 vertices[3] = {
+            { -0.25,0.0,0.0, 1.0},
+            { 0.25,0.0,0.0, 1.0},
+            { 0.0, 0.5,0.0, 1.0}
+    };
+
+    // we will copy our transformed points to here:
+    point4 points[NumVertices];
+
+    // and we will store the colors, per face per vertex, here. since there is
+    // only 1 triangle, with 3 vertices, there will just be 3 here:
+    color4 colors[NumVertices];
+
+    GLint mvp_location;
+    init(mvp_location, &vertices[0], 3, 3);
 
     while (!glfwWindowShouldClose(window))
     {
@@ -281,7 +283,7 @@ int main(int argc, char* argv[])
         mat4x4_rotate_Y(ctm, ctm, theta / 180.0);
 
         // tri() will multiply the points by ctm, and figure out the lighting
-        tri(light, material);
+        tri(light, material, &vertices[0], &points[0], &colors[0]);
 
         // tell the VBO to re-get the data from the points and colors arrays:
         glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(points), points);
