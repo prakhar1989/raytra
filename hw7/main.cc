@@ -1,11 +1,12 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include "linmath.h"
-#include "parser.h"
 #include <stdlib.h>
+#include <vector>
 #include <stdio.h>
 #include <iostream>
 #include <fstream>
+#include "parser.h"
 
 typedef vec4 point4;
 typedef vec4 color4;
@@ -261,13 +262,28 @@ int main(int argc, char* argv[])
         exit(EXIT_FAILURE);
     }
 
+    // read in the object file
+    std::vector<int> tris;
+    std::vector<float> verts;
+    Parser::parse_obj(obj_file, tris, verts);
+
+    // build an array of vertices
+    auto n_vertices = verts.size()/3;
+    point4 vertices[n_vertices];
+
+    for (auto i = 0; i < n_vertices; i++) {
+        vertices[i][0] = verts[3*i];
+        vertices[i][1] = verts[3*i + 1];
+        vertices[i][2] = verts[3*i + 2];
+        vertices[i][3] = 1.0;
+    }
+
     // if there are errors, call this routine:
     glfwSetErrorCallback(error_callback);
 
     // start up GLFW:
     if (!glfwInit())
         exit(EXIT_FAILURE);
-
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
@@ -279,7 +295,7 @@ int main(int argc, char* argv[])
     //  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
 
     GLFWwindow* window;
-    window = glfwCreateWindow(640, 480, "hello triangle transform!", NULL, NULL);
+    window = glfwCreateWindow(640, 480, "GLRender v0.1", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -315,7 +331,6 @@ int main(int argc, char* argv[])
         glClearColor(1.0, 1.0, 1.0, 1.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-
         // make up a transform that rotates around screen "Z" with time:
         mat4x4_identity(ctm);
         mat4x4_rotate_Y(ctm, ctm, theta / 180.0);
@@ -324,8 +339,8 @@ int main(int argc, char* argv[])
         tri();
 
         // tell the VBO to re-get the data from the points and colors arrays:
-        glBufferSubData( GL_ARRAY_BUFFER, 0, sizeof(points), points );
-        glBufferSubData( GL_ARRAY_BUFFER, sizeof(points), sizeof(colors), colors );
+        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(points), points);
+        glBufferSubData(GL_ARRAY_BUFFER, sizeof(points), sizeof(colors), colors);
 
         // orthographically project to screen:
         mat4x4_ortho(p, -ratio, ratio, -1.f, 1.f, 1.f, -1.f);

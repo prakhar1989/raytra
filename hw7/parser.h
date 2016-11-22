@@ -2,12 +2,13 @@
 #define HW7_PARSER_H
 
 #include <vector>
+#include <string>
 
 class Parser {
 
 public:
     static int parse_obj (
-       std::string file_name,
+       const std::string& file_name,
        std::vector<int>& tris,
        std::vector<float>& vertices
     );

@@ -1,11 +1,23 @@
+#include <sstream>
+#include <fstream>
 #include "parser.h"
 
-static int Parser::parse_obj (
-        std::string file_name,
+using namespace std;
+
+// returns true if a string is all whitespaces
+inline bool is_blank(const std::string& line)
+{
+    return line.find_first_not_of("\n\t ") == std::string::npos;
+}
+
+int Parser::parse_obj(
+        const std::string& file_name,
         std::vector<int> &tris,
         std::vector<float> &vertices
 )
 {
+    ifstream in(file_name);
+
     for (string line; getline(in, line);) {
         if (line.empty() || is_blank(line))
             continue;
