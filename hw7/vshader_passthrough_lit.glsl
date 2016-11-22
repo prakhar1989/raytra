@@ -50,7 +50,7 @@ varying vec4 color;
 
 void main()
 {
- //   gl_Position = MVP * vec4(vPos, 0.0, 1.0);
+    // gl_Position = MVP * vec4(vPos, 0.0, 1.0);
     gl_Position = MVP * vPos;
     color = vCol;
 }

@@ -14,17 +14,16 @@
 // in later GLSL, use "in", and "out" respectively
 
 // for transform:
-//varying vec3 color;
+// varying vec3 color;
 
 // for lit:
 varying vec4 color;
 
 void main() 
 { 
-  // "gl_FragColor" is already defined for us - it's the one thing you have
-  // to set in the fragment shader:
-
-//    gl_FragColor = vec4(color, 1.0);
+    // "gl_FragColor" is already defined for us - it's the one thing you have
+    // to set in the fragment shader:
+    // gl_FragColor = vec4(color, 1.0);
     gl_FragColor = color;
 }
 
