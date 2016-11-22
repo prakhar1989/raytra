@@ -187,14 +187,21 @@ int main(int argc, char* argv[])
 
     // build an array of myvertices
     auto n_vertices = verts.size()/3;
-    point4 myvertices[n_vertices];
+    point4 vertices[n_vertices];
 
     for (auto i = 0; i < n_vertices; i++) {
-        myvertices[i][0] = verts[3*i];
-        myvertices[i][1] = verts[3*i + 1];
-        myvertices[i][2] = verts[3*i + 2];
-        myvertices[i][3] = 1.0;
+        vertices[i][0] = verts[3*i];
+        vertices[i][1] = verts[3*i + 1];
+        vertices[i][2] = verts[3*i + 2];
+        vertices[i][3] = 1.0;
     }
+
+    // we will copy our transformed points to here:
+    point4 points[n_vertices];
+
+    // and we will store the colors, per face per vertex, here. since there is
+    // only 1 triangle, with 3 vertices, there will just be 3 here:
+    color4 colors[n_vertices];
 
     // if there are errors, call this routine:
     glfwSetErrorCallback(error_callback);
@@ -243,23 +250,8 @@ int main(int argc, char* argv[])
             .shininess  = 100.0
     };
 
-    const int NumVertices = 3;
-
-    point4 vertices[3] = {
-            { -0.25,0.0,0.0, 1.0},
-            { 0.25,0.0,0.0, 1.0},
-            { 0.0, 0.5,0.0, 1.0}
-    };
-
-    // we will copy our transformed points to here:
-    point4 points[NumVertices];
-
-    // and we will store the colors, per face per vertex, here. since there is
-    // only 1 triangle, with 3 vertices, there will just be 3 here:
-    color4 colors[NumVertices];
-
     GLint mvp_location;
-    init(mvp_location, &vertices[0], 3, 3);
+    init(mvp_location, &vertices[0], n_vertices, n_vertices);
 
     while (!glfwWindowShouldClose(window))
     {
