@@ -13,23 +13,19 @@ using namespace std;
 // source provided for function to load and compile shaders
 GLuint InitShader(const char* vertexShaderFile, const char* fragmentShaderFile);
 
-// viewer's position, for lighting calculations
-point4 viewer = {0.0, 0.0, -1.0, 1.0};
-
-// a transformation matrix, for the rotation, which we will apply to every
-// vertex:
-mat4x4 ctm;
-
-float theta = 0.0;  // mouse rotation around the Y (up) axis
+/** Global location config **/
+float theta = 0.0;   // mouse rotation around the Y (up) axis
 double posx = 0.0;   // translation along X
 double posy = 0.0;   // translation along Y
 
 // transform the triangle's vertex data and put it into the points array.
 // also, compute the lighting at each vertex, and put that into the colors
 // array.
-void tri (
+void transform (
+        point4& viewer,
         light_properties& light, material_properties& material,
-        point4 vertices[], point4 points[], color4 colors[]
+        point4 vertices[], point4 points[], color4 colors[],
+        mat4x4& ctm
     )
 {
     // compute the lighting at each vertex, then set it as the color there:
@@ -186,7 +182,7 @@ int main(int argc, char* argv[])
     Parser::parse_obj(obj_file, tris, verts);
 
     // build an array of myvertices
-    auto n_vertices = verts.size()/3;
+    const auto n_vertices = verts.size()/3;
     point4 vertices[n_vertices];
 
     for (auto i = 0; i < n_vertices; i++) {
@@ -236,22 +232,31 @@ int main(int argc, char* argv[])
     gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
     glfwSwapInterval(1);
 
+    /** Open GL Init **/
+    GLint mvp_location;
+    init(mvp_location, &vertices[0], n_vertices, n_vertices);
+
+    /** Setting up Light and Material Properties **/
     light_properties light = {
-            .position   = {0.0, 0.0, -1.0, 1.0},
-            .ambient    = {0.2, 0.2, 0.2, 1.0},
-            .diffuse    = {1.0, 1.0, 1.0, 1.0},
-            .specular   = {1.0, 1.0, 1.0, 1.0}
+        .position   = {0.0, 0.0, -1.0f, 1.0},
+        .ambient    = {0.2, 0.2, 0.2, 1.0},
+        .diffuse    = {1.0, 1.0, 1.0, 1.0},
+        .specular   = {1.0, 1.0, 1.0, 1.0}
     };
 
     material_properties material = {
-            .ambient    = {1.0, 0.0, 1.0, 1.0},
-            .diffuse    = { 1.0, 0.8, 0.0, 1.0 },
-            .specular   = { 1.0, 0.8, 0.0, 1.0 },
-            .shininess  = 100.0
+        .ambient    = {1.0, 0.0, 1.0, 1.0},
+        .diffuse    = { 1.0, 0.8, 0.0, 1.0 },
+        .specular   = { 1.0, 0.8, 0.0, 1.0 },
+        .shininess  = 100.0
     };
 
-    GLint mvp_location;
-    init(mvp_location, &vertices[0], n_vertices, n_vertices);
+    /** Set the viewer's location **/
+    point4 viewer = {0.0, 0.0, -1.0, 1.0};
+
+    // a transformation matrix, for the rotation,
+    // which we will apply to every vertex
+    mat4x4 rotation_mat;
 
     while (!glfwWindowShouldClose(window))
     {
@@ -259,8 +264,7 @@ int main(int argc, char* argv[])
         int width, height;
         mat4x4 p;
 
-        // in case the  window viewport size changed, we will need to adjust the
-        // projection:
+        // update with window viewport size
         glfwGetFramebufferSize(window, &width, &height);
         ratio = width / (float) height;
 
@@ -271,11 +275,13 @@ int main(int argc, char* argv[])
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // make up a transform that rotates around screen "Z" with time:
-        mat4x4_identity(ctm);
-        mat4x4_rotate_Y(ctm, ctm, theta / 180.0);
+        mat4x4_identity(rotation_mat);
+        mat4x4_rotate_Y(rotation_mat, rotation_mat, theta / 180.0);
 
-        // tri() will multiply the points by ctm, and figure out the lighting
-        tri(light, material, &vertices[0], &points[0], &colors[0]);
+        // transform() will multiply the points by rotation_mat, and figure out the lighting
+        transform(viewer, light, material,
+            &vertices[0], &points[0],
+            &colors[0], rotation_mat);
 
         // tell the VBO to re-get the data from the points and colors arrays:
         glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(points), points);
