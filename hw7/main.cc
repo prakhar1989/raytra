@@ -24,10 +24,14 @@ const float deg_to_rad = (3.1415926f / 180.0f);
 // also, compute the lighting at each vertex, and put that into the colors
 // array.
 void transform (
-        point4& viewer,
-        light_properties& light, material_properties& material,
+        const point4& viewer,
+        const light_properties& light,
+        const material_properties& material,
         point4 vertices[], point4 points[], color4 colors[],
-        mat4x4& rotation_mat, unsigned int n_vertices
+        mat4x4& rotation_mat,
+        unsigned long n_vertices,
+        vec3 faces[],
+        unsigned long n_faces
     )
 {
     // compute the lighting at each vertex,
@@ -36,11 +40,11 @@ void transform (
         mat4x4_mul_vec4(points[i], rotation_mat, vertices[i]);
     }
 
-    for (unsigned int i = 0; i < n_vertices; i++) {
-
-        unsigned int a_index = 3 * i;
-        unsigned int b_index = 3 * i + 1;
-        unsigned int c_index = 3 * i + 2;
+    /* per face computation */
+    for (unsigned int i = 0; i < n_faces; i++) {
+        auto a_index = (unsigned int) faces[i][0];
+        auto b_index = (unsigned int) faces[i][1];
+        auto c_index = (unsigned int) faces[i][2];
 
         // compute the triangle norm
         vec4 e1, e2, n1, light_pos_viewer, half;
@@ -80,14 +84,14 @@ void transform (
         }
 
         // set the computed colors
-        vec4_add(colors[0], ambient_color, diffuse_color);
-        vec4_add(colors[0], colors[0], specular_color);
+        vec4_add(colors[a_index], ambient_color, diffuse_color);
+        vec4_add(colors[a_index], colors[a_index], specular_color);
 
-        vec4_add(colors[1], ambient_color, diffuse_color);
-        vec4_add(colors[1], colors[1], specular_color);
+        vec4_add(colors[b_index], ambient_color, diffuse_color);
+        vec4_add(colors[b_index], colors[b_index], specular_color);
 
-        vec4_add(colors[2], ambient_color, diffuse_color);
-        vec4_add(colors[2], colors[2], specular_color);
+        vec4_add(colors[c_index], ambient_color, diffuse_color);
+        vec4_add(colors[c_index], colors[c_index], specular_color);
     }
 }
 
@@ -188,8 +192,10 @@ int main(int argc, char* argv[])
     std::vector<float> verts;
     Parser::parse_obj(obj_file, tris, verts);
 
-    // build an array of myvertices
+    // build an array of vertices
     const auto n_vertices = verts.size()/3;
+
+    // collection of vertices as OpenGL expects them
     point4 vertices[n_vertices];
 
     for (auto i = 0; i < n_vertices; i++) {
@@ -197,6 +203,15 @@ int main(int argc, char* argv[])
         vertices[i][1] = verts[3*i + 1];
         vertices[i][2] = verts[3*i + 2];
         vertices[i][3] = 1.0;
+    }
+
+    // collection of faces
+    const auto n_faces = tris.size()/3;
+    vec3 faces[n_faces];
+    for (auto i = 0; i < n_faces; i++) {
+        faces[i][0] = tris[3*i];
+        faces[i][1] = tris[3*i+1];
+        faces[i][2] = tris[3*i+2];
     }
 
     // we will copy our transformed points to here:
@@ -292,7 +307,8 @@ int main(int argc, char* argv[])
         // transform() will multiply the points by rotation_mat, and figure out the lighting
         transform(viewer, light, material,
             &vertices[0], &points[0],
-            &colors[0], rotation_mat, n_vertices);
+            &colors[0], rotation_mat, n_vertices,
+            &faces[0], n_faces);
 
         // tell the VBO to re-get the data from the points and colors arrays:
         glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(points), points);
