@@ -18,6 +18,8 @@ float theta = 0.0;   // mouse rotation around the Y (up) axis
 double posx = 0.0;   // translation along X
 double posy = 0.0;   // translation along Y
 
+const float deg_to_rad = (3.1415926f / 180.0f);
+
 // transform the triangle's vertex data and put it into the points array.
 // also, compute the lighting at each vertex, and put that into the colors
 // array.
@@ -25,64 +27,68 @@ void transform (
         point4& viewer,
         light_properties& light, material_properties& material,
         point4 vertices[], point4 points[], color4 colors[],
-        mat4x4& ctm
+        mat4x4& rotation_mat, unsigned int n_vertices
     )
 {
-    // compute the lighting at each vertex, then set it as the color there:
-    mat4x4_mul_vec4 (points[0], ctm, vertices[0]);
-    mat4x4_mul_vec4 (points[1], ctm, vertices[1]);
-    mat4x4_mul_vec4 (points[2], ctm, vertices[2]);
-
-    vec4 e1;
-    vec4_sub(e1, points[1], points[0]);
-
-    vec4 e2;
-    vec4_sub(e2, points[2], points[0]);
-
-    vec4 n1;
-    vec4_mul_cross(n1, e1, e2);
-    vec4_norm(n1, n1);
-
-    vec4 n = {n1[0], n1[1], n1[2], 1.0};
-    vec4 light_pos_viewer;
-    vec4_add (light_pos_viewer, light.position, viewer);
-    vec4 half;
-    vec4_norm(half, light_pos_viewer);
-
-    color4 ambient_color, diffuse_color, specular_color;
-
-    vecproduct(ambient_color, material.ambient, light.ambient);
-
-    float dd = vec4_mul_inner(light.position, n);
-
-    if(dd>0.0) {
-        color4 diffuse_product;
-        vecproduct(diffuse_product, light.diffuse, material.diffuse);
-        vec4_scale (diffuse_product, diffuse_product, dd);
-        vecset(diffuse_color, diffuse_product);
+    // compute the lighting at each vertex,
+    // then set it as the color there:
+    for (unsigned int i = 0; i < n_vertices; i++) {
+        mat4x4_mul_vec4(points[i], rotation_mat, vertices[i]);
     }
-    else
-        vecclear(diffuse_color);
 
-    dd = vec4_mul_inner(half, n);
+    for (unsigned int i = 0; i < n_vertices; i++) {
 
-    if(dd > 0.0) {
-        color4 spec_prod;
-        vecproduct(spec_prod, light.specular, material.specular);
-        vec4_scale (spec_prod,spec_prod, exp(material.shininess*log(dd)));
-        vecset(specular_color, spec_prod);
+        unsigned int a_index = 3 * i;
+        unsigned int b_index = 3 * i + 1;
+        unsigned int c_index = 3 * i + 2;
+
+        // compute the triangle norm
+        vec4 e1, e2, n1, light_pos_viewer, half;
+        color4 ambient_color, diffuse_color, specular_color;
+
+        vec4_sub(e1, points[b_index], points[a_index]);
+        vec4_sub(e2, points[c_index], points[a_index]);
+        vec4_mul_cross(n1, e1, e2);
+        vec4_norm(n1, n1);
+
+        vec4 n = {n1[0], n1[1], n1[2], 1.0};
+        vec4_add(light_pos_viewer, light.position, viewer);
+        vec4_norm(half, light_pos_viewer);
+
+        vecproduct(ambient_color, material.ambient, light.ambient);
+
+        // calculate the diffuse shading
+        float dd = vec4_mul_inner(light.position, n);
+        if (dd > 0.0) {
+            color4 diffuse_product;
+            vecproduct(diffuse_product, light.diffuse, material.diffuse);
+            vec4_scale(diffuse_product, diffuse_product, dd);
+            vecset(diffuse_color, diffuse_product);
+        } else {
+            vecclear(diffuse_color);
+        }
+
+        // calculate the specular shading
+        dd = vec4_mul_inner(half, n);
+        if (dd > 0.0) {
+            color4 spec_prod;
+            vecproduct(spec_prod, light.specular, material.specular);
+            vec4_scale(spec_prod, spec_prod, exp(material.shininess * log(dd)));
+            vecset(specular_color, spec_prod);
+        } else {
+            vecclear(specular_color);
+        }
+
+        // set the computed colors
+        vec4_add(colors[0], ambient_color, diffuse_color);
+        vec4_add(colors[0], colors[0], specular_color);
+
+        vec4_add(colors[1], ambient_color, diffuse_color);
+        vec4_add(colors[1], colors[1], specular_color);
+
+        vec4_add(colors[2], ambient_color, diffuse_color);
+        vec4_add(colors[2], colors[2], specular_color);
     }
-    else
-        vecclear(specular_color);
-
-    vec4_add (colors[0], ambient_color, diffuse_color);
-    vec4_add (colors[0], colors[0], specular_color);
-
-    vec4_add (colors[1], ambient_color, diffuse_color);
-    vec4_add (colors[1], colors[1], specular_color);
-
-    vec4_add (colors[2], ambient_color, diffuse_color);
-    vec4_add (colors[2], colors[2], specular_color);
 }
 
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -115,7 +121,8 @@ void init (GLint& mvp_location, point4 vertices[],
     // accompanying initshader.c code).
     // the shaders themselves must be text glsl files in the same directory
     // as we are running this program:
-    program = InitShader("vshader_passthrough_lit.glsl", "fshader_passthrough_lit.glsl");
+    program = InitShader("shaders/vshader_passthrough_lit.glsl",
+                         "shaders/fshader_passthrough_lit.glsl");
 
     // ...and set them to be active
     glUseProgram(program);
@@ -236,6 +243,10 @@ int main(int argc, char* argv[])
     GLint mvp_location;
     init(mvp_location, &vertices[0], n_vertices, n_vertices);
 
+    /** Enable Z Buffering for depth */
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
+
     /** Setting up Light and Material Properties **/
     light_properties light = {
         .position   = {0.0, 0.0, -1.0f, 1.0},
@@ -276,12 +287,12 @@ int main(int argc, char* argv[])
 
         // make up a transform that rotates around screen "Z" with time:
         mat4x4_identity(rotation_mat);
-        mat4x4_rotate_Y(rotation_mat, rotation_mat, theta / 180.0);
+        mat4x4_rotate_Y(rotation_mat, rotation_mat, theta * deg_to_rad);
 
         // transform() will multiply the points by rotation_mat, and figure out the lighting
         transform(viewer, light, material,
             &vertices[0], &points[0],
-            &colors[0], rotation_mat);
+            &colors[0], rotation_mat, n_vertices);
 
         // tell the VBO to re-get the data from the points and colors arrays:
         glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(points), points);
@@ -291,7 +302,7 @@ int main(int argc, char* argv[])
         mat4x4_ortho(p, -ratio, ratio, -1.f, 1.f, 1.f, -1.f);
 
         glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat*) p);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glDrawArrays(GL_TRIANGLES, 0, n_vertices);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
