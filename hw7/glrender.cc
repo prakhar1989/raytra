@@ -212,10 +212,10 @@ int main(int argc, char* argv[])
 
     /** Setting up Light and Material Properties **/
     light_properties light = {
-        .position   = {0.0, 0.0, -1.0f, 1.0},
+        .position   = {0.0, 0.0, -10.0f, 1.0},
         .ambient    = {0.2, 0.2, 0.2, 1.0},
-        .diffuse    = {1.0, 1.0, 1.0, 1.0},
-        .specular   = {1.0, 1.0, 1.0, 1.0}
+        .diffuse    = {0.8, 0.8, 0.8, 1.0},
+        .specular   = {.5, .5, .5, 1.0}
     };
 
     material_properties material = {
@@ -226,7 +226,7 @@ int main(int argc, char* argv[])
     };
 
     /** Set the viewer's location **/
-    point4 viewer = {0.0, 0.0, -1.0f, 1.0};
+    point4 viewer = {0.0, 0.0, -10.0f, 1.0};
 
     // a transformation matrix, for the rotation,
     // which we will apply to every vertex
