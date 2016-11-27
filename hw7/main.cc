@@ -32,61 +32,66 @@ void transform (
         unsigned long n_vertices
     )
 {
-    for (unsigned int i = 0; i < n_vertices/3; i++) {
-        auto a_index = 3 * i;
-        auto b_index = 3 * i + 1;
-        auto c_index = 3 * i + 2;
+    for (unsigned int i = 0; i < n_vertices / 3; i++) {
+
+        unsigned int a_index, b_index, c_index;
+        a_index = 3 * i; b_index = 3 * i + 1; c_index = 3 * i + 2;
 
         mat4x4_mul_vec4(points[a_index], rotation_mat, vertices[a_index]);
         mat4x4_mul_vec4(points[b_index], rotation_mat, vertices[b_index]);
         mat4x4_mul_vec4(points[c_index], rotation_mat, vertices[c_index]);
 
         // compute the triangle norm
-        vec4 e1, e2, n1, light_pos_viewer, half;
+        vec4 e1, e2, n;
+        vec4_sub(e1, points[b_index], points[a_index]);
+        vec4_sub(e2, points[c_index], points[a_index]);
+        vec4_mul_cross(n, e1, e2);
+        n[3] = 0.f;
+        vec4_norm(n, n);
+
+        // shading
         color4 ambient_color, diffuse_color, specular_color;
 
-        vec4_sub(e1, vertices[b_index], vertices[a_index]);
-        vec4_sub(e2, vertices[c_index], vertices[a_index]);
-        vec4_mul_cross(n1, e1, e2);
-        vec4_norm(n1, n1);
-
-        vec4 n = {n1[0], n1[1], n1[2], 1.0};
-        vec4_add(light_pos_viewer, light.position, viewer);
-        vec4_norm(half, light_pos_viewer);
-
+        // ambient computation
+        vecclear(ambient_color);
         vecproduct(ambient_color, material.ambient, light.ambient);
 
-        // calculate the diffuse shading
-        float dd = vec4_mul_inner(light.position, n);
-        if (dd > 0.0) {
-            color4 diffuse_product;
-            vecproduct(diffuse_product, light.diffuse, material.diffuse);
-            vec4_scale(diffuse_product, diffuse_product, dd);
-            vecset(diffuse_color, diffuse_product);
-        } else {
-            vecclear(diffuse_color);
+        // diffuse computation
+        vecclear(diffuse_color);
+        color4 diffuse_product;
+        vecproduct(diffuse_product, light.diffuse, material.diffuse);
+
+        // specular computation
+        vecclear(specular_color);
+        color4 spec_product;
+        vecproduct(spec_product, light.specular, material.specular);
+
+        for (int j = 0; j < 3; j++) {
+            int index = 3 * i + j;
+            vec4 light_vec;
+            vec4_sub(light_vec, light.position, points[index]);
+            vec4_norm(light_vec, light_vec);
+
+            // calculate the diffuse shading
+            float dd = vec4_mul_inner(light.position, n);
+            if (dd > 0.0)
+                vec4_scale(diffuse_color, diffuse_product, dd);
+
+//        // calculate the specular shading
+//        dd = vec4_mul_inner(half, n);
+//        if (dd > 0.0) {
+//            color4 spec_prod;
+//            vecproduct(spec_prod, light.specular, material.specular);
+//            vec4_scale(spec_prod, spec_prod, exp(material.shininess * log(dd)));
+//            vecset(specular_color, spec_prod);
+//        } else {
+//            vecclear(specular_color);
+//        }
+
+            // set the computed colors
+            vec4_add(colors[index], ambient_color, diffuse_color);
+            //vec4_add(colors[index], colors[a_index], specular_color);
         }
-
-        // calculate the specular shading
-        dd = vec4_mul_inner(half, n);
-        if (dd > 0.0) {
-            color4 spec_prod;
-            vecproduct(spec_prod, light.specular, material.specular);
-            vec4_scale(spec_prod, spec_prod, exp(material.shininess * log(dd)));
-            vecset(specular_color, spec_prod);
-        } else {
-            vecclear(specular_color);
-        }
-
-        // set the computed colors
-        vec4_add(colors[a_index], ambient_color, diffuse_color);
-        vec4_add(colors[a_index], colors[a_index], specular_color);
-
-        vec4_add(colors[b_index], ambient_color, diffuse_color);
-        vec4_add(colors[b_index], colors[b_index], specular_color);
-
-        vec4_add(colors[c_index], ambient_color, diffuse_color);
-        vec4_add(colors[c_index], colors[c_index], specular_color);
     }
 }
 
