@@ -144,7 +144,6 @@ static void mouse_move_rotate (GLFWwindow* window, double x, double y)
     }
 }
 
-
 int main(int argc, char* argv[])
 {
     if (argc < 2) {

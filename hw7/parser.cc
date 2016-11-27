@@ -58,7 +58,7 @@ unsigned long Parser::parse_obj (
     in.close();
 
     printf("Read %lu vertices and %lu faces from '%s'\n",
-           vertices.size() / 3, tris.size() / 3, file_name.c_str());
+           verts.size() / 3, tris.size() / 3, file_name.c_str());
 
     // build the vertices array as an array of floats
     unsigned long n_vertices = tris.size();

@@ -21,5 +21,3 @@ set(SOURCE_FILES utils.h parser.cc initshader.cc glrender.cc)
 
 add_executable(glrender ${GLAD} ${SOURCE_FILES})
 target_link_libraries(glrender ${FRAMEWORKS} ${GL_LIBS} pthread dl)
-
-
