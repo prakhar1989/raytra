@@ -226,7 +226,7 @@ int main(int argc, char* argv[])
     };
 
     /** Set the viewer's location **/
-    point4 viewer = {0.0, 0.0, -1.0, 1.0};
+    point4 viewer = {0.0, 0.0, -1.0f, 1.0};
 
     // a transformation matrix, for the rotation,
     // which we will apply to every vertex
