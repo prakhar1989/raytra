@@ -62,9 +62,9 @@ void transform (
             vec4_sub(light_vec, light.position, points[index]);
             vec4_norm(light_vec, light_vec);
 
-            float dd = vec4_mul_inner(light.position, n);
-            if (dd > 0.0)
-                vec4_scale(diffuse_color, diffuse_product, dd);
+            float dd1 = vec4_mul_inner(light_vec, n);
+            if (dd1 > 0.0)
+                vec4_scale(diffuse_color, diffuse_product, dd1);
 
             // compute the specular shading
             vec4 view_vec, half;
@@ -73,10 +73,10 @@ void transform (
             vec4_add(half, light_vec, view_vec);
             vec4_norm(half, half);
 
-            float dd1 = vec4_mul_inner(half, n);
+            float dd2 = vec4_mul_inner(half, n);
 
-            if (dd1 > 0.0)
-                vec4_scale(specular_color, spec_product, exp(material.shininess * log(dd1)));
+            if (dd2 > 0.0)
+                vec4_scale(specular_color, spec_product, exp(material.shininess * log(dd2)));
 
             // set the computed colors
             vec4_add(colors[index], ambient_color, diffuse_color);
@@ -163,8 +163,11 @@ int main(int argc, char* argv[])
     std::vector<float> verts;
     const auto n_vertices = Parser::parse_obj(obj_file, verts);
 
-    // collection of vertices as OpenGL expects them
+    // collection of vertices, points and colors
+    // as OpenGL expects them
     point4 vertices[n_vertices];
+    point4 points[n_vertices];
+    color4 colors[n_vertices];
 
     for (auto i = 0; i < n_vertices; i++) {
         vertices[i][0] = verts[3*i];
@@ -173,40 +176,26 @@ int main(int argc, char* argv[])
         vertices[i][3] = 1;
     }
 
-    // we will copy our transformed points to here:
-    point4 points[n_vertices];
-
-    // and we will store the colors, per face per vertex, here. since there is
-    // only 1 triangle, with 3 vertices, there will just be 3 here:
-    color4 colors[n_vertices];
-
-    // if there are errors, call this routine:
-    glfwSetErrorCallback(error_callback);
-
-    // start up GLFW:
     if (!glfwInit())
+    {
+        fprintf(stderr, "Failed to initialize GLFW\n");
         exit(EXIT_FAILURE);
+    }
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+    glfwWindowHint(GLFW_SAMPLES, 4);
 
-    // for more modern version of OpenGL:
-    //  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    //  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
-    //  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-    //  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
-
-    GLFWwindow* window;
-    window = glfwCreateWindow(640, 480, "GLRender v0.1", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(640, 480, "GLRender v0.1", NULL, NULL);
     if (!window)
     {
+        fprintf(stderr, "Failed to initialize glfw window\n");
         glfwTerminate();
         exit(EXIT_FAILURE);
     }
 
+    glfwSetErrorCallback(error_callback);
     glfwSetKeyCallback(window, key_callback);
-
-    // call only once: demo for rotation:
     glfwSetCursorPosCallback(window, mouse_move_rotate);
 
     glfwMakeContextCurrent(window);
