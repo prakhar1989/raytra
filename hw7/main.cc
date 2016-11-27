@@ -40,18 +40,19 @@ void transform (
         mat4x4_mul_vec4(points[i], rotation_mat, vertices[i]);
     }
 
-    /* per face computation */
-    for (unsigned int i = 0; i < n_faces; i++) {
-        auto a_index = (unsigned int) faces[i][0];
-        auto b_index = (unsigned int) faces[i][1];
-        auto c_index = (unsigned int) faces[i][2];
+
+    for (unsigned int i = 0; i < n_vertices/3; i++) {
+
+        auto a_index = 3 * i;
+        auto b_index = 3 * i + 1;
+        auto c_index = 3 * i + 2;
 
         // compute the triangle norm
         vec4 e1, e2, n1, light_pos_viewer, half;
         color4 ambient_color, diffuse_color, specular_color;
 
-        vec4_sub(e1, points[b_index], points[a_index]);
-        vec4_sub(e2, points[c_index], points[a_index]);
+        vec4_sub(e1, vertices[b_index], vertices[a_index]);
+        vec4_sub(e2, vertices[c_index], vertices[a_index]);
         vec4_mul_cross(n1, e1, e2);
         vec4_norm(n1, n1);
 
@@ -101,8 +102,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
         glfwSetWindowShouldClose(window, GLFW_TRUE);
 }
 
-void init (GLint& mvp_location, point4 vertices[],
-           int n_colors, int n_points)
+void init (GLint& mvp_location, point4 vertices[], int n_colors, int n_points)
 {
     // "names" for the various buffers, shaders, programs etc:
     GLuint vertex_buffer, program;
@@ -114,25 +114,18 @@ void init (GLint& mvp_location, point4 vertices[],
     glGenBuffers(1, &vertex_buffer);
     glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
 
-
     // specify that its part of a VAO, what its size is, and where the
     // data is located, and finally a "hint" about how we are going to use
     // the data (the driver will put it in a good memory location, hopefully)
-    glBufferData(GL_ARRAY_BUFFER, (n_colors + n_points) * sizeof(vec4),
-                 vertices, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, (n_colors + n_points) * sizeof(vec4), NULL, GL_DYNAMIC_DRAW);
 
-    // load in these two shaders...  (note: InitShader is defined in the
-    // accompanying initshader.c code).
-    // the shaders themselves must be text glsl files in the same directory
-    // as we are running this program:
     program = InitShader("shaders/vshader_passthrough_lit.glsl",
                          "shaders/fshader_passthrough_lit.glsl");
 
-    // ...and set them to be active
     glUseProgram(program);
 
-    // get acces to the various things we will be sending to the shaders:
-    mvp_location = glGetUniformLocation(program, "MVP");
+    // get access to the various things we will be sending to the shaders:
+    mvp_location  = glGetUniformLocation(program, "MVP");
     vpos_location = glGetAttribLocation(program, "vPos");
     vcol_location = glGetAttribLocation(program, "vCol");
 
@@ -142,7 +135,6 @@ void init (GLint& mvp_location, point4 vertices[],
     // beginning of the buffer
     glVertexAttribPointer(vpos_location, 4, GL_FLOAT, GL_FALSE,
                           0, (void*) (0));
-
 
     glEnableVertexAttribArray(vcol_location);
     glVertexAttribPointer(vcol_location, 4, GL_FLOAT, GL_FALSE,
@@ -163,15 +155,6 @@ static void mouse_move_rotate (GLFWwindow* window, double x, double y)
     }
 }
 
-// use this motionfunc to demonstrate translation - it adjusts posx and
-// posy based on the mouse movement. posx and posy are then used in the
-// display loop to generate the transformation that is applied
-// to all the vertices before they are displayed:
-static void mouse_move_translate (GLFWwindow* window, double x, double y)
-{
-    posx = x;
-    posy = -y;
-}
 
 int main(int argc, char* argv[])
 {
@@ -192,26 +175,53 @@ int main(int argc, char* argv[])
     std::vector<float> verts;
     Parser::parse_obj(obj_file, tris, verts);
 
-    // build an array of vertices
-    const auto n_vertices = verts.size()/3;
+    // collection of faces
+    const auto n_faces = tris.size()/3;
+    const auto n_vertices = tris.size();
 
     // collection of vertices as OpenGL expects them
     point4 vertices[n_vertices];
+    std::vector<float> myvertices;
+    vec3 faces[n_faces];
 
-    for (auto i = 0; i < n_vertices; i++) {
-        vertices[i][0] = verts[3*i];
-        vertices[i][1] = verts[3*i + 1];
-        vertices[i][2] = verts[3*i + 2];
-        vertices[i][3] = 1.0;
+    int currIndex = 0;
+
+    for (auto i = 0; i < n_faces; i++) {
+        int v1, v2, v3;
+        float x1, y1, z1, x2, y2, z2, x3, y3, z3;
+
+        v1 = tris[3*i];
+        v2 = tris[3*i+1];
+        v3 = tris[3*i+2];
+
+        x1 = verts[3 * v1];
+        y1 = verts[3 * v1 + 1];
+        z1 = verts[3 * v1 + 2];
+
+        x2 = verts[3 * v2];
+        y2 = verts[3 * v2 + 1];
+        z2 = verts[3 * v2 + 2];
+
+        x3 = verts[3 * v3];
+        y3 = verts[3 * v3 + 1];
+        z3 = verts[3 * v3 + 2];
+
+        myvertices.push_back(x1);
+        myvertices.push_back(y1);
+        myvertices.push_back(z1);
+        myvertices.push_back(x2);
+        myvertices.push_back(y2);
+        myvertices.push_back(z2);
+        myvertices.push_back(x3);
+        myvertices.push_back(y3);
+        myvertices.push_back(z3);
     }
 
-    // collection of faces
-    const auto n_faces = tris.size()/3;
-    vec3 faces[n_faces];
-    for (auto i = 0; i < n_faces; i++) {
-        faces[i][0] = tris[3*i];
-        faces[i][1] = tris[3*i+1];
-        faces[i][2] = tris[3*i+2];
+    for (auto i = 0; i < n_vertices; i++) {
+        vertices[i][0] = myvertices[3*i];
+        vertices[i][1] = myvertices[3*i+1];
+        vertices[i][2] = myvertices[3*i+2];
+        vertices[i][3] = 1;
     }
 
     // we will copy our transformed points to here:
@@ -272,8 +282,8 @@ int main(int argc, char* argv[])
 
     material_properties material = {
         .ambient    = {1.0, 0.0, 1.0, 1.0},
-        .diffuse    = { 1.0, 0.8, 0.0, 1.0 },
-        .specular   = { 1.0, 0.8, 0.0, 1.0 },
+        .diffuse    = {1.0, 0.8, 0.0, 1.0},
+        .specular   = {1.0, 0.8, 0.0, 1.0},
         .shininess  = 100.0
     };
 
