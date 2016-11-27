@@ -31,8 +31,8 @@ void transform (
     unsigned long n_vertices
 )
 {
+    // for each face
     for (unsigned int i = 0; i < n_vertices / 3; i++) {
-
         // compute the triangle norm
         vec4 e1, e2, n;
         vec4_sub(e1, points[3*i+1], points[3*i]);
@@ -51,9 +51,10 @@ void transform (
         vecproduct(diffuse_product, light.diffuse, material.diffuse);
         vecproduct(spec_product, light.specular, material.specular);
 
+        // for each point in that face
         for (int j = 0; j < 3; j++) {
-            int index = 3 * i + j;
 
+            int index = 3 * i + j;
             mat4x4_mul_vec4(points[index], rotation_mat, vertices[index]);
 
             // calculate diffuse shading
@@ -75,7 +76,7 @@ void transform (
             float dd1 = vec4_mul_inner(half, n);
 
             if (dd1 > 0.0)
-                vec4_scale(specular_color, spec_product, exp(material.shininess * log(dd)));
+                vec4_scale(specular_color, spec_product, exp(material.shininess * log(dd1)));
 
             // set the computed colors
             vec4_add(colors[index], ambient_color, diffuse_color);
