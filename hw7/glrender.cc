@@ -21,16 +21,15 @@ double posy = 0.0;   // translation along Y
 const float deg_to_rad = (3.1415926f / 180.0f);
 
 // transform the triangle's vertex data and put it into the points array.
-// also, compute the lighting at each vertex, and put that into the colors
-// array.
+// also, compute the lighting at each vertex, and put that into the colors array.
 void transform (
-        const point4& viewer,
-        const light_properties& light,
-        const material_properties& material,
-        point4 vertices[], point4 points[], color4 colors[],
-        mat4x4& rotation_mat,
-        unsigned long n_vertices
-    )
+    const point4& viewer,
+    const light_properties& light,
+    const material_properties& material,
+    point4 vertices[], point4 points[], color4 colors[],
+    mat4x4& rotation_mat,
+    unsigned long n_vertices
+)
 {
     for (unsigned int i = 0; i < n_vertices / 3; i++) {
 
@@ -109,8 +108,8 @@ void init (GLint& mvp_location, point4 vertices[], int n_colors, int n_points)
     // the data (the driver will put it in a good memory location, hopefully)
     glBufferData(GL_ARRAY_BUFFER, (n_colors + n_points) * sizeof(vec4), NULL, GL_DYNAMIC_DRAW);
 
-    program = InitShader("shaders/vshader_passthrough_lit.glsl",
-                         "shaders/fshader_passthrough_lit.glsl");
+    program = InitShader("vshader_passthrough_lit.glsl",
+                         "fshader_passthrough_lit.glsl");
 
     glUseProgram(program);
 
