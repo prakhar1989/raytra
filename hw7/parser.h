@@ -7,9 +7,8 @@
 class Parser {
 
 public:
-    static int parse_obj (
+    static unsigned long parse_obj (
        const std::string& file_name,
-       std::vector<int>& tris,
        std::vector<float>& vertices
     );
 };

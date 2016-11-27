@@ -165,56 +165,16 @@ int main(int argc, char* argv[])
     }
 
     // read in the object file
-    std::vector<int> tris;
     std::vector<float> verts;
-    Parser::parse_obj(obj_file, tris, verts);
-
-    // collection of faces
-    const auto n_faces = tris.size()/3;
-    const auto n_vertices = tris.size();
+    const auto n_vertices = Parser::parse_obj(obj_file, verts);
 
     // collection of vertices as OpenGL expects them
     point4 vertices[n_vertices];
-    std::vector<float> myvertices;
-    vec3 faces[n_faces];
-
-    int currIndex = 0;
-
-    for (auto i = 0; i < n_faces; i++) {
-        int v1, v2, v3;
-        float x1, y1, z1, x2, y2, z2, x3, y3, z3;
-
-        v1 = tris[3*i];
-        v2 = tris[3*i+1];
-        v3 = tris[3*i+2];
-
-        x1 = verts[3 * v1];
-        y1 = verts[3 * v1 + 1];
-        z1 = verts[3 * v1 + 2];
-
-        x2 = verts[3 * v2];
-        y2 = verts[3 * v2 + 1];
-        z2 = verts[3 * v2 + 2];
-
-        x3 = verts[3 * v3];
-        y3 = verts[3 * v3 + 1];
-        z3 = verts[3 * v3 + 2];
-
-        myvertices.push_back(x1);
-        myvertices.push_back(y1);
-        myvertices.push_back(z1);
-        myvertices.push_back(x2);
-        myvertices.push_back(y2);
-        myvertices.push_back(z2);
-        myvertices.push_back(x3);
-        myvertices.push_back(y3);
-        myvertices.push_back(z3);
-    }
 
     for (auto i = 0; i < n_vertices; i++) {
-        vertices[i][0] = myvertices[3*i];
-        vertices[i][1] = myvertices[3*i+1];
-        vertices[i][2] = myvertices[3*i+2];
+        vertices[i][0] = verts[3*i];
+        vertices[i][1] = verts[3*i+1];
+        vertices[i][2] = verts[3*i+2];
         vertices[i][3] = 1;
     }
 
