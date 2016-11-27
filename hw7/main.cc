@@ -29,23 +29,17 @@ void transform (
         const material_properties& material,
         point4 vertices[], point4 points[], color4 colors[],
         mat4x4& rotation_mat,
-        unsigned long n_vertices,
-        vec3 faces[],
-        unsigned long n_faces
+        unsigned long n_vertices
     )
 {
-    // compute the lighting at each vertex,
-    // then set it as the color there:
-    for (unsigned int i = 0; i < n_vertices; i++) {
-        mat4x4_mul_vec4(points[i], rotation_mat, vertices[i]);
-    }
-
-
     for (unsigned int i = 0; i < n_vertices/3; i++) {
-
         auto a_index = 3 * i;
         auto b_index = 3 * i + 1;
         auto c_index = 3 * i + 2;
+
+        mat4x4_mul_vec4(points[a_index], rotation_mat, vertices[a_index]);
+        mat4x4_mul_vec4(points[b_index], rotation_mat, vertices[b_index]);
+        mat4x4_mul_vec4(points[c_index], rotation_mat, vertices[c_index]);
 
         // compute the triangle norm
         vec4 e1, e2, n1, light_pos_viewer, half;
@@ -317,8 +311,7 @@ int main(int argc, char* argv[])
         // transform() will multiply the points by rotation_mat, and figure out the lighting
         transform(viewer, light, material,
             &vertices[0], &points[0],
-            &colors[0], rotation_mat, n_vertices,
-            &faces[0], n_faces);
+            &colors[0], rotation_mat, n_vertices);
 
         // tell the VBO to re-get the data from the points and colors arrays:
         glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(points), points);
