@@ -22,7 +22,7 @@ const float deg_to_rad = (3.1415926f / 180.0f);
 
 // transform the triangle's vertex data and put it into the points array.
 // also, compute the lighting at each vertex, and put that into the colors array.
-void transform (
+void calculate_lighting (
     const point4& viewer,
     const light_properties& light,
     const material_properties& material,
@@ -119,13 +119,13 @@ void init (GLint& mvp_location, point4 vertices[], int n_colors, int n_points)
     vpos_location = glGetAttribLocation(program, "vPos");
     vcol_location = glGetAttribLocation(program, "vCol");
 
-    glEnableVertexAttribArray(vpos_location);
-
     // the vPosition attribute is a series of 4-vecs of floats, starting at the
     // beginning of the buffer
-    glVertexAttribPointer(vpos_location, 4, GL_FLOAT, GL_FALSE,
-                          0, (void*) (0));
+    glEnableVertexAttribArray(vpos_location);
+    glVertexAttribPointer(vpos_location, 4, GL_FLOAT, GL_FALSE, 0, (void*) (0));
 
+    // the vColors attribute is a series of 4-vecs of floats, starting where
+    // previous buffer ends
     glEnableVertexAttribArray(vcol_location);
     glVertexAttribPointer(vcol_location, 4, GL_FLOAT, GL_FALSE,
                           0, (void*) (n_points * sizeof(vec4)));
@@ -253,7 +253,7 @@ int main(int argc, char* argv[])
         mat4x4_rotate_Y(rotation_mat, rotation_mat, theta * deg_to_rad);
 
         // transform() will multiply the points by rotation_mat, and figure out the lighting
-        transform(viewer, light, material,
+        calculate_lighting(viewer, light, material,
             &vertices[0], &points[0],
             &colors[0], rotation_mat, n_vertices);
 
