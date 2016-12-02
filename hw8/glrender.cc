@@ -15,6 +15,8 @@ GLuint InitShader(const char* vertexShaderFile, const char* fragmentShaderFile);
 
 /** Global location config **/
 float theta = 0.0;   // mouse rotation around the Y (up) axis
+float phi = 0.0;     // mouse rotation around the X axis
+
 double posx = 0.0;   // translation along X
 double posy = 0.0;   // translation along Y
 
@@ -39,17 +41,16 @@ const point4 viewer = {0.0, 0.0, -10.0f, 1.0};
 const float deg_to_rad = (3.1415926f / 180.0f);
 
 /** values that are sent to shader repeatedly **/
-GLint mvp_location, rotation_mat_location;
+GLint mvp_location;
 
-void update_normals (
-    point4 vertices[], point4 points[], vec4 norms[],
-    mat4x4& rotation_mat, unsigned long n_vertices
+void compute_normals (
+    point4 vertices[], point4 points[], vec4 norms[], unsigned long n_vertices
 )
 {
     for (unsigned int i = 0; i < n_vertices / 3; i++) {
-        mat4x4_mul_vec4(points[3*i], rotation_mat, vertices[3*i]);
-        mat4x4_mul_vec4(points[3*i+1], rotation_mat, vertices[3*i+1]);
-        mat4x4_mul_vec4(points[3*i+2], rotation_mat, vertices[3*i+2]);
+        vecset(points[3*i], vertices[3*i]);
+        vecset(points[3*i+1], vertices[3*i+1]);
+        vecset(points[3*i+2], vertices[3*i+2]);
 
         // compute the triangle norm
         vec4 e1, e2, n;
@@ -160,8 +161,6 @@ int main(int argc, char* argv[])
     std::vector<float> verts;
     const auto n_vertices = Parser::parse_obj(obj_file, verts);
 
-    // collection of vertices, points and colors
-    // as OpenGL expects them
     point4 vertices[n_vertices];
     point4 points[n_vertices];
     vec4 norms[n_vertices];
@@ -202,13 +201,16 @@ int main(int argc, char* argv[])
     /** Open GL Init **/
     init(n_vertices);
 
+    /** Compute normals **/
+    compute_normals(&vertices[0], &points[0], &norms[0], n_vertices);
+
     /** Enable Z Buffering for depth */
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
 
-    // a transformation matrix, for the rotation,
-    // which we will apply to every vertex
-    mat4x4 rotation_mat;
+    /** Move data over to the shader **/
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(points), points);
+    glBufferSubData(GL_ARRAY_BUFFER, sizeof(points), sizeof(norms), norms);
 
     while (!glfwWindowShouldClose(window))
     {
@@ -224,16 +226,6 @@ int main(int argc, char* argv[])
         glViewport(0, 0, width, height);
         glClearColor(1.0, 1.0, 1.0, 1.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        // make up a transform that rotates around screen "Z" with time:
-        mat4x4_identity(rotation_mat);
-        mat4x4_rotate_Y(rotation_mat, rotation_mat, theta * deg_to_rad);
-        glUniformMatrix4fv(rotation_mat_location, 1, GL_FALSE, (const GLfloat*) rotation_mat);
-
-        update_normals(&vertices[0], &points[0], &norms[0], rotation_mat, n_vertices);
-
-        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(points), points);
-        glBufferSubData(GL_ARRAY_BUFFER, sizeof(points), sizeof(norms), norms);
 
         // perspective projection
         vec3 up = {0, 1.f, 0};
