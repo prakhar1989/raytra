@@ -33,10 +33,9 @@ void main()
     vec4 diffuse_color = material_diffuse * light_diffuse * dd1;
 
     vec4 view_vec = normalize(eye - vPos);
-    vec4 half_vec = normalize(light_direction + view_vec);
-    float dd2 = max(0, dot(vNorm, half_vec));
-    vec4 specular_color = material_specular * light_specular *
-                            pow(dd2, material_shininess);
+    vec4 bisector = normalize(light_direction + view_vec);
+    float dd2 = max(0, dot(vNorm, bisector));
+    vec4 specular_color = material_specular * light_specular * pow(dd2, material_shininess);
 
     vec4 vColor = ambient_color + diffuse_color + specular_color;
     vColor[3] = 1.0;
