@@ -68,6 +68,12 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         glfwSetWindowShouldClose(window, GLFW_TRUE);
+
+    if (key == GLFW_KEY_Z && action == GLFW_PRESS)
+        radius =  fminf(radius + 0.5f, -0.5f);
+
+    if (key == GLFW_KEY_X && action == GLFW_PRESS)
+        radius =  fmaxf(radius - 0.5f, -100.f);
 }
 
 void init (int n_vertices)
