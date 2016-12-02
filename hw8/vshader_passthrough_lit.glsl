@@ -1,5 +1,6 @@
 #version 120
 
+// model, view, projection
 uniform mat4 MVP;
 
 // camera location

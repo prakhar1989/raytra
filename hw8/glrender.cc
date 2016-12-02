@@ -16,6 +16,7 @@ GLuint InitShader(const char* vertexShaderFile, const char* fragmentShaderFile);
 /** Global location config **/
 float theta = 0.0;   // mouse rotation around the Y (up) axis
 float phi = 0.0;     // mouse rotation around the X axis
+float radius = -5.f; // the distance of camera from origin
 
 double posx = 0.0;   // translation along X
 double posy = 0.0;   // translation along Y
@@ -35,13 +36,10 @@ const material_properties material = {
         .shininess  = 100.0
 };
 
-/** Set the viewer's location **/
-const point4 viewer = {0.0, 0.0, -10.0f, 1.0};
-
 const float deg_to_rad = (3.1415926f / 180.0f);
 
 /** values that are sent to shader repeatedly **/
-GLint mvp_location;
+GLint mvp_location, eye_location;
 
 void compute_normals (
     point4 vertices[], point4 points[], vec4 norms[], unsigned long n_vertices
@@ -78,7 +76,7 @@ void init (int n_vertices)
 
     GLint vpos_location, vnorm_location; // attributes
 
-    GLint light_diffuse_location, eye_location, // uniforms
+    GLint light_diffuse_location,
           light_specular_location, light_ambient_location,
           light_position_location, material_diffuse_location, material_specular_location,
           material_ambient_location, material_shininess_location;
@@ -117,7 +115,6 @@ void init (int n_vertices)
     glUniform4fv(material_specular_location, 1, (const GLfloat *) material.specular);
     glUniform4fv(material_ambient_location, 1, (const GLfloat *) material.ambient);
     glUniform1f(material_shininess_location, material.shininess);
-    glUniform4fv(eye_location, 1, (const GLfloat *) viewer);
 
     vpos_location = glGetAttribLocation(program, "vPos");
     vnorm_location = glGetAttribLocation(program, "vNorm");
@@ -133,13 +130,23 @@ void init (int n_vertices)
 // on how the mouse has moved.
 static void mouse_move_rotate (GLFWwindow* window, double x, double y)
 {
-    static double last_x = 0;// keep track of where the mouse was last:
-    double delta = x - last_x;
-    if (delta != 0) {
-        theta += delta;
+    const int SCALE_STEPS = 10;
+    static double last_x = 0; // last pos of mouse in x
+    double delta_x = x - last_x;
+    if (delta_x != 0) {
+        theta += (delta_x)/SCALE_STEPS;
         if (theta > 360.0 ) theta -= 360.0;
         if (theta < 0.0 ) theta += 360.0;
         last_x = x;
+    }
+
+    static double last_y = 0; // last pos of mouse in y
+    double delta_y = y - last_y;
+    if (delta_y != 0) {
+        phi += (delta_y)/SCALE_STEPS;
+        if (phi > 360.0) phi -= 360.0;
+        if (phi < 0.0) phi += 360.0;
+        last_y = y;
     }
 }
 
@@ -228,14 +235,18 @@ int main(int argc, char* argv[])
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // perspective projection
+        vec3 viewer = {radius * sinf(theta),
+                       radius * sinf(phi),
+                       radius * cosf(theta) * cosf(phi)};
+
         vec3 up = {0, 1.f, 0};
         vec3 center = {0, 0, 0};
-        vec3 cameraPos = {viewer[0], viewer[1], viewer[2]};
 
-        mat4x4_look_at(view, cameraPos, center, up);
+        mat4x4_look_at(view, viewer, center, up);
         mat4x4_perspective(projection, 30 * deg_to_rad, ratio, 0.1f, 100.f);
         mat4x4_mul(projection, projection, view);
 
+        glUniform4fv(eye_location, 1, (const GLfloat *) viewer);
         glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat*) projection);
         glDrawArrays(GL_TRIANGLES, 0, n_vertices);
 
