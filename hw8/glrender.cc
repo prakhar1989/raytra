@@ -18,14 +18,29 @@ float theta = 0.0;   // mouse rotation around the Y (up) axis
 double posx = 0.0;   // translation along X
 double posy = 0.0;   // translation along Y
 
+/** Setting up Light and Material Properties **/
+const light_properties light = {
+        .position   = {0.0, 0.0, -10.0f, 1.0},
+        .ambient    = {0.2, 0.2, 0.2, 1.0},
+        .diffuse    = {0.8, 0.8, 0.8, 1.0},
+        .specular   = {.5, .5, .5, 1.0}
+};
+
+const material_properties material = {
+        .ambient    = {1.0, 0.0, 1.0, 1.0},
+        .diffuse    = {1.0, 0.8, 0.0, 1.0},
+        .specular   = {1.0, 0.8, 0.0, 1.0},
+        .shininess  = 100.0
+};
+
+/** Set the viewer's location **/
+const point4 viewer = {0.0, 0.0, -10.0f, 1.0};
+
 const float deg_to_rad = (3.1415926f / 180.0f);
 
 // transform the triangle's vertex data and put it into the points array.
 // also, compute the lighting at each vertex, and put that into the colors array.
 void calculate_lighting (
-    const point4& viewer,
-    const light_properties& light,
-    const material_properties& material,
     point4 vertices[], point4 points[], color4 colors[],
     mat4x4& rotation_mat,
     unsigned long n_vertices
@@ -98,6 +113,14 @@ void init (GLint& mvp_location, int n_colors, int n_points)
     GLuint vertex_buffer, program;
     GLint vpos_location, vcol_location;
 
+    // light properties
+    GLint light_diffuse_location, light_specular_location,
+            light_ambient_location, light_position_location,
+            material_diffuse_location, material_specular_location,
+            material_ambient_location, material_shininess_location;
+
+    GLint viewer;
+
     // set up vertex buffer object - this will be memory on the GPU where
     // we are going to store our vertex data (that is currently in the "points"
     // array)
@@ -116,6 +139,24 @@ void init (GLint& mvp_location, int n_colors, int n_points)
 
     // get access to the various things we will be sending to the shaders:
     mvp_location  = glGetUniformLocation(program, "MVP");
+    light_diffuse_location = glGetUniformLocation(program, "light_diffuse");
+    light_specular_location = glGetUniformLocation(program, "light_specular");
+    light_ambient_location = glGetUniformLocation(program, "light_ambient");
+    light_position_location = glGetUniformLocation(program, "light_position");
+    material_diffuse_location = glGetUniformLocation(program, "material_diffuse");
+    material_specular_location = glGetUniformLocation(program, "material_specular");
+    material_ambient_location = glGetUniformLocation(program, "material_ambient");
+    material_shininess_location = glGetUniformLocation(program, "material_shininess");
+
+    glUniform4fv(light_diffuse_location, 1, (const GLfloat *) light.diffuse);
+    glUniform4fv(light_specular_location, 1, (const GLfloat *) light.specular);
+    glUniform4fv(light_ambient_location, 1, (const GLfloat *) light.ambient);
+    glUniform4fv(light_position_location, 1, (const GLfloat *) light.position);
+    glUniform4fv(material_diffuse_location, 1, (const GLfloat *) material.diffuse);
+    glUniform4fv(material_specular_location, 1, (const GLfloat *) material.specular);
+    glUniform4fv(material_ambient_location, 1, (const GLfloat *) material.ambient);
+    glUniform1f(material_shininess_location, material.shininess);
+
     vpos_location = glGetAttribLocation(program, "vPos");
     vcol_location = glGetAttribLocation(program, "vCol");
 
@@ -210,24 +251,6 @@ int main(int argc, char* argv[])
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
 
-    /** Setting up Light and Material Properties **/
-    light_properties light = {
-        .position   = {0.0, 0.0, -10.0f, 1.0},
-        .ambient    = {0.2, 0.2, 0.2, 1.0},
-        .diffuse    = {0.8, 0.8, 0.8, 1.0},
-        .specular   = {.5, .5, .5, 1.0}
-    };
-
-    material_properties material = {
-        .ambient    = {1.0, 0.0, 1.0, 1.0},
-        .diffuse    = {1.0, 0.8, 0.0, 1.0},
-        .specular   = {1.0, 0.8, 0.0, 1.0},
-        .shininess  = 100.0
-    };
-
-    /** Set the viewer's location **/
-    point4 viewer = {0.0, 0.0, -10.0f, 1.0};
-
     // a transformation matrix, for the rotation,
     // which we will apply to every vertex
     mat4x4 rotation_mat;
@@ -253,8 +276,7 @@ int main(int argc, char* argv[])
         mat4x4_rotate_Y(rotation_mat, rotation_mat, theta * deg_to_rad);
 
         // transform() will multiply the points by rotation_mat, and figure out the lighting
-        calculate_lighting(viewer, light, material,
-            &vertices[0], &points[0],
+        calculate_lighting(&vertices[0], &points[0],
             &colors[0], rotation_mat, n_vertices);
 
         // tell the VBO to re-get the data from the points and colors arrays:

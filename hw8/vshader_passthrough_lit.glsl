@@ -1,8 +1,11 @@
 #version 120
 
 uniform mat4 MVP;
+
+// rotation matrix
 uniform mat4 rotation;
 
+// camera location
 uniform vec4 eye;
 
 // light properties
@@ -38,10 +41,12 @@ void main()
     vec4 half_vec = normalize(light_direction + view_vec);
     float dd2 = max(0, dot(vNorm, half_vec));
     vec4 specular_color = material_specular * light_specular *
-                            pow(material_shininess, log(dd2));
+                            pow(dd2, material_shininess);
 
     vec4 vColor = ambient_color + diffuse_color + specular_color;
+    vColor[3] = 1.0;
 
     gl_Position = MVP * vPos;
-    color = vCol; // vColor
+    //color = vCol; // vColor
+    color = ambient_color;
 }
