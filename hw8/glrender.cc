@@ -235,17 +235,18 @@ int main(int argc, char* argv[])
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // perspective projection
-        vec3 viewer = {radius * sinf(theta),
-                       radius * sinf(phi),
+        vec3 eye = {radius * sinf(theta), // X
+                       radius * sinf(phi),   // Y
                        radius * cosf(theta) * cosf(phi)};
 
         vec3 up = {0, 1.f, 0};
         vec3 center = {0, 0, 0};
 
-        mat4x4_look_at(view, viewer, center, up);
+        mat4x4_look_at(view, eye, center, up);
         mat4x4_perspective(projection, 30 * deg_to_rad, ratio, 0.1f, 100.f);
         mat4x4_mul(projection, projection, view);
 
+        vec4 viewer = {eye[0], eye[1], eye[2], 1.f};
         glUniform4fv(eye_location, 1, (const GLfloat *) viewer);
         glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat*) projection);
         glDrawArrays(GL_TRIANGLES, 0, n_vertices);
