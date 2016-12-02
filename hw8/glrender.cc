@@ -41,16 +41,16 @@ const float deg_to_rad = (3.1415926f / 180.0f);
 /** values that are sent to shader repeatedly **/
 GLint mvp_location, rotation_mat_location;
 
-// transform the triangle's vertex data and put it into the points array.
-// also, compute the lighting at each vertex, and put that into the colors array.
-void calculate_lighting (
-    point4 vertices[], point4 points[], color4 colors[],
-    mat4x4& rotation_mat,
-    unsigned long n_vertices
+void update_normals (
+    point4 vertices[], point4 points[], vec4 norms[],
+    mat4x4& rotation_mat, unsigned long n_vertices
 )
 {
-    // for each face
     for (unsigned int i = 0; i < n_vertices / 3; i++) {
+        mat4x4_mul_vec4(points[3*i], rotation_mat, vertices[3*i]);
+        mat4x4_mul_vec4(points[3*i+1], rotation_mat, vertices[3*i+1]);
+        mat4x4_mul_vec4(points[3*i+2], rotation_mat, vertices[3*i+2]);
+
         // compute the triangle norm
         vec4 e1, e2, n;
         vec4_sub(e1, points[3*i+1], points[3*i]);
@@ -59,48 +59,9 @@ void calculate_lighting (
         n[3] = 0.f;
         vec4_norm(n, n);
 
-        color4 ambient_color, diffuse_color, specular_color;
-        vecclear(ambient_color);
-        vecclear(diffuse_color);
-        vecclear(specular_color);
-
-        color4 diffuse_product, spec_product;
-        vecproduct(ambient_color, material.ambient, light.ambient);
-        vecproduct(diffuse_product, light.diffuse, material.diffuse);
-        vecproduct(spec_product, light.specular, material.specular);
-
-        // for each point in that face
-        for (int j = 0; j < 3; j++) {
-
-            int index = 3 * i + j;
-            mat4x4_mul_vec4(points[index], rotation_mat, vertices[index]);
-
-            // calculate diffuse shading
-            vec4 light_vec;
-            vec4_sub(light_vec, light.position, points[index]);
-            vec4_norm(light_vec, light_vec);
-
-            float dd1 = vec4_mul_inner(light_vec, n);
-            if (dd1 > 0.0)
-                vec4_scale(diffuse_color, diffuse_product, dd1);
-
-            // compute the specular shading
-            vec4 view_vec, half;
-            vec4_sub(view_vec, viewer, points[index]);
-            vec4_norm(view_vec, view_vec);
-            vec4_add(half, light_vec, view_vec);
-            vec4_norm(half, half);
-
-            float dd2 = vec4_mul_inner(half, n);
-
-            if (dd2 > 0.0)
-                vec4_scale(specular_color, spec_product, exp(material.shininess * log(dd2)));
-
-            // set the computed colors
-            vec4_add(colors[index], ambient_color, diffuse_color);
-            vec4_add(colors[index], colors[index], specular_color);
-            colors[index][3] = 1.0;
-        }
+        vecset(norms[3*i], n);
+        vecset(norms[3*i+1], n);
+        vecset(norms[3*i+2], n);
     }
 }
 
@@ -110,11 +71,11 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
         glfwSetWindowShouldClose(window, GLFW_TRUE);
 }
 
-void init (int n_colors, int n_points)
+void init (int n_vertices)
 {
     GLuint vertex_buffer, program;
 
-    GLint vpos_location, vcol_location; // attributes
+    GLint vpos_location, vnorm_location; // attributes
 
     GLint light_diffuse_location, eye_location, // uniforms
           light_specular_location, light_ambient_location,
@@ -130,7 +91,7 @@ void init (int n_colors, int n_points)
     // specify that its part of a VAO, what its size is, and where the
     // data is located, and finally a "hint" about how we are going to use
     // the data (the driver will put it in a good memory location, hopefully)
-    glBufferData(GL_ARRAY_BUFFER, (n_colors + n_points) * sizeof(vec4), NULL, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, 2 * n_vertices * sizeof(vec4), NULL, GL_DYNAMIC_DRAW);
 
     program = InitShader("vshader_passthrough_lit.glsl", "fshader_passthrough_lit.glsl");
     glUseProgram(program);
@@ -147,7 +108,6 @@ void init (int n_colors, int n_points)
     material_shininess_location = glGetUniformLocation(program, "material_shininess");
     eye_location = glGetUniformLocation(program, "eye");
 
-
     glUniform4fv(light_diffuse_location, 1, (const GLfloat *) light.diffuse);
     glUniform4fv(light_specular_location, 1, (const GLfloat *) light.specular);
     glUniform4fv(light_ambient_location, 1, (const GLfloat *) light.ambient);
@@ -159,18 +119,13 @@ void init (int n_colors, int n_points)
     glUniform4fv(eye_location, 1, (const GLfloat *) viewer);
 
     vpos_location = glGetAttribLocation(program, "vPos");
-    vcol_location = glGetAttribLocation(program, "vCol");
+    vnorm_location = glGetAttribLocation(program, "vNorm");
 
-    // the vPosition attribute is a series of 4-vecs of floats, starting at the
-    // beginning of the buffer
     glEnableVertexAttribArray(vpos_location);
     glVertexAttribPointer(vpos_location, 4, GL_FLOAT, GL_FALSE, 0, (void*) (0));
 
-    // the vColors attribute is a series of 4-vecs of floats, starting where
-    // previous buffer ends
-    glEnableVertexAttribArray(vcol_location);
-    glVertexAttribPointer(vcol_location, 4, GL_FLOAT, GL_FALSE,
-                          0, (void*) (n_points * sizeof(vec4)));
+    glEnableVertexAttribArray(vnorm_location);
+    glVertexAttribPointer(vnorm_location, 4, GL_FLOAT, GL_FALSE, 0, (void*) (n_vertices * sizeof(vec4)));
 }
 
 // use this motionfunc to demonstrate rotation - it adjusts "theta" based
@@ -209,7 +164,7 @@ int main(int argc, char* argv[])
     // as OpenGL expects them
     point4 vertices[n_vertices];
     point4 points[n_vertices];
-    color4 colors[n_vertices];
+    vec4 norms[n_vertices];
 
     for (auto i = 0; i < n_vertices; i++) {
         vertices[i][0] = verts[3*i];
@@ -245,7 +200,7 @@ int main(int argc, char* argv[])
     glfwSwapInterval(1);
 
     /** Open GL Init **/
-    init(n_vertices, n_vertices);
+    init(n_vertices);
 
     /** Enable Z Buffering for depth */
     glEnable(GL_DEPTH_TEST);
@@ -274,10 +229,10 @@ int main(int argc, char* argv[])
         mat4x4_rotate_Y(rotation_mat, rotation_mat, theta * deg_to_rad);
         glUniformMatrix4fv(rotation_mat_location, 1, GL_FALSE, (const GLfloat*) rotation_mat);
 
-        calculate_lighting(&vertices[0], &points[0], &colors[0], rotation_mat, n_vertices);
+        update_normals(&vertices[0], &points[0], &norms[0], rotation_mat, n_vertices);
 
         glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(points), points);
-        glBufferSubData(GL_ARRAY_BUFFER, sizeof(points), sizeof(colors), colors);
+        glBufferSubData(GL_ARRAY_BUFFER, sizeof(points), sizeof(norms), norms);
 
         // orthographically project to screen:
         mat4x4_ortho(p, -ratio, ratio, -1.f, 1.f, 1.f, -1.f);
