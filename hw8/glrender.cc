@@ -38,6 +38,9 @@ const point4 viewer = {0.0, 0.0, -10.0f, 1.0};
 
 const float deg_to_rad = (3.1415926f / 180.0f);
 
+/** values that are sent to shader repeatedly **/
+GLint mvp_location, rotation_mat_location;
+
 // transform the triangle's vertex data and put it into the points array.
 // also, compute the lighting at each vertex, and put that into the colors array.
 void calculate_lighting (
@@ -107,19 +110,16 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
         glfwSetWindowShouldClose(window, GLFW_TRUE);
 }
 
-void init (GLint& mvp_location, int n_colors, int n_points)
+void init (int n_colors, int n_points)
 {
-    // "names" for the various buffers, shaders, programs etc:
     GLuint vertex_buffer, program;
-    GLint vpos_location, vcol_location;
 
-    // light properties
-    GLint light_diffuse_location, light_specular_location,
-            light_ambient_location, light_position_location,
-            material_diffuse_location, material_specular_location,
-            material_ambient_location, material_shininess_location;
+    GLint vpos_location, vcol_location; // attributes
 
-    GLint viewer;
+    GLint light_diffuse_location, eye_location, // uniforms
+          light_specular_location, light_ambient_location,
+          light_position_location, material_diffuse_location, material_specular_location,
+          material_ambient_location, material_shininess_location;
 
     // set up vertex buffer object - this will be memory on the GPU where
     // we are going to store our vertex data (that is currently in the "points"
@@ -132,9 +132,7 @@ void init (GLint& mvp_location, int n_colors, int n_points)
     // the data (the driver will put it in a good memory location, hopefully)
     glBufferData(GL_ARRAY_BUFFER, (n_colors + n_points) * sizeof(vec4), NULL, GL_DYNAMIC_DRAW);
 
-    program = InitShader("vshader_passthrough_lit.glsl",
-                         "fshader_passthrough_lit.glsl");
-
+    program = InitShader("vshader_passthrough_lit.glsl", "fshader_passthrough_lit.glsl");
     glUseProgram(program);
 
     // get access to the various things we will be sending to the shaders:
@@ -147,6 +145,8 @@ void init (GLint& mvp_location, int n_colors, int n_points)
     material_specular_location = glGetUniformLocation(program, "material_specular");
     material_ambient_location = glGetUniformLocation(program, "material_ambient");
     material_shininess_location = glGetUniformLocation(program, "material_shininess");
+    eye_location = glGetUniformLocation(program, "eye");
+
 
     glUniform4fv(light_diffuse_location, 1, (const GLfloat *) light.diffuse);
     glUniform4fv(light_specular_location, 1, (const GLfloat *) light.specular);
@@ -156,6 +156,7 @@ void init (GLint& mvp_location, int n_colors, int n_points)
     glUniform4fv(material_specular_location, 1, (const GLfloat *) material.specular);
     glUniform4fv(material_ambient_location, 1, (const GLfloat *) material.ambient);
     glUniform1f(material_shininess_location, material.shininess);
+    glUniform4fv(eye_location, 1, (const GLfloat *) viewer);
 
     vpos_location = glGetAttribLocation(program, "vPos");
     vcol_location = glGetAttribLocation(program, "vCol");
@@ -244,8 +245,7 @@ int main(int argc, char* argv[])
     glfwSwapInterval(1);
 
     /** Open GL Init **/
-    GLint mvp_location;
-    init(mvp_location, n_vertices, n_vertices);
+    init(n_vertices, n_vertices);
 
     /** Enable Z Buffering for depth */
     glEnable(GL_DEPTH_TEST);
@@ -266,20 +266,16 @@ int main(int argc, char* argv[])
         ratio = width / (float) height;
 
         glViewport(0, 0, width, height);
-
-        // clear the window (with white) and clear the z-buffer
         glClearColor(1.0, 1.0, 1.0, 1.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // make up a transform that rotates around screen "Z" with time:
         mat4x4_identity(rotation_mat);
         mat4x4_rotate_Y(rotation_mat, rotation_mat, theta * deg_to_rad);
+        glUniformMatrix4fv(rotation_mat_location, 1, GL_FALSE, (const GLfloat*) rotation_mat);
 
-        // transform() will multiply the points by rotation_mat, and figure out the lighting
-        calculate_lighting(&vertices[0], &points[0],
-            &colors[0], rotation_mat, n_vertices);
+        calculate_lighting(&vertices[0], &points[0], &colors[0], rotation_mat, n_vertices);
 
-        // tell the VBO to re-get the data from the points and colors arrays:
         glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(points), points);
         glBufferSubData(GL_ARRAY_BUFFER, sizeof(points), sizeof(colors), colors);
 

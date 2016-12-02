@@ -48,5 +48,5 @@ void main()
 
     gl_Position = MVP * vPos;
     //color = vCol; // vColor
-    color = ambient_color;
+    color = ambient_color + diffuse_color;
 }
