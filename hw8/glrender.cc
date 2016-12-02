@@ -18,8 +18,8 @@ float theta = 0.0;   // mouse rotation around the Y (up) axis
 float phi = 0.0;     // mouse rotation around the X axis
 float radius = -5.f; // the distance of camera from origin
 
-double posx = 0.0;   // translation along X
-double posy = 0.0;   // translation along Y
+const int PANNING_STEPS = 10.0;
+const float ZOOMING_STEPS = 0.5f;
 
 /** Setting up Light and Material Properties **/
 const light_properties light = {
@@ -42,7 +42,8 @@ const float deg_to_rad = (3.1415926f / 180.0f);
 GLint mvp_location, eye_location;
 
 void compute_normals (
-    point4 vertices[], point4 points[], vec4 norms[], unsigned long n_vertices
+    point4 vertices[], point4 points[],
+    vec4 norms[], unsigned long n_vertices
 )
 {
     for (unsigned int i = 0; i < n_vertices / 3; i++) {
@@ -70,10 +71,10 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
         glfwSetWindowShouldClose(window, GLFW_TRUE);
 
     if (key == GLFW_KEY_Z && action == GLFW_PRESS)
-        radius =  fminf(radius + 0.5f, -0.5f);
+        radius =  fminf(radius + ZOOMING_STEPS, -0.5f);
 
     if (key == GLFW_KEY_X && action == GLFW_PRESS)
-        radius =  fmaxf(radius - 0.5f, -100.f);
+        radius =  fmaxf(radius - ZOOMING_STEPS, -100.f);
 }
 
 void init (int n_vertices)
@@ -136,11 +137,10 @@ void init (int n_vertices)
 // on how the mouse has moved.
 static void mouse_move_rotate (GLFWwindow* window, double x, double y)
 {
-    const int SCALE_STEPS = 10;
     static double last_x = 0; // last pos of mouse in x
     double delta_x = x - last_x;
     if (delta_x != 0) {
-        theta += (delta_x)/SCALE_STEPS;
+        theta += (delta_x)/PANNING_STEPS;
         if (theta > 360.0 ) theta -= 360.0;
         if (theta < 0.0 ) theta += 360.0;
         last_x = x;
@@ -149,7 +149,7 @@ static void mouse_move_rotate (GLFWwindow* window, double x, double y)
     static double last_y = 0; // last pos of mouse in y
     double delta_y = y - last_y;
     if (delta_y != 0) {
-        phi += (delta_y)/SCALE_STEPS;
+        phi += (delta_y)/PANNING_STEPS;
         if (phi > 360.0) phi -= 360.0;
         if (phi < 0.0) phi += 360.0;
         last_y = y;
