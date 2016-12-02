@@ -214,7 +214,8 @@ int main(int argc, char* argv[])
     {
         float ratio;
         int width, height;
-        mat4x4 p;
+        mat4x4 projection;
+        mat4x4 view;
 
         // update with window viewport size
         glfwGetFramebufferSize(window, &width, &height);
@@ -234,10 +235,16 @@ int main(int argc, char* argv[])
         glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(points), points);
         glBufferSubData(GL_ARRAY_BUFFER, sizeof(points), sizeof(norms), norms);
 
-        // orthographically project to screen:
-        mat4x4_ortho(p, -ratio, ratio, -1.f, 1.f, 1.f, -1.f);
+        // perspective projection
+        vec3 up = {0, 1.f, 0};
+        vec3 center = {0, 0, 0};
+        vec3 cameraPos = {viewer[0], viewer[1], viewer[2]};
 
-        glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat*) p);
+        mat4x4_look_at(view, cameraPos, center, up);
+        mat4x4_perspective(projection, 30 * deg_to_rad, ratio, 0.1f, 100.f);
+        mat4x4_mul(projection, projection, view);
+
+        glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat*) projection);
         glDrawArrays(GL_TRIANGLES, 0, n_vertices);
 
         glfwSwapBuffers(window);
