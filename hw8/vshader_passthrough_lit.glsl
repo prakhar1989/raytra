@@ -1,7 +1,8 @@
 #version 120
 
-// model, view, projection
-uniform mat4 MVP;
+// model, view, prespective
+uniform mat4 perspective;
+uniform mat4 view;
 
 // camera location
 uniform vec4 eye;
@@ -41,6 +42,6 @@ void main()
     vec4 vColor = ambient_color + diffuse_color + specular_color;
     vColor[3] = 1.0;
 
-    gl_Position = MVP * vPos;
+    gl_Position = perspective * view * vPos;
     color = vColor;
 }

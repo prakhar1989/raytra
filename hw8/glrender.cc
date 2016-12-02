@@ -39,7 +39,7 @@ const material_properties material = {
 const float deg_to_rad = (3.1415926f / 180.0f);
 
 /** values that are sent to shader repeatedly **/
-GLint mvp_location, eye_location;
+GLint perspective_location, eye_location, view_location;
 
 void compute_normals (
     point4 vertices[], point4 points[],
@@ -103,7 +103,8 @@ void init (int n_vertices)
     glUseProgram(program);
 
     // get access to the various things we will be sending to the shaders:
-    mvp_location  = glGetUniformLocation(program, "MVP");
+    perspective_location = glGetUniformLocation(program, "perspective");
+    view_location = glGetUniformLocation(program, "view");
     light_diffuse_location = glGetUniformLocation(program, "light_diffuse");
     light_specular_location = glGetUniformLocation(program, "light_specular");
     light_ambient_location = glGetUniformLocation(program, "light_ambient");
@@ -241,20 +242,19 @@ int main(int argc, char* argv[])
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // perspective projection
-        vec3 eye = {radius * sinf(theta), // X
-                       radius * sinf(phi),   // Y
-                       radius * cosf(theta) * cosf(phi)};
+        vec3 eye = {radius * sinf(theta), radius * sinf(phi),
+                    radius * cosf(theta) * cosf(phi)};
 
         vec3 up = {0, 1.f, 0};
         vec3 center = {0, 0, 0};
-
         mat4x4_look_at(view, eye, center, up);
         mat4x4_perspective(projection, 30 * deg_to_rad, ratio, 0.1f, 100.f);
-        mat4x4_mul(projection, projection, view);
 
         vec4 viewer = {eye[0], eye[1], eye[2], 1.f};
         glUniform4fv(eye_location, 1, (const GLfloat *) viewer);
-        glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat*) projection);
+
+        glUniformMatrix4fv(perspective_location, 1, GL_FALSE, (const GLfloat*) projection);
+        glUniformMatrix4fv(view_location, 1, GL_FALSE, (const GLfloat*) view);
         glDrawArrays(GL_TRIANGLES, 0, n_vertices);
 
         glfwSwapBuffers(window);
