@@ -16,16 +16,16 @@ GLuint InitShader(const char* vertexShaderFile, const char* fragmentShaderFile);
 /** Global location config **/
 float theta = 0.0;   // mouse rotation around the Y (up) axis
 float phi = 0.0;     // mouse rotation around the X axis
-float radius = -10.f; // the distance of camera from origin
+float radius = 10.f; // the distance of camera from origin
 
 const float PANNING_STEPS = 10.0;
 const float ZOOMING_STEPS = 0.5f;
-const float MAX_DISTANCE_FROM_ORIGIN = 50;
-const float MIN_DISTANCE_FROM_ORIGIN = 3;
+const float MAX_DISTANCE_FROM_ORIGIN = -50;
+const float MIN_DISTANCE_FROM_ORIGIN = -3;
 
 /** Setting up Light and Material Properties **/
 const light_properties light = {
-        .position   = {0.0, 0.0, -10.0f, 1.0},
+        .position   = {100.0, 100.0, 100.0f, 1.0},
         .ambient    = {0.2, 0.2, 0.2, 1.0},
         .diffuse    = {0.8, 0.8, 0.8, 1.0},
         .specular   = {.5, .5, .5, 1.0}
@@ -73,10 +73,10 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
         glfwSetWindowShouldClose(window, GLFW_TRUE);
 
     if (key == GLFW_KEY_Z && action == GLFW_PRESS)
-        radius =  fminf(radius + ZOOMING_STEPS, -MIN_DISTANCE_FROM_ORIGIN);
+        radius =  fmaxf(radius - ZOOMING_STEPS, -MIN_DISTANCE_FROM_ORIGIN);
 
     if (key == GLFW_KEY_X && action == GLFW_PRESS)
-        radius =  fmaxf(radius - ZOOMING_STEPS, -MAX_DISTANCE_FROM_ORIGIN);
+        radius =  fminf(radius + ZOOMING_STEPS, -MAX_DISTANCE_FROM_ORIGIN);
 }
 
 void init (int n_vertices)
