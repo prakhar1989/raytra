@@ -14,11 +14,10 @@ using namespace std;
 GLuint InitShader(const char* vertexShaderFile, const char* fragmentShaderFile);
 
 /** Global location config **/
-float theta = 0.0;   // mouse rotation around the Y (up) axis
-float phi = 0.0;     // mouse rotation around the X axis
-float radius = 10.f; // the distance of camera from origin
+float theta = 20.0;  // angle with the Z axis
+float phi = 90.0;   // angle with the Y axis
+float radius = 5.f;  // the distance of camera from origin
 
-const float PANNING_STEPS = 10.0;
 const float ZOOMING_STEPS = 0.5f;
 const float MAX_DISTANCE_FROM_ORIGIN = -50;
 const float MIN_DISTANCE_FROM_ORIGIN = -3;
@@ -136,14 +135,12 @@ void init (int n_vertices)
     glVertexAttribPointer(vnorm_location, 4, GL_FLOAT, GL_FALSE, 0, (void*) (n_vertices * sizeof(vec4)));
 }
 
-// use this motionfunc to demonstrate rotation - it adjusts "theta" based
-// on how the mouse has moved.
 static void mouse_move_rotate (GLFWwindow* window, double x, double y)
 {
     static double last_x = 0; // last pos of mouse in x
     double delta_x = x - last_x;
     if (delta_x != 0) {
-        theta += (delta_x)/PANNING_STEPS;
+        theta += delta_x;
         if (theta > 360.0 ) theta -= 360.0;
         if (theta < 0.0 ) theta += 360.0;
         last_x = x;
@@ -152,9 +149,9 @@ static void mouse_move_rotate (GLFWwindow* window, double x, double y)
     static double last_y = 0; // last pos of mouse in y
     double delta_y = y - last_y;
     if (delta_y != 0) {
-        phi += (delta_y)/PANNING_STEPS;
-        if (phi > 360.0) phi -= 360.0;
-        if (phi < 0.0) phi += 360.0;
+        phi += delta_y;
+        if (phi > 175.0) phi = 175.0;
+        if (phi < 5.0) phi = 5.0;
         last_y = y;
     }
 }
@@ -243,9 +240,12 @@ int main(int argc, char* argv[])
         glClearColor(1.0, 1.0, 1.0, 1.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // perspective projection
-        vec3 eye = {radius * sinf(theta), radius * sinf(phi),
-                    radius * cosf(theta) * cosf(phi)};
+        // camera location
+        vec3 eye = {
+            radius * sinf(phi * deg_to_rad) * sinf(theta * deg_to_rad),
+            radius * cosf(phi * deg_to_rad),
+            radius * sinf(phi * deg_to_rad) * cosf(theta * deg_to_rad)
+        };
 
         vec3 up = {0, 1.f, 0};
         vec3 center = {0, 0, 0};
