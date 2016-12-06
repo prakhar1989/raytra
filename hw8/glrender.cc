@@ -137,7 +137,9 @@ void init (int n_vertices)
 
 static void mouse_move_rotate (GLFWwindow* window, double x, double y)
 {
-    static double last_x = 0; // last pos of mouse in x
+    static double last_x = x; // last pos of mouse in x
+    static double last_y = y; // last pos of mouse in y
+
     double delta_x = x - last_x;
     if (delta_x != 0) {
         theta += delta_x;
@@ -146,7 +148,6 @@ static void mouse_move_rotate (GLFWwindow* window, double x, double y)
         last_x = x;
     }
 
-    static double last_y = 0; // last pos of mouse in y
     double delta_y = y - last_y;
     if (delta_y != 0) {
         phi += delta_y;
