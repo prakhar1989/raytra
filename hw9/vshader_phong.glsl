@@ -27,11 +27,18 @@ attribute vec4 vPos;
 // between vertext / fragment
 uniform bool show_vs_color;
 
+// toggles between showing checkboard pattern
+// and material shading
+uniform bool checkboard_toggle;
+
 // same as out..
 varying vec4 color;
 varying vec4 f_vNorm;
 varying vec4 f_light_direction;
 varying vec4 f_view_vec;
+
+// the world space position
+varying vec4 pos;
 
 void main()
 {
@@ -40,7 +47,7 @@ void main()
     vec4 view_vec = normalize(eye - vPos);
     vec4 vColor = vec4(0, 0, 0, 1);
 
-    if (show_vs_color) {
+    if (show_vs_color && !checkboard_toggle) {
         float dd1 = max(0, dot(vNorm, light_direction));
         vec4 diffuse_color = material_diffuse * light_diffuse * dd1;
 
@@ -57,4 +64,5 @@ void main()
     f_vNorm = vNorm;
     f_light_direction = light_direction;
     f_view_vec = view_vec;
+    pos = vPos;
 }

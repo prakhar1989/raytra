@@ -16,13 +16,21 @@ GLuint InitShader(const char* vertexShaderFile, const char* fragmentShaderFile);
 /** Global location config **/
 float theta = 20.0;  // angle with the Z axis
 float phi = 90.0;   // angle with the Y axis
-float radius = 3.f;  // the distance of camera from origin
+float radius = 5.f;  // the distance of camera from origin
 
 const float ZOOMING_STEPS = 0.5f;
 const float MAX_DISTANCE_FROM_ORIGIN = -50;
 const float MIN_DISTANCE_FROM_ORIGIN = -3;
 
+/* press S to toggle between moving shading calculation
+ * from vertex shader to fragment shader
+ */
 bool vertex_shader_color_toggle = false;
+
+/* press t to toggle between moving checkboard pattern
+ * texture drawing
+ */
+bool checkboard_toggle = false;
 
 /** Setting up Light and Material Properties **/
 const light_properties light = {
@@ -42,8 +50,8 @@ const material_properties material = {
 const float deg_to_rad = (3.1415926f / 180.0f);
 
 /** values that are sent to shader repeatedly **/
-GLint perspective_location, eye_location,
-        view_location, show_vs_color_location;
+GLint perspective_location, eye_location, view_location,
+      show_vs_color_location, checkboard_toggle_location;
 
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
@@ -58,6 +66,9 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 
     if (key == GLFW_KEY_S && action == GLFW_PRESS)
         vertex_shader_color_toggle = !vertex_shader_color_toggle;
+
+    if (key == GLFW_KEY_C && action == GLFW_PRESS)
+        checkboard_toggle = !checkboard_toggle;
 }
 
 void init (int n_vertices)
@@ -77,8 +88,8 @@ void init (int n_vertices)
     // the data (the driver will put it in a good memory location, hopefully)
     glBufferData(GL_ARRAY_BUFFER, 2 * n_vertices * sizeof(vec4), NULL, GL_DYNAMIC_DRAW);
 
-    //program = InitShader("vshader_phong.glsl", "fshader_phong.glsl");
-    program = InitShader("vshader_checkboard.glsl", "fshader_checkboard.glsl");
+    program = InitShader("vshader_phong.glsl", "fshader_phong.glsl");
+    //program = InitShader("vshader_checkboard.glsl", "fshader_checkboard.glsl");
     glUseProgram(program);
 
     // get access to the various things we will be sending to the shaders:
@@ -86,7 +97,7 @@ void init (int n_vertices)
     view_location = glGetUniformLocation(program, "view");
     eye_location = glGetUniformLocation(program, "eye");
     show_vs_color_location = glGetUniformLocation(program, "show_vs_color");
-    glUniform1i(show_vs_color_location, vertex_shader_color_toggle);
+    checkboard_toggle_location = glGetUniformLocation(program, "checkboard_toggle");
 
     glUniform4fv(glGetUniformLocation(program, "light_diffuse"), 1, (const GLfloat *) light.diffuse);
     glUniform4fv(glGetUniformLocation(program, "light_specular"), 1, (const GLfloat *) light.specular);
@@ -96,6 +107,8 @@ void init (int n_vertices)
     glUniform4fv(glGetUniformLocation(program, "material_specular"), 1, (const GLfloat *) material.specular);
     glUniform4fv(glGetUniformLocation(program, "material_ambient"), 1, (const GLfloat *) material.ambient);
     glUniform1f(glGetUniformLocation(program, "material_shininess"), material.shininess);
+    glUniform1i(show_vs_color_location, vertex_shader_color_toggle);
+    glUniform1i(checkboard_toggle_location, checkboard_toggle);
 
     vpos_location = glGetAttribLocation(program, "vPos");
     vnorm_location = glGetAttribLocation(program, "vNorm");
@@ -190,6 +203,11 @@ int main(int argc, char* argv[])
     gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
     glfwSwapInterval(1);
 
+    /** helper message **/
+    std::cout << "Press c to toggle checkboard pattern" << std::endl;
+    std::cout << "Press s to toggle shading calculations "
+        "between fragment and vertex shader" << std::endl;
+
     /** Open GL Init **/
     init(n_vertices);
 
@@ -231,6 +249,7 @@ int main(int argc, char* argv[])
         vec4 viewer = {eye[0], eye[1], eye[2], 1.f};
         glUniform4fv(eye_location, 1, (const GLfloat *) viewer);
         glUniform1i(show_vs_color_location, vertex_shader_color_toggle);
+        glUniform1i(checkboard_toggle_location, checkboard_toggle);
 
         glUniformMatrix4fv(perspective_location, 1, GL_FALSE, (const GLfloat*) projection);
         glUniformMatrix4fv(view_location, 1, GL_FALSE, (const GLfloat*) view);
