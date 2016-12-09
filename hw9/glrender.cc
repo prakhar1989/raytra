@@ -66,11 +66,6 @@ void init (int n_vertices)
 
     GLint vpos_location, vnorm_location; // attributes
 
-    GLint light_diffuse_location,
-          light_specular_location, light_ambient_location,
-          light_position_location, material_diffuse_location, material_specular_location,
-          material_ambient_location, material_shininess_location;
-
     // set up vertex buffer object - this will be memory on the GPU where
     // we are going to store our vertex data (that is currently in the "points"
     // array)
@@ -88,26 +83,18 @@ void init (int n_vertices)
     // get access to the various things we will be sending to the shaders:
     perspective_location = glGetUniformLocation(program, "perspective");
     view_location = glGetUniformLocation(program, "view");
-    light_diffuse_location = glGetUniformLocation(program, "light_diffuse");
-    light_specular_location = glGetUniformLocation(program, "light_specular");
-    light_ambient_location = glGetUniformLocation(program, "light_ambient");
-    light_position_location = glGetUniformLocation(program, "light_position");
-    material_diffuse_location = glGetUniformLocation(program, "material_diffuse");
-    material_specular_location = glGetUniformLocation(program, "material_specular");
-    material_ambient_location = glGetUniformLocation(program, "material_ambient");
-    material_shininess_location = glGetUniformLocation(program, "material_shininess");
     eye_location = glGetUniformLocation(program, "eye");
     show_vs_color_location = glGetUniformLocation(program, "show_vs_color");
-
-    glUniform4fv(light_diffuse_location, 1, (const GLfloat *) light.diffuse);
-    glUniform4fv(light_specular_location, 1, (const GLfloat *) light.specular);
-    glUniform4fv(light_ambient_location, 1, (const GLfloat *) light.ambient);
-    glUniform4fv(light_position_location, 1, (const GLfloat *) light.position);
-    glUniform4fv(material_diffuse_location, 1, (const GLfloat *) material.diffuse);
-    glUniform4fv(material_specular_location, 1, (const GLfloat *) material.specular);
-    glUniform4fv(material_ambient_location, 1, (const GLfloat *) material.ambient);
-    glUniform1f(material_shininess_location, material.shininess);
     glUniform1i(show_vs_color_location, vertex_shader_color_toggle);
+
+    glUniform4fv(glGetUniformLocation(program, "light_diffuse"), 1, (const GLfloat *) light.diffuse);
+    glUniform4fv(glGetUniformLocation(program, "light_specular"), 1, (const GLfloat *) light.specular);
+    glUniform4fv(glGetUniformLocation(program, "light_ambient"), 1, (const GLfloat *) light.ambient);
+    glUniform4fv(glGetUniformLocation(program, "light_position"), 1, (const GLfloat *) light.position);
+    glUniform4fv(glGetUniformLocation(program, "material_diffuse"), 1, (const GLfloat *) material.diffuse);
+    glUniform4fv(glGetUniformLocation(program, "material_specular"), 1, (const GLfloat *) material.specular);
+    glUniform4fv(glGetUniformLocation(program, "material_ambient"), 1, (const GLfloat *) material.ambient);
+    glUniform1f(glGetUniformLocation(program, "material_shininess"), material.shininess);
 
     vpos_location = glGetAttribLocation(program, "vPos");
     vnorm_location = glGetAttribLocation(program, "vNorm");
