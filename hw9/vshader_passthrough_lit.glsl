@@ -23,6 +23,10 @@ uniform float material_shininess;
 attribute vec4 vNorm;
 attribute vec4 vPos;
 
+// toggles between shading computation
+// between vertext / fragment
+uniform bool show_vs_color;
+
 // same as out..
 varying vec4 color;
 varying vec4 f_vNorm;
@@ -32,18 +36,21 @@ varying vec4 f_view_vec;
 void main()
 {
     vec4 ambient_color = material_ambient * light_ambient;
-
     vec4 light_direction = normalize(light_position - vPos);
-    float dd1 = max(0, dot(vNorm, light_direction));
-    vec4 diffuse_color = material_diffuse * light_diffuse * dd1;
-
     vec4 view_vec = normalize(eye - vPos);
-    vec4 bisector = normalize(light_direction + view_vec);
-    float dd2 = max(0, dot(vNorm, bisector));
-    vec4 specular_color = material_specular * light_specular * pow(dd2, material_shininess);
+    vec4 vColor = vec4(0, 0, 0, 1);
 
-    vec4 vColor = ambient_color + diffuse_color + specular_color;
-    vColor[3] = 1.0;
+    if (show_vs_color) {
+        float dd1 = max(0, dot(vNorm, light_direction));
+        vec4 diffuse_color = material_diffuse * light_diffuse * dd1;
+
+        vec4 bisector = normalize(light_direction + view_vec);
+        float dd2 = max(0, dot(vNorm, bisector));
+        vec4 specular_color = material_specular * light_specular * pow(dd2, material_shininess);
+
+        vColor = ambient_color + diffuse_color + specular_color;
+        vColor[3] = 1.0;
+    }
 
     gl_Position = perspective * view * vPos;
     color = vColor;

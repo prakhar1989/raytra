@@ -33,9 +33,9 @@ void main()
     f_color[3] = 1.0;
 
     if (show_vs_color) {
-        gl_FragColor = f_color;
-    } else {
         gl_FragColor = color;
+    } else {
+        gl_FragColor = f_color;
     }
 }
 
