@@ -109,7 +109,7 @@ unsigned long Parser::parse_obj (
 
     // normalize
     for (unsigned int i = 0; i < n_counts; i++)
-        norm(normals[i]);
+        normals[i] = norm(normals[i]);
 
     for (unsigned int i = 0; i < n_faces/3; i++) {
         int a_index = tris[3*i];

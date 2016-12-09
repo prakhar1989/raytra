@@ -16,7 +16,7 @@ GLuint InitShader(const char* vertexShaderFile, const char* fragmentShaderFile);
 /** Global location config **/
 float theta = 20.0;  // angle with the Z axis
 float phi = 90.0;   // angle with the Y axis
-float radius = 5.f;  // the distance of camera from origin
+float radius = 3.f;  // the distance of camera from origin
 
 const float ZOOMING_STEPS = 0.5f;
 const float MAX_DISTANCE_FROM_ORIGIN = -50;
@@ -41,39 +41,6 @@ const float deg_to_rad = (3.1415926f / 180.0f);
 
 /** values that are sent to shader repeatedly **/
 GLint perspective_location, eye_location, view_location;
-
-void compute_normals (
-    point4 vertices[], point4 points[],
-    vec4 norms[], unsigned long n_vertices
-)
-{
-    // reset the normals
-    for (unsigned int i = 0; i < n_vertices; i++)
-        vecset(norms[i], {0, 0, 0, 0});
-
-    for (unsigned int i = 0; i < n_vertices / 3; i++) {
-        vecset(points[3*i], vertices[3*i]);
-        vecset(points[3*i+1], vertices[3*i+1]);
-        vecset(points[3*i+2], vertices[3*i+2]);
-
-        // compute the triangle norm
-        vec4 e1, e2, n;
-        vec4_sub(e1, points[3*i+1], points[3*i]);
-        vec4_sub(e2, points[3*i+2], points[3*i]);
-        vec4_mul_cross(n, e1, e2);
-        n[3] = 0.f;
-        vec4_norm(n, n);
-
-        vec4_add(norms[3*i], norms[3*i], n);
-        vec4_add(norms[3*i+1], norms[3*i*1], n);
-        vec4_add(norms[3*i+2], norms[3*i+2], n);
-    }
-
-    // normalize
-    for (unsigned int i = 0; i < n_vertices; i++)
-        vec4_norm(norms[i], norms[i]);
-
-}
 
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
@@ -190,10 +157,15 @@ int main(int argc, char* argv[])
     vec4 norms[n_vertices];
 
     for (auto i = 0; i < n_vertices; i++) {
-        vertices[i][0] = verts[3*i];
-        vertices[i][1] = verts[3*i+1];
-        vertices[i][2] = verts[3*i+2];
-        vertices[i][3] = 1;
+        points[i][0] = verts[3*i];
+        points[i][1] = verts[3*i+1];
+        points[i][2] = verts[3*i+2];
+        points[i][3] = 1;
+
+        norms[i][0] = normals[i].x;
+        norms[i][1] = normals[i].y;
+        norms[i][2] = normals[i].z;
+        norms[i][3] = 0;
     }
 
     if (!glfwInit())
@@ -224,9 +196,6 @@ int main(int argc, char* argv[])
 
     /** Open GL Init **/
     init(n_vertices);
-
-    /** Compute normals **/
-    compute_normals(&vertices[0], &points[0], &norms[0], n_vertices);
 
     /** Enable Z Buffering for depth */
     glEnable(GL_DEPTH_TEST);
