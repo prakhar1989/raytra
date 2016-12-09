@@ -77,7 +77,8 @@ void init (int n_vertices)
     // the data (the driver will put it in a good memory location, hopefully)
     glBufferData(GL_ARRAY_BUFFER, 2 * n_vertices * sizeof(vec4), NULL, GL_DYNAMIC_DRAW);
 
-    program = InitShader("vshader_phong.glsl", "fshader_phong.glsl");
+    //program = InitShader("vshader_phong.glsl", "fshader_phong.glsl");
+    program = InitShader("vshader_checkboard.glsl", "fshader_checkboard.glsl");
     glUseProgram(program);
 
     // get access to the various things we will be sending to the shaders:
