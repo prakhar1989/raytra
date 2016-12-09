@@ -24,7 +24,7 @@ attribute vec4 vNorm;
 attribute vec4 vPos;
 
 // same as out..
-//varying vec4 color;
+varying vec4 color;
 varying vec4 f_vNorm;
 varying vec4 f_light_direction;
 varying vec4 f_view_vec;
@@ -46,7 +46,7 @@ void main()
     vColor[3] = 1.0;
 
     gl_Position = perspective * view * vPos;
-    //color = vColor;
+    color = vColor;
     f_vNorm = vNorm;
     f_light_direction = light_direction;
     f_view_vec = view_vec;

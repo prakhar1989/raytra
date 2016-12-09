@@ -22,6 +22,8 @@ const float ZOOMING_STEPS = 0.5f;
 const float MAX_DISTANCE_FROM_ORIGIN = -50;
 const float MIN_DISTANCE_FROM_ORIGIN = -3;
 
+bool vertex_shader_color_toggle = false;
+
 /** Setting up Light and Material Properties **/
 const light_properties light = {
         .position   = {100.0, 100.0, 100.0f, 1.0},
@@ -40,7 +42,8 @@ const material_properties material = {
 const float deg_to_rad = (3.1415926f / 180.0f);
 
 /** values that are sent to shader repeatedly **/
-GLint perspective_location, eye_location, view_location;
+GLint perspective_location, eye_location,
+        view_location, show_vs_color_location;
 
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
@@ -52,6 +55,9 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 
     if (key == GLFW_KEY_X && action == GLFW_PRESS)
         radius =  fminf(radius + ZOOMING_STEPS, -MAX_DISTANCE_FROM_ORIGIN);
+
+    if (key == GLFW_KEY_S && action == GLFW_PRESS)
+        vertex_shader_color_toggle = !vertex_shader_color_toggle;
 }
 
 void init (int n_vertices)
@@ -91,6 +97,7 @@ void init (int n_vertices)
     material_ambient_location = glGetUniformLocation(program, "material_ambient");
     material_shininess_location = glGetUniformLocation(program, "material_shininess");
     eye_location = glGetUniformLocation(program, "eye");
+    show_vs_color_location = glGetUniformLocation(program, "show_vs_color");
 
     glUniform4fv(light_diffuse_location, 1, (const GLfloat *) light.diffuse);
     glUniform4fv(light_specular_location, 1, (const GLfloat *) light.specular);
@@ -100,6 +107,7 @@ void init (int n_vertices)
     glUniform4fv(material_specular_location, 1, (const GLfloat *) material.specular);
     glUniform4fv(material_ambient_location, 1, (const GLfloat *) material.ambient);
     glUniform1f(material_shininess_location, material.shininess);
+    glUniform1i(show_vs_color_location, vertex_shader_color_toggle);
 
     vpos_location = glGetAttribLocation(program, "vPos");
     vnorm_location = glGetAttribLocation(program, "vNorm");
@@ -234,6 +242,7 @@ int main(int argc, char* argv[])
 
         vec4 viewer = {eye[0], eye[1], eye[2], 1.f};
         glUniform4fv(eye_location, 1, (const GLfloat *) viewer);
+        glUniform1i(show_vs_color_location, vertex_shader_color_toggle);
 
         glUniformMatrix4fv(perspective_location, 1, GL_FALSE, (const GLfloat*) projection);
         glUniformMatrix4fv(view_location, 1, GL_FALSE, (const GLfloat*) view);
