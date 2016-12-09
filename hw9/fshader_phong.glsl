@@ -14,6 +14,7 @@ uniform float material_shininess;
 
 uniform bool show_vs_color;
 uniform bool checkboard_toggle;
+uniform float checkboard_size;
 
 varying vec4 f_vNorm;
 varying vec4 f_light_direction;
@@ -51,8 +52,7 @@ vec4 checker(float u, float v, float z)
     vec4 white_material_specular = vec4(0.5, 0.5, 0.5, 1.0);
     float white_material_shininess = 100.0;
 
-    float checksize = 20;
-    float res = mod(floor(checksize * u) + floor(checksize * v), 2.0);
+    float res = mod(floor(checkboard_size * u) + floor(checkboard_size * v), 2.0);
 
     if (res == 0)
         return compute_shading(black_material_ambient, black_material_specular,

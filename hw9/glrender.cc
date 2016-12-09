@@ -32,6 +32,10 @@ bool vertex_shader_color_toggle = false;
  */
 bool checkboard_toggle = false;
 
+/* size of each checkboard
+ */
+float checkboard_size = 20;
+
 /** Setting up Light and Material Properties **/
 const light_properties light = {
         .position   = {100.0, 100.0, 100.0f, 1.0},
@@ -51,7 +55,8 @@ const float deg_to_rad = (3.1415926f / 180.0f);
 
 /** values that are sent to shader repeatedly **/
 GLint perspective_location, eye_location, view_location,
-      show_vs_color_location, checkboard_toggle_location;
+      show_vs_color_location, checkboard_toggle_location,
+      checkboard_size_location;
 
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
@@ -69,6 +74,12 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 
     if (key == GLFW_KEY_C && action == GLFW_PRESS)
         checkboard_toggle = !checkboard_toggle;
+
+    if (key == GLFW_KEY_UP && action == GLFW_PRESS)
+        checkboard_size += 5;
+
+    if (key == GLFW_KEY_DOWN && action == GLFW_PRESS)
+        checkboard_size = fmaxf(checkboard_size - 5, 2);
 }
 
 void init (int n_vertices)
@@ -98,6 +109,7 @@ void init (int n_vertices)
     eye_location = glGetUniformLocation(program, "eye");
     show_vs_color_location = glGetUniformLocation(program, "show_vs_color");
     checkboard_toggle_location = glGetUniformLocation(program, "checkboard_toggle");
+    checkboard_size_location = glGetUniformLocation(program, "checkboard_size");
 
     glUniform4fv(glGetUniformLocation(program, "light_diffuse"), 1, (const GLfloat *) light.diffuse);
     glUniform4fv(glGetUniformLocation(program, "light_specular"), 1, (const GLfloat *) light.specular);
@@ -109,6 +121,7 @@ void init (int n_vertices)
     glUniform1f(glGetUniformLocation(program, "material_shininess"), material.shininess);
     glUniform1i(show_vs_color_location, vertex_shader_color_toggle);
     glUniform1i(checkboard_toggle_location, checkboard_toggle);
+    glUniform1f(checkboard_size_location, checkboard_size);
 
     vpos_location = glGetAttribLocation(program, "vPos");
     vnorm_location = glGetAttribLocation(program, "vNorm");
@@ -207,6 +220,7 @@ int main(int argc, char* argv[])
     std::cout << "Press c to toggle checkboard pattern" << std::endl;
     std::cout << "Press s to toggle shading calculations "
         "between fragment and vertex shader" << std::endl;
+    std::cout << "Use Up and Down arrow keys for resizing checkboard" << std::endl;
 
     /** Open GL Init **/
     init(n_vertices);
@@ -250,6 +264,7 @@ int main(int argc, char* argv[])
         glUniform4fv(eye_location, 1, (const GLfloat *) viewer);
         glUniform1i(show_vs_color_location, vertex_shader_color_toggle);
         glUniform1i(checkboard_toggle_location, checkboard_toggle);
+        glUniform1f(checkboard_size_location, checkboard_size);
 
         glUniformMatrix4fv(perspective_location, 1, GL_FALSE, (const GLfloat*) projection);
         glUniformMatrix4fv(view_location, 1, GL_FALSE, (const GLfloat*) view);
