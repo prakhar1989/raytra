@@ -1,11 +1,19 @@
 RayTra
 ===
 
-Part III of Building a Raytracer by Prakhar Srivastav (ps2894).
+Raytra is a raytracer written in C++
 
+### Features
+- Supports a simple scene description language ([sample scene](https://github.com/prakhar1989/raytra/blob/master/scenes/multiple_lights.scn))
+- Renders an image in the [OpenEXR](http://www.openexr.com/) format.
+- Ray acceleration tests using Bounded Volume Heirarchy (BVH) trees.
+- Reflections and shadows
+- Reading in geometry via Obj files
+- Antialiasing via Monte Carlo sampling
 
-## Run
+### Run
 ```
+$ mkdir build && cd build
 $ cmake . && make
-$ raytra scenes/sample.scn outputs/image.exr
+$ raytra ../scenes/sample.scn image.exr
 ```
