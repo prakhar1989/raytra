@@ -12,6 +12,8 @@ using namespace Raytra;
 using namespace std;
 
 const int MAX_REFLECTIONS = 20;
+const unsigned int ray_samples = 4;
+const unsigned int shadow_samples = 4;
 
 void cleanup(vector<Surface*>& surfaces,
              vector<PointLight*>& lights,
@@ -194,9 +196,8 @@ color compute_spd (
 
 int main(int argc, char** argv)
 {
-    if (argc < 5) {
-        cerr << "USAGE: raytra <scene_file> "
-                "<output_file> <ray samples> <shadow samples>" << endl;
+    if (argc < 3) {
+        cerr << "USAGE: raytra <scene_file> <output_file> " << endl;
         return -1;
     }
 
@@ -205,9 +206,6 @@ int main(int argc, char** argv)
 
     string scene_file {argv[1]};
     char* output_file {argv[2]};
-
-    const unsigned int ray_samples = (unsigned int) (atoi(argv[3]));
-    const unsigned int shadow_samples = (unsigned int) (atoi(argv[4]));
 
     if (!does_file_exist(scene_file)) {
         cerr << "error: scene file doesn't exist" << endl;
