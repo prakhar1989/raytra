@@ -3,6 +3,8 @@ RayTra
 
 Raytra is a raytracer written in C++
 
+![shot.png](shot.png)
+
 ### Features
 - Supports a simple scene description language ([sample scene](https://github.com/prakhar1989/raytra/blob/master/scenes/multiple_lights.scn))
 - Renders an image in the [OpenEXR](http://www.openexr.com/) format.
